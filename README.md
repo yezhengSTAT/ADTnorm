@@ -6,7 +6,7 @@ CITE-seq technology enables the direct measurement of protein expression, known 
 
 ## ADT normaliztion pipeline
 
-<img src="./figures/Pipeline.png" alt="ADTnorm" width="700px">
+<img src="./figures/Pipeline.png" alt="ADTnorm" width="200px">
 
 ## Installation
 
