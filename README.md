@@ -6,7 +6,7 @@ CITE-seq technology enables the direct measurement of protein expression, known 
 
 ## ADT normaliztion pipeline
 
-<img src="./figures/pipeline.png" alt="ADTnorm" width="700px">
+<img src="./figures/Pipeline.png" alt="ADTnorm" width="700px">
 
 ## Installation
 
@@ -22,8 +22,8 @@ install_github("yezhengSTAT/ADTnorm", builf_vignettes = FALSE)
 
 ## Usage
 
-```
-cell_x_adt_norm = cbind(cell_x_adt_norm, ADTnorm(cell_x_adt = adt_data, cell_x_feature = adt_feature,  save_outpath = out_path, study_name =study_name, marker_to_process = c("CD3", "CD4", "CD8"), clean_adt_name = TRUE))
+``` 
+cell_x_adt_norm = ADTnorm(cell_x_adt = adt_data, cell_x_feature = adt_feature,  save_outpath = out_path, study_name =study_name, marker_to_process = c("CD3", "CD4", "CD8"), clean_adt_name = TRUE)
 
 ```
 For more detail and typical parameter tuning examples, please visit tutorial website.
@@ -31,9 +31,11 @@ For more detail and typical parameter tuning examples, please visit tutorial web
 ## Results
 
 Raw Counts 
+
 <img src="./figures/RawCount.png" alt="RawCount" width="700px">
 
 ADTnorm Counts
+
 <img src="./figures/ADTnorm.png" alt="Normalization" width="700px">
 
 ## Contact
