@@ -34,4 +34,9 @@ Imports:
     flowCore,
     flowStats,
     dplyr,
-    fda
+    fda,
+    EMDomics,
+    ggplot2,
+    RColorBrewer,
+    ggridges,
+    ggpubr
