@@ -11,8 +11,6 @@ CITE-seq technology enables the direct measurement of protein expression, known 
 ## Installation
 
 ```
-install.packages(c('ggplot2', 'dplyr', 'data.table', 'flowCore', 'flowStats'))
-
 if (!requireNamespace("devtools", quietly=TRUE))
     install.packages("devtools")
 
@@ -22,13 +20,28 @@ install_github("yezhengSTAT/ADTnorm", builf_vignettes = FALSE)
 
 ## Usage
 
-``` 
-cell_x_adt_norm = ADTnorm(cell_x_adt = adt_data, cell_x_feature = adt_feature,  save_outpath = out_path, study_name =study_name, marker_to_process = c("CD3", "CD4", "CD8"), clean_adt_name = TRUE)
+```
+data(cell_x_adt)
+data(cell_x_feature) 
+out_path = "/path/to/output/location"
+study_name = "ADTnorm_demoRun"
 
+cell_x_adt_norm = ADTnorm(
+    cell_x_adt = cell_x_adt, 
+    cell_x_feature = cell_x_feature,
+    save_outpath = out_path, 
+    study_name =study_name, 
+    marker_to_process = c("CD3", "CD4", "CD8", "CD45RA"), 
+    trimodal_marker = c("CD4", "CD45RA"), 
+    positive_peak = list(ADT = "CD3", sample = "buus_2021_T"),
+    save_intermediate = TRUE
+)
 ```
 For more detail and typical parameter tuning examples, please visit tutorial website.
 
 ## Results
+
+In the `out_path` specified by the users, there will be two subfolders, `figures` and `RDS`, containing the intermediate object and density plot of detected peak and valley landmarks.
 
 Raw Counts 
 
