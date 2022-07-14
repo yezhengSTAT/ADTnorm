@@ -77,19 +77,23 @@ peak_alignment = function(cell_x_adt, cell_x_feature = NULL, landmark_matrix = N
       environment(funsBack[[samples[j]]]) = e2
     }
   } else { ## more than one landmark: warping
-    args = list(fdobj=fdobj, ximarks=landmark_matrix, WfdPar=WfdPar, monwrd=monwrd)
-    if(!is.null(target_landmark)){
-      args[['x0marks']] = target_landmark
-    }
-    args = args[names(formals(fda::landmarkreg))]
-    regDens = do.call(fda::landmarkreg, args)
+    # args = list(fdobj=fdobj, ximarks=landmark_matrix, WfdPar=WfdPar, monwrd=monwrd)
+    # if(!is.null(target_landmark)){
+    #   args[['x0marks']] = target_landmark
+    # }
+    # args = args[names(formals(fda::landmarkreg))]
+    # regDens = do.call(fda::landmarkreg, args)
 
     # if(is.null(target_landmark)){
     #   regDens = fda::landmarkreg(fdobj, landmark_matrix, WfdPar = WfdPar, monwrd = monwrd)
     # }else{
     #   regDens = fda::landmarkreg(fdobj, landmark_matrix, x0marks = target_landmark, WfdPar = WfdPar, monwrd = monwrd)
     # }
-    
+    if(is.null(target_landmark)){
+      regDens = fda::landmarkreg(fdobj, landmark_matrix, WfdPar = WfdPar)
+    }else{
+      regDens = fda::landmarkreg(fdobj, landmark_matrix, x0marks = target_landmark, WfdPar = WfdPar)
+    }   
     warpfdobj = regDens$warpfd
     warpedX = eval.fd(warpfdobj, arg_vals)
     warpedX[1, ] = head(arg_vals, 1)
