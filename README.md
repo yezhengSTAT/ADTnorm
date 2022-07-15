@@ -15,12 +15,13 @@ if (!requireNamespace("devtools", quietly=TRUE))
     install.packages("devtools")
 
 library(devtools)
-install_github("yezhengSTAT/ADTnorm", builf_vignettes = FALSE)
+install_github("yezhengSTAT/ADTnorm", build_vignettes = FALSE)
 ```
 
 ## Usage
 
 ```
+library(ADTnorm)
 data(cell_x_adt)
 data(cell_x_feature) 
 out_path = "/path/to/output/location"

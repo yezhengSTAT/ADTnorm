@@ -17,7 +17,7 @@ Depends:
     flowStats,
     dplyr,
     EMDomics,
-    fda,
+    fda (<= 5.1.4),
     ggplot2,
     RColorBrewer,
     ggridges,
