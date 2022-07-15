@@ -80,6 +80,8 @@ peak_alignment = function(cell_x_adt, cell_x_feature = NULL, landmark_matrix = N
     args = list("unregfd" = fdobj, "fdobj"=fdobj, "ximarks"=landmark_matrix, "WfdPar"=WfdPar, "monwrd"=monwrd)
     if(!is.null(target_landmark)){
       args[['x0marks']] = target_landmark
+    }else{
+      args[['x0marks']] = colMeans(landmark_matrix, na.rm = TRUE)
     }
     args_run = args[intersect(names(formals(fda::landmarkreg)), names(args))]
     regDens = do.call(fda::landmarkreg, args_run, quote = TRUE)
