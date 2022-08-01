@@ -6,7 +6,6 @@
 #' @param save_outpath The path to save the results.
 #' @param study_name Name of this run.
 #' @param marker_to_process Markers to normalize. Leaving empty to process all the ADT markers in cell_x_adt matrix.
-#' @param adt_marker_index Index of the ADT markers that will be normalized. Leaving empty if adt_marker_select is not specified.
 #' @param bimodal_marker Specify ADT markers that tend to have two peaks based on researchers' prior knowledge or preliminary observation on particular data to be processed.
 #' @param trimodal_marker Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g. CD4) or preliminary observation on particular data to be processed.
 #' @param positive_peak A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to positive peaks of other samples.
