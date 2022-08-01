@@ -30,15 +30,5 @@ Suggests:
     markdown,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
-biocViews:
-Imports:
-    flowCore,
-    flowStats,
-    dplyr,
-    fda,
-    EMDomics,
-    ggplot2,
-    RColorBrewer,
-    ggridges,
-    ggpubr
+biocViews: SingleCell
 Config/testthat/edition: 3
