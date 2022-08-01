@@ -11,6 +11,7 @@ Description: CITE-seq technology enables the direct measurement of protein expre
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
+LazyDataCompression: xz
 Depends:
     R (>= 4.0.0),
     dplyr,
