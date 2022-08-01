@@ -30,5 +30,7 @@ detect_impute_outlier_valley(
 This function identify the valley that tend to be outliers compared to other valley locations and try to find the closest samples that have similar density distribution to impute the valley. If no neighbor sample is detected, the valley will remain as original.
 }
 \examples{
+\dontrun{
 detect_impute_outlier_valley(valley_location_res, cell_x_feature)
+}
 }

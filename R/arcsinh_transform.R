@@ -5,7 +5,9 @@
 #' @param parameter_list Parameter list for a: positive double that corresponds to a shift about 0; b: positive double that corresponds to a scale factor; c: positive double. By default a = 1, b = 1/5 and c = 0.
 #' @export
 #' @examples
+#' \dontrun{
 #' arcsinh_transform(cell_x_adt)
+#' }
 
 arcsinh_transform = function(cell_x_adt = NULL, parameter_list = NULL){
     ## parameters

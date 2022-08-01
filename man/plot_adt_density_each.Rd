@@ -24,5 +24,12 @@ plot_adt_density_each(
 This function plots adt expression density profile for only one ADT marker. Each track is a sample. Color by batch
 }
 \examples{
-plot_adt_density_each(cell_x_adt, cell_x_feature, brewer_palettes = "Set1", parameter_list = list(bw = 0.1, run_label = "ADTnorm"))
+\dontrun{
+plot_adt_density_each(
+ cell_x_adt,
+ cell_x_feature,
+ brewer_palettes = "Set1",
+ parameter_list = list(bw = 0.1, run_label = "ADTnorm")
+)
+}
 }

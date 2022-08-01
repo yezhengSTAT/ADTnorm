@@ -1,10 +1,12 @@
 #' Clean ADT marker name
 #'
-#' This function enables the general ADT name clearning but users should try cleaning and unifying their ADT marker name first. Please also make sure there is no "/" in the ADT name such as "TCRγ/δ". 
+#' This function enables the general ADT name clearning but users should try cleaning and unifying their ADT marker name first. Please also make sure there is no "/" in the ADT name such as "TCRγ/δ".
 #' @param adt_name A vector of ADT marker name.
 #' @export
 #' @examples
+#' \dontrun{
 #' clean_adt_name(colnames(cell_x_adt))
+#' }
 
 # require(dplyr)
 clean_adt_name <- function(adt_name) {
@@ -30,7 +32,7 @@ clean_adt_name <- function(adt_name) {
         gsub("-TG.*", "", .) %>%
         gsub("-TT.*", "", .) %>%
         gsub("_.*", "", .) %>%
-        gsub("ADT-", "", .) 
+        gsub("ADT-", "", .)
 
     if (!("CD8" %in% adt_rename)) {
         if ("CD8a" %in% adt_rename | "CD8A" %in% adt_rename) {
@@ -52,6 +54,6 @@ clean_adt_name <- function(adt_name) {
     adt_rename <- replace(adt_rename, adt_rename == "Rat-IgG2b", "IgG2b-Rat")
 
     adt_rename <- adt_rename %>% gsub("HLA-DR", "HLADR", .) %>% gsub("HLA\\.DR", "HLADR", .) %>% gsub("PD-1", "PD1", .) %>% gsub(" ", "", .) %>% gsub("\\s*\\([^\\)]+\\)", "", .) %>% gsub("CD279", "PD1", .) %>% gsub("CD274", "PDL1", .) %>% gsub("\\.", "", .) %>% gsub("-", "", .) %>% gsub("/", "",.)
-    
+
     return(adt_rename)
 }

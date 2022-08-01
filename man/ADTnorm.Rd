@@ -97,12 +97,18 @@ ADTnorm(
 \item{target_landmark_location}{Align the landmarks to fixed location or by default align to the mean across samples for each landmark.}
 
 \item{clean_adt_name}{Clean the ADT marker name}
-
-\item{adt_marker_index}{Index of the ADT markers that will be normalized. Leaving empty if adt_marker_select is not specified.}
 }
 \description{
 This function removes the technical variations such as batch effect, sequencing depth biases, antibody selection difference and antibody concentration differences, etc. The normalized samples are ready for integration across studies.
 }
 \examples{
-ADTnorm(cell_x_adt, cell_x_feature, save_outpath, study_name, marker_to_process = c("CD3", "CD4", "CD8"))
+\dontrun{
+ADTnorm(
+  cell_x_adt = cell_x_adt,
+  cell_x_feature = cell_x_feature,
+  save_outpath = save_outpath,
+  study_name = study_name,
+  marker_to_process = c("CD3", "CD4", "CD8")
+ )
+}
 }

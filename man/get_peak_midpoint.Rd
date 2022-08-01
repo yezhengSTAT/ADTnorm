@@ -46,12 +46,17 @@ get_peak_midpoint(
 \item{cd4_index}{Index for CD4 marker. If the ADT marker is named "CD4", the program can detect the index automatically. If users named CD4 in a unique way, please provide the index for CD4 markers in the colname of cell_x_adt.}
 
 \item{cd8_index}{Index for CD8 marker. If the ADT marker is named "CD8", the program can detect the index automatically. If users named CD8 in a unique way, please provide the index for CD8 markers in the colname of cell_x_adt.}
-
-\item{parameter_list}{Parameter list for a: positive double that corresponds to a shift about 0; b: positive double that corresponds to a scale factor; c: positive double. By default a = 1, b = 1/5 and c = 0.}
 }
 \description{
 This function detect the peak landmark locations for each sample per ADT markers based on the midpoint of the peak region. Using the peak midpoint instead of the peak mode can be more stable across samples and less affected by the bandwidth.
 }
 \examples{
-get_peak_midpoint(cell_x_adt, cell_x_feature, adt_marker_select = "CD3", neg_candidate_thres = asinh(6/5+1))
+\dontrun{
+get_peak_midpoint(
+  cell_x_adt = cell_x_adt,
+  cell_x_feature = cell_x_feature,
+  adt_marker_select = "CD3",
+  neg_candidate_thres = asinh(6/5+1)
+)
+}
 }

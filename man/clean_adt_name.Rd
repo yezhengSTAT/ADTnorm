@@ -13,5 +13,7 @@ clean_adt_name(adt_name)
 This function enables the general ADT name clearning but users should try cleaning and unifying their ADT marker name first. Please also make sure there is no "/" in the ADT name such as "TCRγ/δ".
 }
 \examples{
+\dontrun{
 clean_adt_name(colnames(cell_x_adt))
+}
 }
