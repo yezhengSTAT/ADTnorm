@@ -1,5 +1,5 @@
-#' Plot the expression density profile for ONE ADT marker 
-#' 
+#' Plot the expression density profile for ONE ADT marker
+#'
 #' This function plots adt expression density profile for only one ADT marker. Each track is a sample. Color by batch
 #' @param adt_count Matrix of ADT raw counts in cells (rows) by one target ADT marker (column) format.
 #' @param cell_x_feature Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch related information.
@@ -7,14 +7,14 @@
 #' @param parameter_list Users can specify: "run_label" to give name for this run; "bw" to adjust the band width of the density plot.
 #' @export
 #' @examples
+#' \dontrun{
 #' plot_adt_density_each(cell_x_adt, cell_x_feature, brewer_palettes = "Set1", parameter_list = list(bw = 0.1, run_label = "ADTnorm"))
-
+#' }
 # require(ggplot2)
 # require(RColorBrewer)
 # require(tidyr)
 # require(ggridges)
 # require(ggpubr)
-
 plot_adt_density_each = function(adt_count, cell_x_feature, brewer_palettes, parameter_list = NULL) {
     if (is.null(parameter_list)) {
         return("parameter_list is NULL!")

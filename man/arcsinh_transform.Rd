@@ -15,5 +15,7 @@ arcsinh_transform(cell_x_adt = NULL, parameter_list = NULL)
 This function arcsine transform the input cell_x_adt matrix with co-factor 5. The definition of this function is x_new <- asinh(a + b * x) + c)
 }
 \examples{
+\dontrun{
 arcsinh_transform(cell_x_adt)
+}
 }

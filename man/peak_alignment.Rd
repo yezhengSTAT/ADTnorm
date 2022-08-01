@@ -24,5 +24,7 @@ peak_alignment(
 This function detect the valley locations either between every two peak landmarks or cut at the right heavy tails. If specified positive uni-peak, the valley location will be set at the left side of the uni-peak.
 }
 \examples{
+\dontrun{
 peak_alignment(cell_x_adt, cell_x_feature, landmark_matrix)
+}
 }

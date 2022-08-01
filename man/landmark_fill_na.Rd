@@ -27,5 +27,7 @@ landmark_fill_na(
 This function detect the valley locations either between every two peak landmarks or cut at the right heavy tails. If specified positive uni-peak, the valley location will be set at the left side of the uni-peak.
 }
 \examples{
+\dontrun{
 landmark_fill_na(peak_landmark_list, valley_landmark_list, landmark_align_type = "negPeak_valley_posPeak")
+}
 }

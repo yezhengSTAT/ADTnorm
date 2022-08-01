@@ -30,5 +30,7 @@ get_neighbors(
 This function identify the valley that tend to be outliers compared to other valley locations and try to find the closest samples that have similar density distribution to imput the valley. If no neighbor sample is detected, the valley will remain as original.
 }
 \examples{
+\dontrun{
 get_neighbors(target_sample, adt_marker_select, cell_x_adt, cell_x_feature)
+}
 }

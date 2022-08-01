@@ -53,5 +53,7 @@ get_peak_mode(
 This function detect the peak mode locations for each sample per ADT markers. Using the peak mode instead of the peak region midpoint can be more accurate in determining the peak location if the band width is generally proper and the local peak density is not too discrete.
 }
 \examples{
+\dontrun{
 get_peak_mode(cell_x_adt, cell_x_feature, adt_marker_select = "CD3", neg_candidate_thres = asinh(6/5+1))
+}
 }

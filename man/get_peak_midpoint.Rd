@@ -53,5 +53,7 @@ get_peak_midpoint(
 This function detect the peak landmark locations for each sample per ADT markers based on the midpoint of the peak region. Using the peak midpoint instead of the peak mode can be more stable across samples and less affected by the bandwidth.
 }
 \examples{
+\dontrun{
 get_peak_midpoint(cell_x_adt, cell_x_feature, adt_marker_select = "CD3", neg_candidate_thres = asinh(6/5+1))
+}
 }
