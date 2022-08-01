@@ -103,6 +103,12 @@ This function removes the technical variations such as batch effect, sequencing 
 }
 \examples{
 \dontrun{
-ADTnorm(cell_x_adt, cell_x_feature, save_outpath, study_name, marker_to_process = c("CD3", "CD4", "CD8"))
+ADTnorm(
+  cell_x_adt = cell_x_adt,
+  cell_x_feature = cell_x_feature,
+  save_outpath = save_outpath,
+  study_name = study_name,
+  marker_to_process = c("CD3", "CD4", "CD8")
+ )
 }
 }

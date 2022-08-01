@@ -7,15 +7,13 @@
 #' @param method Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range).
 #' @param nearest_neighbor_n Number of top nearest neighbor samples to detect.
 #' @param nearest_neighbor_threshold Threshold to call neighbor samples.
-#' @export
 #' @examples
 #' \dontrun{
 #' detect_impute_outlier_valley(valley_location_res, cell_x_feature)
 #' }
-
 # require(EMDomics)
 # require(dplyr)
-
+#' @export
 detect_impute_outlier_valley <- function(valley_location_res, cell_x_feature, scale = 3, method = "MAD", nearest_neighbor_n = 3, nearest_neighbor_threshold = 0.75){
     ## get batch information
     valley_df <- valley_location_res %>% data.frame %>% mutate(sample = rownames(valley_location_res))
@@ -33,10 +31,10 @@ detect_impute_outlier_valley <- function(valley_location_res, cell_x_feature, sc
 
                 ## choose outlier detection method
                 if(method == "MAD"){
-                    row_index <- sample_select[which(abs(valley_location_res[sample_select, c] - median(valley_location_res[sample_select, c], na.rm = TRUE)) > mad(valley_location_res[sample_select, c], na.rm = TRUE) * scale)]
+                    row_index <- sample_select[which(abs(valley_location_res[sample_select, c] - stats::median(valley_location_res[sample_select, c], na.rm = TRUE)) > stats::mad(valley_location_res[sample_select, c], na.rm = TRUE) * scale)]
 
                 }else if(method == "IQR"){
-                    row_index <- sample_select[which(quantile(valley_location_res[sample_select, c], 0.75, na.rm = TRUE) + scale * IQR(valley_location_res[sample_select, c], na.rm = TRUE) < valley_location_res[sample_select, c])]
+                    row_index <- sample_select[which(stats::quantile(valley_location_res[sample_select, c], 0.75, na.rm = TRUE) + scale * stats::IQR(valley_location_res[sample_select, c], na.rm = TRUE) < valley_location_res[sample_select, c])]
                 }else{
                     return("Please select method from MAD or IQR")
                 }
@@ -53,7 +51,7 @@ detect_impute_outlier_valley <- function(valley_location_res, cell_x_feature, sc
                         ## if there is qualified neighbors to impute
                         ## otherwise, this is a unique sample marker distribution. Leave original valley value.
                         if(length(target_neighbors) > 0){
-                            valley_location_res[target_sample, c] <- valley_location_res[target_neighbors, c] %>% median
+                            valley_location_res[target_sample, c] <- valley_location_res[target_neighbors, c] %>% stats::median
                         }
                     }
                 }

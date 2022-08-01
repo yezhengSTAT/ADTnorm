@@ -34,6 +34,14 @@ This function plots adt expression density profile with identifies peak and vall
 }
 \examples{
 \dontrun{
-plot_adt_density_with_peak_valley(cell_x_adt, cell_x_feature, adt_marker_select = c("CD3", "CD4", "CD8", "CD19"), peak_landmark_list = peak_mode_norm_res, valley_landmark_list = valley_location_norm_res, brewer_palettes = "Set1", parameter_list = list(bw = 0.1, run_label = "ADTnorm"))
+plot_adt_density_with_peak_valley(
+  cell_x_adt,
+  cell_x_feature,
+  adt_marker_select = c("CD3", "CD4", "CD8", "CD19"),
+  peak_landmark_list = peak_mode_norm_res,
+  valley_landmark_list = valley_location_norm_res,
+  brewer_palettes = "Set1",
+  parameter_list = list(bw = 0.1, run_label = "ADTnorm")
+)
 }
 }

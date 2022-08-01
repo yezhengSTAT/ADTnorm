@@ -9,7 +9,11 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' landmark_fill_na(peak_landmark_list, valley_landmark_list, landmark_align_type = "negPeak_valley_posPeak")
+#' landmark_fill_na(
+#'   peak_landmark_list = peak_landmark_list,
+#'   valley_landmark_list = valley_landmark_list,
+#'   landmark_align_type = "negPeak_valley_posPeak"
+#' )
 #' }
 landmark_fill_na <-  function(peak_landmark_list = NULL, valley_landmark_list = NULL, landmark_align_type = NULL, midpoint_type = "valley", neg_candidate_thres = asinh(10/5 + 1)){
     if(!landmark_align_type %in% c("negPeak", "negPeak_valley", "negPeak_valley_posPeak", "valley")){
@@ -28,8 +32,8 @@ landmark_fill_na <-  function(peak_landmark_list = NULL, valley_landmark_list = 
           valley_landmark_list[, 1]
         )
         ## fill in na
-        landmark_matrix[is.na(landmark_matrix[, 1]), 1] <- median(landmark_matrix[!is.na(landmark_matrix[, 1]), 1])
-        alter_pos = median(landmark_matrix[!is.na(landmark_matrix[, 2]), 2])
+        landmark_matrix[is.na(landmark_matrix[, 1]), 1] <- stats::median(landmark_matrix[!is.na(landmark_matrix[, 1]), 1])
+        alter_pos = stats::median(landmark_matrix[!is.na(landmark_matrix[, 2]), 2])
         for(tmpIndex in which(is.na(landmark_matrix[, 2]))){
           if(neg_candidate_thres > landmark_matrix[tmpIndex, 1]){
             landmark_matrix[tmpIndex, 2] <- neg_candidate_thres
@@ -61,7 +65,7 @@ landmark_fill_na <-  function(peak_landmark_list = NULL, valley_landmark_list = 
         ## fill in either 0.5 or half of the first valley
         landmark_matrix[is.na(landmark_matrix[, 1]), 1] <- landmark_matrix[is.na(landmark_matrix[, 1]), 2]/2 #0.5
         ## fill in the last positive peak: add on the valley using the median distance from the last positive peak to the first valley
-        landmark_matrix[is.na(landmark_matrix[, 3]), 3] <- landmark_matrix[is.na(landmark_matrix[, 3]), 2] + median(landmark_matrix[!is.na(landmark_matrix[, 3]), 3] - landmark_matrix[!is.na(landmark_matrix[, 3]), 2])
+        landmark_matrix[is.na(landmark_matrix[, 3]), 3] <- landmark_matrix[is.na(landmark_matrix[, 3]), 2] + stats::median(landmark_matrix[!is.na(landmark_matrix[, 3]), 3] - landmark_matrix[!is.na(landmark_matrix[, 3]), 2])
 
       }
     }

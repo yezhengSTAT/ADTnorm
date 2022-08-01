@@ -31,12 +31,18 @@
 #' @param detect_outlier_valley Detect outlier valley and impute by the neighbor samples.
 #' @param target_landmark_location Align the landmarks to fixed location or by default align to the mean across samples for each landmark.
 #' @param clean_adt_name Clean the ADT marker name
-#' @export
 #' @examples
 #' \dontrun{
-#' ADTnorm(cell_x_adt, cell_x_feature, save_outpath, study_name, marker_to_process = c("CD3", "CD4", "CD8"))
+#' ADTnorm(
+#'   cell_x_adt = cell_x_adt,
+#'   cell_x_feature = cell_x_feature,
+#'   save_outpath = save_outpath,
+#'   study_name = study_name,
+#'   marker_to_process = c("CD3", "CD4", "CD8")
+#'  )
 #' }
-
+#' @export
+#' @import dplyr ggplot2
 ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL, study_name = "ADTnorm", marker_to_process = NULL, bimodal_marker = NULL, trimodal_marker = NULL, positive_peak = NULL, bw_smallest_cd3 = 0.8, bw_smallest_cd4 = 0.8, bw_smallest_cd8 = 0.8, bw_smallest_bi = 1.1, bw_smallest_tri = 0.8, cd3_index = NULL, cd4_index = NULL, cd8_index = NULL, peak_type = "midpoint", multi_sample_per_batch = FALSE, shoulder_valley = FALSE, shoulder_valley_slope = -0.5, valley_density_adjust = 3, landmark_align_type = "negPeak_valley_posPeak", midpoint_type = "valley", neg_candidate_thres = asinh(8/5 + 1), lower_peak_thres = 0.001, brewer_palettes = "Set1", save_intermediate = TRUE, detect_outlier_valley = FALSE, target_landmark_location = NULL, clean_adt_name = FALSE){
 
     ## input parameter checking
@@ -66,7 +72,7 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
             target_landmark_location = c(1, 5)
         }else{
             if(length(target_landmark_location) == 2 && target_landmark_location[1] < target_landmark_location[2]){
-                print(pasate0("Will align negative peak to", target_landmark_location[1], " and right-most positive peak to ", target_landmark_location[2]))
+                print(paste0("Will align negative peak to", target_landmark_location[1], " and right-most positive peak to ", target_landmark_location[2]))
             }else{
                 stop("Please provide two elements vector to target_landmark_location where the first element is smaller!")
             }
@@ -213,9 +219,9 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
             }
             saveRDS(peak_valley, file = paste0(save_outpath, "/RDS/peak_valley_raw_", adt_marker_select_name, "_", study_name, ".rds"))
             saveRDS(density_plot, file = paste0(save_outpath, "/RDS/density_raw_", adt_marker_select_name, "_", study_name, ".rds"))
-            pdf(paste0(save_outpath, "/figures/ArcsinhTransform_", adt_marker_select_name, "_", study_name, ".pdf"), width = 11, height = ceiling(length(levels(cell_x_feature$sample)) * 0.4))
+            grDevices::pdf(paste0(save_outpath, "/figures/ArcsinhTransform_", adt_marker_select_name, "_", study_name, ".pdf"), width = 11, height = ceiling(length(levels(cell_x_feature$sample)) * 0.4))
             print(density_plot)
-            dev.off()
+            grDevices::dev.off()
         }
 
 
@@ -267,9 +273,9 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         ))
         if(save_intermediate){
             saveRDS(density_norm_plot, file = paste0(save_outpath, "/RDS/density_ADTnorm_", adt_marker_select_name, "_", study_name, ".rds"))
-            pdf(paste0(save_outpath, "/figures/ADTnorm_", adt_marker_select_name, "_", study_name, ".pdf"), width = 11, height = ceiling(length(levels(cell_x_feature$sample)) * 0.4))
+            grDevices::pdf(paste0(save_outpath, "/figures/ADTnorm_", adt_marker_select_name, "_", study_name, ".pdf"), width = 11, height = ceiling(length(levels(cell_x_feature$sample)) * 0.4))
             print(density_norm_plot)
-            dev.off()
+            grDevices::dev.off()
         }
 
 

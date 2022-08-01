@@ -26,13 +26,13 @@ get_neighbors <- function(target_sample, adt_marker_select, cell_x_adt, cell_x_f
          labels <- c(rep("target", length(target_cell_ind)), rep("sample", length(cell_ind)))
          names(labels) <- rownames(cell_x_adt)[c(target_cell_ind, cell_ind)]
 
-         knn_res <- c(knn_res, calculate_emd_gene(exp_data, labels, names(exp_data)))
+         knn_res <- c(knn_res, EMDomics::calculate_emd_gene(exp_data, labels, names(exp_data)))
     }
     names(knn_res) <- sample_list
     if(is.null(nearest_neighbor_threshold)){
-        return(knn_res %>% sort %>% head(nearest_neighbor_n) %>% names)
+        return(knn_res %>% sort %>% utils::head(nearest_neighbor_n) %>% names)
     }else{
-        return(knn_res[knn_res <= nearest_neighbor_threshold] %>% sort %>% head(nearest_neighbor_n) %>% names)
+        return(knn_res[knn_res <= nearest_neighbor_threshold] %>% sort %>% utils::head(nearest_neighbor_n) %>% names)
     }
 
 

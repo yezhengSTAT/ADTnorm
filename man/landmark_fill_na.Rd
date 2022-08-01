@@ -28,6 +28,10 @@ This function detect the valley locations either between every two peak landmark
 }
 \examples{
 \dontrun{
-landmark_fill_na(peak_landmark_list, valley_landmark_list, landmark_align_type = "negPeak_valley_posPeak")
+landmark_fill_na(
+  peak_landmark_list = peak_landmark_list,
+  valley_landmark_list = valley_landmark_list,
+  landmark_align_type = "negPeak_valley_posPeak"
+)
 }
 }

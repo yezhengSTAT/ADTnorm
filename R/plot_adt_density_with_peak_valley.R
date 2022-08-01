@@ -11,7 +11,15 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' plot_adt_density_with_peak_valley(cell_x_adt, cell_x_feature, adt_marker_select = c("CD3", "CD4", "CD8", "CD19"), peak_landmark_list = peak_mode_norm_res, valley_landmark_list = valley_location_norm_res, brewer_palettes = "Set1", parameter_list = list(bw = 0.1, run_label = "ADTnorm"))
+#' plot_adt_density_with_peak_valley(
+#'   cell_x_adt,
+#'   cell_x_feature,
+#'   adt_marker_select = c("CD3", "CD4", "CD8", "CD19"),
+#'   peak_landmark_list = peak_mode_norm_res,
+#'   valley_landmark_list = valley_location_norm_res,
+#'   brewer_palettes = "Set1",
+#'   parameter_list = list(bw = 0.1, run_label = "ADTnorm")
+#' )
 #' }
 # require(ggplot2)
 # require(RColorBrewer)
@@ -70,10 +78,10 @@ plot_adt_density_with_peak_valley = function(cell_x_adt, cell_x_feature, adt_mar
             )
         }
     }
-    fillColor = colorRampPalette(RColorBrewer::brewer.pal(8, brewer_palettes))(length(unique(tmpProfile$batch)))
+    fillColor = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, brewer_palettes))(length(unique(tmpProfile$batch)))
 
     resPlot = ggplot(tmpProfile, aes(x = counts, y = sample)) +
-        geom_density_ridges(aes(fill = factor(batch)), bandwidth = bw) +
+        ggridges::geom_density_ridges(aes(fill = factor(batch)), bandwidth = bw) +
         geom_segment(data = peak_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1) +
         geom_segment(data = valley_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1, color = "grey") +
         facet_wrap(~ factor(ADT), scales = "free_x") +
@@ -83,7 +91,7 @@ plot_adt_density_with_peak_valley = function(cell_x_adt, cell_x_feature, adt_mar
         ggpubr::rotate_x_text(angle = 90) +
         ggpubr::rremove("legend") +
         scale_fill_manual(values = fillColor) +
-        rremove("legend.title")
+        ggpubr::rremove("legend.title")
 
 
     if (ncol(peak_landmark_list) >= 2) {

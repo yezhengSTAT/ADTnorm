@@ -36,12 +36,12 @@ peak_alignment = function(cell_x_adt, cell_x_feature = NULL, landmark_matrix = N
   extend = 0.15
   from = min(cell_x_adt, na.rm = TRUE) - diff(range(cell_x_adt, na.rm = TRUE)) * extend
   to = max(cell_x_adt, na.rm = TRUE) + diff(range(cell_x_adt, na.rm = TRUE)) * extend
-  wbasis = create.bspline.basis(
+  wbasis = fda::create.bspline.basis(
     rangeval = c(from, to),
     norder = 4, breaks = seq(from, to, len = nbreaks)
   )
-  Wfd0 = fd(matrix(0, wbasis$nbasis, 1), wbasis)
-  WfdPar = fdPar(Wfd0, 1, 1e-4)
+  Wfd0 = fda::fd(matrix(0, wbasis$nbasis, 1), wbasis)
+  WfdPar = fda::fdPar(Wfd0, 1, 1e-4)
 
 
   density_y = c()
@@ -49,7 +49,7 @@ peak_alignment = function(cell_x_adt, cell_x_feature = NULL, landmark_matrix = N
     cell_ind_tmp = which(cell_x_feature$sample == sample)
     cell_ind = cell_ind_tmp[which(!is.na(cell_x_adt[cell_ind_tmp]))]
     if(length(cell_ind) > 0){
-      density_y = cbind(density_y, density(cell_x_adt[cell_ind], from = from, to = to, n = nb, na.rm = TRUE)$y)
+      density_y = cbind(density_y, stats::density(cell_x_adt[cell_ind], from = from, to = to, n = nb, na.rm = TRUE)$y)
     }else{
       density_y = cbind(density_y, rep(NA, nb))
     }
@@ -58,10 +58,10 @@ peak_alignment = function(cell_x_adt, cell_x_feature = NULL, landmark_matrix = N
   colnames(density_y) = samples
 
   arg_vals = seq(from, to, len = nb)
-  fdobj = Data2fd(arg_vals, density_y, wbasis)
+  fdobj = fda::Data2fd(arg_vals, density_y, wbasis)
 
   if (ncol(landmark_matrix) == 1) { ## only one peak no valley: offset
-    offsets = landmark_matrix - median(landmark_matrix)
+    offsets = landmark_matrix - stats::median(landmark_matrix)
     names(offsets) = samples
     funs = funsBack = vector("list", nrow(landmark_matrix))
     names(funs) = samples
@@ -97,11 +97,11 @@ peak_alignment = function(cell_x_adt, cell_x_feature = NULL, landmark_matrix = N
     #   regDens = fda::landmarkreg(fdobj, landmark_matrix, x0marks = target_landmark, WfdPar = WfdPar)
     # }
     warpfdobj = regDens$warpfd
-    warpedX = eval.fd(warpfdobj, arg_vals)
-    warpedX[1, ] = head(arg_vals, 1)
-    warpedX[nrow(warpedX), ] = tail(arg_vals, 1)
-    funs = apply(warpedX, 2, approxfun, arg_vals)
-    funsBack = apply(warpedX, 2, function(a, b) approxfun(b, a), arg_vals)
+    warpedX = fda::eval.fd(warpfdobj, arg_vals)
+    warpedX[1, ] = utils::head(arg_vals, 1)
+    warpedX[nrow(warpedX), ] = utils::tail(arg_vals, 1)
+    funs = apply(warpedX, 2, stats::approxfun, arg_vals)
+    funsBack = apply(warpedX, 2, function(a, b) stats::approxfun(b, a), arg_vals)
   }
 
 

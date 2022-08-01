@@ -13,22 +13,27 @@ Encoding: UTF-8
 LazyData: true
 Depends:
     R (>= 4.0.0),
+    dplyr,
+    ggplot2
+Imports:
+    grDevices,
+    stats,
+    utils,
+    magrittr,
     flowCore,
     flowStats,
-    dplyr,
     EMDomics,
     fda,
-    ggplot2,
     RColorBrewer,
-    ggridges,
-    ggpubr
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+    ggpubr,
+    ggridges
 Suggests:
     knitr,
     rmarkdown,
     markdown,
     testthat (>= 3.0.0)
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
 VignetteBuilder: knitr
 biocViews: SingleCell
 Config/testthat/edition: 3

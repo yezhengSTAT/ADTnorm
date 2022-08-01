@@ -8,7 +8,12 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' plot_adt_density_each(cell_x_adt, cell_x_feature, brewer_palettes = "Set1", parameter_list = list(bw = 0.1, run_label = "ADTnorm"))
+#' plot_adt_density_each(
+#'  cell_x_adt,
+#'  cell_x_feature,
+#'  brewer_palettes = "Set1",
+#'  parameter_list = list(bw = 0.1, run_label = "ADTnorm")
+#' )
 #' }
 # require(ggplot2)
 # require(RColorBrewer)
@@ -62,9 +67,9 @@ plot_adt_density_each = function(adt_count, cell_x_feature, brewer_palettes, par
     #         )
     #     }
     # }
-    fillColor = colorRampPalette(RColorBrewer::brewer.pal(8, brewer_palettes))(length(unique(tmpProfile$batch)))
+    fillColor = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, brewer_palettes))(length(unique(tmpProfile$batch)))
     resPlot = ggplot(tmpProfile, aes(x = counts, y = sample)) +
-        geom_density_ridges(aes(fill = factor(batch)), bandwidth = bw) +
+        ggridges::geom_density_ridges(aes(fill = factor(batch)), bandwidth = bw) +
         # geom_segment(data = peak_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1) +
         # geom_segment(data = valley_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1, color = "grey") +
         # facet_wrap(~ factor(ADT), scales = "free_x") +
@@ -74,7 +79,7 @@ plot_adt_density_each = function(adt_count, cell_x_feature, brewer_palettes, par
         ggpubr::rotate_x_text(angle = 90) +
         ggpubr::rremove("legend") +
         scale_fill_manual(values = fillColor) +
-        rremove("legend.title")
+        ggpubr::rremove("legend.title")
 
 
     return(resPlot)

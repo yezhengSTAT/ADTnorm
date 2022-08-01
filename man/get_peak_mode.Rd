@@ -52,6 +52,11 @@ This function detect the peak mode locations for each sample per ADT markers. Us
 }
 \examples{
 \dontrun{
-get_peak_mode(cell_x_adt, cell_x_feature, adt_marker_select = "CD3", neg_candidate_thres = asinh(6/5+1))
+get_peak_mode(
+  cell_x_adt = cell_x_adt,
+  cell_x_feature = cell_x_feature,
+  adt_marker_select = "CD3",
+  neg_candidate_thres = asinh(6/5+1)
+)
 }
 }
