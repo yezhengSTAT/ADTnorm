@@ -2,6 +2,8 @@
 #'
 #' This function identify the valley that tend to be outliers compared to other valley locations and try to find the closest samples that have similar density distribution to impute the valley. If no neighbor sample is detected, the valley will remain as original.
 #' @param valley_location_res Matrix of valley landmark locations with rows being samples and columns being the valleys.
+#' @param adt_marker_select The marker whose valley need to be imputed. Fine the neighbor samples whose density distribution is close to the target sample of the same ADT marker.
+#' @param cell_x_adt Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.
 #' @param cell_x_feature Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch related information.
 #' @param scale Scale level to defining outlier. Larger scale value corresponds to more severe ourliers.
 #' @param method Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range).

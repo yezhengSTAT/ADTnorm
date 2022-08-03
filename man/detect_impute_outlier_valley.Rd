@@ -18,6 +18,10 @@ detect_impute_outlier_valley(
 \arguments{
 \item{valley_location_res}{Matrix of valley landmark locations with rows being samples and columns being the valleys.}
 
+\item{adt_marker_select}{The marker whose valley need to be imputed. Fine the neighbor samples whose density distribution is close to the target sample of the same ADT marker.}
+
+\item{cell_x_adt}{Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.}
+
 \item{cell_x_feature}{Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch related information.}
 
 \item{scale}{Scale level to defining outlier. Larger scale value corresponds to more severe ourliers.}
