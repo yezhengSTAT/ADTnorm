@@ -1,3 +1,9 @@
+title: ADTnorm
+url: http://yezhengSTAT.github.io/ADTnorm
+template:
+  params:
+    bootswatch: flatly
+    ganalytics: UA-12345678-0
 pandoc: 2.7.3
 pkgdown: 2.0.6
 pkgdown_sha: ~
