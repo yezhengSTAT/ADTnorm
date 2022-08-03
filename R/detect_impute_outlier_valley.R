@@ -14,7 +14,7 @@
 # require(EMDomics)
 # require(dplyr)
 #' @export
-detect_impute_outlier_valley <- function(valley_location_res, cell_x_feature, scale = 3, method = "MAD", nearest_neighbor_n = 3, nearest_neighbor_threshold = 0.75){
+detect_impute_outlier_valley <- function(valley_location_res, adt_marker_select, cell_x_adt, cell_x_feature, scale = 3, method = "MAD", nearest_neighbor_n = 3, nearest_neighbor_threshold = 0.75){
     ## get batch information
     valley_df <- valley_location_res %>% data.frame %>% mutate(sample = rownames(valley_location_res))
     valley_df <- left_join(valley_df, cell_x_feature %>% select(sample, batch) %>% unique, by = "sample")
@@ -45,7 +45,7 @@ detect_impute_outlier_valley <- function(valley_location_res, cell_x_feature, sc
                     print(paste0("Outlier valley for sample: ", valley_df$sample[row_index], " Valley: ", c))
                     for(target_sample in valley_df$sample[row_index]){
                         ## neighbors at most 3 and earth mover distance <= 0.75 by default
-                        target_neighbors <- get_neighbors(target_sample, adt_marker_select, cell_x_adt, adt_feature, nearest_neighbor_n = nearest_neighbor_n, nearest_neighbor_threshold = nearest_neighbor_threshold) #valley_df$sample[row_index],
+                        target_neighbors <- get_neighbors(target_sample, adt_marker_select, cell_x_adt, cell_x_feature, nearest_neighbor_n = nearest_neighbor_n, nearest_neighbor_threshold = nearest_neighbor_threshold) #valley_df$sample[row_index],
                         print(paste0("Outlier sample ", target_sample, " nearest neighbors: ", target_neighbors))
 
                         ## if there is qualified neighbors to impute

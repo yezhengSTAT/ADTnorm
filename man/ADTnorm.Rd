@@ -31,7 +31,8 @@ ADTnorm(
   neg_candidate_thres = asinh(8/5 + 1),
   lower_peak_thres = 0.001,
   brewer_palettes = "Set1",
-  save_intermediate = TRUE,
+  save_intermediate_rds = FALSE,
+  save_intermediate_fig = TRUE,
   detect_outlier_valley = FALSE,
   target_landmark_location = NULL,
   clean_adt_name = FALSE
@@ -48,7 +49,7 @@ ADTnorm(
 
 \item{marker_to_process}{Markers to normalize. Leaving empty to process all the ADT markers in cell_x_adt matrix.}
 
-\item{bimodal_marker}{Specify ADT markers that tend to have two peaks based on researchers' prior knowledge or preliminary observation on particular data to be processed.}
+\item{bimodal_marker}{Specify ADT markers that tend to have two peaks based on researchers' prior knowledge or preliminary observation on particular data to be processed. Leave it as default, ADTnorm will try to find biomodal peak in all markers that are not listed in \code{trimodal_marker}.}
 
 \item{trimodal_marker}{Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g. CD4) or preliminary observation on particular data to be processed.}
 
@@ -90,7 +91,9 @@ ADTnorm(
 
 \item{brewer_palettes}{Set the color scheme of color brewer.}
 
-\item{save_intermediate}{Save the rds file for the intermediate objects and generate the density plot figure for checking the peak and valley location detection.}
+\item{save_intermediate_rds}{Save the rds file for the intermediate objects .}
+
+\item{save_intermediate_fig}{Save the density plot figure for checking the peak and valley location detection.}
 
 \item{detect_outlier_valley}{Detect outlier valley and impute by the neighbor samples.}
 

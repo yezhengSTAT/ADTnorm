@@ -6,7 +6,7 @@
 #' @param save_outpath The path to save the results.
 #' @param study_name Name of this run.
 #' @param marker_to_process Markers to normalize. Leaving empty to process all the ADT markers in cell_x_adt matrix.
-#' @param bimodal_marker Specify ADT markers that tend to have two peaks based on researchers' prior knowledge or preliminary observation on particular data to be processed.
+#' @param bimodal_marker Specify ADT markers that tend to have two peaks based on researchers' prior knowledge or preliminary observation on particular data to be processed. Leave it as default, ADTnorm will try to find biomodal peak in all markers that are not listed in `trimodal_marker`.
 #' @param trimodal_marker Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g. CD4) or preliminary observation on particular data to be processed.
 #' @param positive_peak A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to positive peaks of other samples.
 #' @param bw_smallest_cd3 The smallest band width parameter value for CD3. Recommend 0.5 or 0.8.
@@ -27,7 +27,8 @@
 #' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples are large.
 #' @param lower_peak_thres The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid suspecious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.
 #' @param brewer_palettes Set the color scheme of color brewer.
-#' @param save_intermediate Save the rds file for the intermediate objects and generate the density plot figure for checking the peak and valley location detection.
+#' @param save_intermediate_rds Save the rds file for the intermediate objects .
+#' @param save_intermediate_fig Save the density plot figure for checking the peak and valley location detection.
 #' @param detect_outlier_valley Detect outlier valley and impute by the neighbor samples.
 #' @param target_landmark_location Align the landmarks to fixed location or by default align to the mean across samples for each landmark.
 #' @param clean_adt_name Clean the ADT marker name
@@ -43,7 +44,7 @@
 #' }
 #' @export
 #' @import dplyr ggplot2
-ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL, study_name = "ADTnorm", marker_to_process = NULL, bimodal_marker = NULL, trimodal_marker = NULL, positive_peak = NULL, bw_smallest_cd3 = 0.8, bw_smallest_cd4 = 0.8, bw_smallest_cd8 = 0.8, bw_smallest_bi = 1.1, bw_smallest_tri = 0.8, cd3_index = NULL, cd4_index = NULL, cd8_index = NULL, peak_type = "midpoint", multi_sample_per_batch = FALSE, shoulder_valley = FALSE, shoulder_valley_slope = -0.5, valley_density_adjust = 3, landmark_align_type = "negPeak_valley_posPeak", midpoint_type = "valley", neg_candidate_thres = asinh(8/5 + 1), lower_peak_thres = 0.001, brewer_palettes = "Set1", save_intermediate = TRUE, detect_outlier_valley = FALSE, target_landmark_location = NULL, clean_adt_name = FALSE){
+ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL, study_name = "ADTnorm", marker_to_process = NULL, bimodal_marker = NULL, trimodal_marker = NULL, positive_peak = NULL, bw_smallest_cd3 = 0.8, bw_smallest_cd4 = 0.8, bw_smallest_cd8 = 0.8, bw_smallest_bi = 1.1, bw_smallest_tri = 0.8, cd3_index = NULL, cd4_index = NULL, cd8_index = NULL, peak_type = "midpoint", multi_sample_per_batch = FALSE, shoulder_valley = FALSE, shoulder_valley_slope = -0.5, valley_density_adjust = 3, landmark_align_type = "negPeak_valley_posPeak", midpoint_type = "valley", neg_candidate_thres = asinh(8/5 + 1), lower_peak_thres = 0.001, brewer_palettes = "Set1", save_intermediate_rds = FALSE, save_intermediate_fig = TRUE, detect_outlier_valley = FALSE, target_landmark_location = NULL, clean_adt_name = FALSE){
 
     ## input parameter checking
     if(is.null(cell_x_adt)){
@@ -63,8 +64,11 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
     if(sum(!(bimodal_marker %in% colnames(cell_x_adt))) > 0){
         stop("Please provide consistent bimodal marker name as the column name of input ADT count matrix.")
     }
-    if(save_intermediate && is.null(save_outpath)){
-        stop("Please provide the save_outpath to save the intermediate results in rds and figures in pdf.")
+    if(save_intermediate_rds && is.null(save_outpath)){
+        stop("Please provide the save_outpath to save the intermediate results in rds.")
+    }
+    if(save_intermediate_fig && is.null(save_outpath)){
+        stop("Please provide the save_outpath to save the intermediate figures in pdf.")
     }
     if(!is.null(target_landmark_location)){
         if(target_landmark_location == "fixed"){
@@ -196,7 +200,7 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         peak_mode_res <- peak_valley_list$peak_landmark_list
 
         if(detect_outlier_valley){ ## detect if valley is outlier and impute by neighbor samples if found
-            valley_location_res <- detect_impute_outlier_valley(valley_location_res, adt_feature, scale = 3, method = "MAD", nearest_neighbor_n = 3, nearest_neighbor_threshold = 0.75)
+            valley_location_res <- detect_impute_outlier_valley(valley_location_res, adt_marker_select, cell_x_adt, cell_x_feature, scale = 3, method = "MAD", nearest_neighbor_n = 3, nearest_neighbor_threshold = 0.75)
         }
 
         ## density plot for peak and valley location checking
@@ -210,15 +214,19 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
             peak_landmark_list = peak_mode_res,
             valley_landmark_list = valley_location_res
         )
-        if(save_intermediate){
+        if(save_intermediate_rds){
             if(!dir.exists(paste0(save_outpath, "/RDS"))){
                 dir.create(paste0(save_outpath, "/RDS"), recursive = TRUE)
             }
+
+            saveRDS(peak_valley, file = paste0(save_outpath, "/RDS/peak_valley_raw_", adt_marker_select_name, "_", study_name, ".rds"), compress = FALSE)
+            saveRDS(density_plot, file = paste0(save_outpath, "/RDS/density_raw_", adt_marker_select_name, "_", study_name, ".rds"), compress = FALSE)
+
+        }
+        if(save_intermediate_fig){
             if(!dir.exists(paste0(save_outpath, "/figures"))){
                 dir.create(paste0(save_outpath, "/figures"), recursive = TRUE)
             }
-            saveRDS(peak_valley, file = paste0(save_outpath, "/RDS/peak_valley_raw_", adt_marker_select_name, "_", study_name, ".rds"))
-            saveRDS(density_plot, file = paste0(save_outpath, "/RDS/density_raw_", adt_marker_select_name, "_", study_name, ".rds"))
             grDevices::pdf(paste0(save_outpath, "/figures/ArcsinhTransform_", adt_marker_select_name, "_", study_name, ".pdf"), width = 11, height = ceiling(length(levels(cell_x_feature$sample)) * 0.4))
             print(density_plot)
             grDevices::dev.off()
@@ -271,8 +279,10 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
             bw = 0.2,
             method_label = "ADTnorm"
         ))
-        if(save_intermediate){
-            saveRDS(density_norm_plot, file = paste0(save_outpath, "/RDS/density_ADTnorm_", adt_marker_select_name, "_", study_name, ".rds"))
+        if(save_intermediate_rds){
+            saveRDS(density_norm_plot, file = paste0(save_outpath, "/RDS/density_ADTnorm_", adt_marker_select_name, "_", study_name, ".rds"), compress = FALSE)
+        }
+        if(save_intermediate_fig){
             grDevices::pdf(paste0(save_outpath, "/figures/ADTnorm_", adt_marker_select_name, "_", study_name, ".pdf"), width = 11, height = ceiling(length(levels(cell_x_feature$sample)) * 0.4))
             print(density_norm_plot)
             grDevices::dev.off()

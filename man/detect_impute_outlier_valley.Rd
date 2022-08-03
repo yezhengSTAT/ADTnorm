@@ -6,6 +6,8 @@
 \usage{
 detect_impute_outlier_valley(
   valley_location_res,
+  adt_marker_select,
+  cell_x_adt,
   cell_x_feature,
   scale = 3,
   method = "MAD",

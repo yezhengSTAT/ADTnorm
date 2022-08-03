@@ -52,7 +52,7 @@ plot_adt_density_with_peak_valley = function(cell_x_adt, cell_x_feature, adt_mar
     tmpProfile = cell_x_adt %>% data.frame %>%
         dplyr::select(all_of(adt_marker_select)) %>%
         data.frame() %>%
-        gather(key = "ADT", value = "counts") %>%
+        tidyr::gather(key = "ADT", value = "counts") %>%
         mutate(
             sample = rep(cell_x_feature$sample, length(adt_marker_select)),
             batch = rep(cell_x_feature$batch, length(adt_marker_select))

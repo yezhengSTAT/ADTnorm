@@ -8,7 +8,7 @@
 #' clean_adt_name(colnames(cell_x_adt))
 #' }
 
-# require(dplyr)
+
 clean_adt_name <- function(adt_name) {
     adt_rename <- adt_name %>%
         gsub("CD19-CAR", "CARCD19", .) %>%

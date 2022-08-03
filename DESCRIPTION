@@ -15,6 +15,7 @@ LazyDataCompression: xz
 Depends:
     R (>= 4.0.0),
     dplyr,
+    tidyr,
     ggplot2
 Imports:
     grDevices,
