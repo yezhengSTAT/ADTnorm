@@ -71,7 +71,7 @@ cell_x_adt_norm <- ADTnorm(
 )
 ```
 
-Basic parameters introduction. The full parameter explanation for the ```ADTnorm``` function can be found at [Reference - ADTnorm](https://yezhengSTAT.github.io/ADTnorm/reference/adtnorm.html). 
+Basic parameters introduction. The full parameter explanation for the ```ADTnorm``` function can be found at [Reference - ADTnorm](https://yezhengstat.github.io/ADTnorm/reference/ADTnorm.html). 
 
 ```
 cell_x_adt:         Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.
@@ -93,7 +93,7 @@ positive_peak:      A list variable containing a vector of ADT marker(s) and a c
 save_intermediate_fig:  Save the density plot figure for checking the peak and valley location detection.
 ```
 
-For more detailed and typical parameter tuning examples, please visit [tutorial website](https://yezhengSTAT.github.io/ADTnorm/articles/ADTnorm-tutorial.html). We will illustrate using the demo data.
+For more detailed and typical parameter tuning examples, please visit [tutorial website](https://yezhengstat.github.io/ADTnorm/index.html). We will illustrate using the demo data.
 
 
 ## Results
