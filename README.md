@@ -67,11 +67,11 @@ cell_x_adt_norm <- ADTnorm(
   marker_to_process = c("CD3", "CD4", "CD8", "CD45RA"), 
   trimodal_marker = c("CD4", "CD45RA"), 
   positive_peak = list(ADT = "CD3", sample = "buus_2021_T"),
-  save_intermediate = TRUE
+  save_intermediate_fig = TRUE
 )
 ```
 
-Basic parameters introduction. The full parameter explanation for the ```ADTnorm``` function can be found at [Reference - ADTnorm](yezhengstat.github.io/ADTnorm/reference/adtnorm.html). 
+Basic parameters introduction. The full parameter explanation for the ```ADTnorm``` function can be found at [Reference - ADTnorm](https://yezhengSTAT.github.io/ADTnorm/reference/adtnorm.html). 
 
 ```
 cell_x_adt:         Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.
@@ -90,10 +90,10 @@ trimodal_marker:    Index of the ADT markers that tend to have three peaks based
 
 positive_peak:      A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to positive peaks of other samples.
 
-save_intermediate:  Save the rds file for the intermediate objects and generate the density plot figure for checking the peak and valley location detection.
+save_intermediate_fig:  Save the density plot figure for checking the peak and valley location detection.
 ```
 
-For more detailed and typical parameter tuning examples, please visit [tutorial website](yezhengstat.github.io/ADTnorm/articles/ADTnorm-tutorial.html). We will illustrate using the demo data.
+For more detailed and typical parameter tuning examples, please visit [tutorial website](https://yezhengSTAT.github.io/ADTnorm/articles/ADTnorm-tutorial.html). We will illustrate using the demo data.
 
 
 ## Results
