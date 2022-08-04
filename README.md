@@ -25,9 +25,25 @@ remotes::install_github("yezhengSTAT/ADTnorm", build_vignettes = FALSE)
 
 ## Input Data
 
-Demo data sets are ```cell_x_adt``` and ```cell_x_feature``` where ```cell_x_adt``` contains a matrix of raw count for the cell by ADT markers. 
 
-- ```cell_x_adt``` is a data frame with 422682 cells (row) and 9 ADT markers (column): CD3, CD4, CD8, CD14, CD19, CD25, CD45RA, CD56, CD127.
+The 13 public datasets used in the [manuscript](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1) is also included in the R package as demo data set. They can be loaded by
+
+```{r loaddata, eval = FALSE}
+data(cell_x_adt)
+data(cell_x_feature) 
+```
+
+- ```cell_x_adt``` contains a matrix of raw count for the cell by ADT markers, which is a data frame with 422682 cells (row) and 9 ADT markers (column): CD3, CD4, CD8, CD14, CD19, CD25, CD45RA, CD56, CD127.
+
+```
+  CD3  CD4 CD8 CD14 CD19 CD25 CD45RA CD56 CD127
+1  18  138  13  491    3    9    110   17     7
+2  30  119  19  472    3    5    125  248     8
+3  18  207  10 1289    8   15   5268   26    12
+4  18   11  17   20    5   15   4743  491    16
+5   5   14  14   19    4   16   4108  458    17
+6  21 1014  29 2428    7   52    227   29    15
+```
 
 - ```cell_x_feature``` is a data frame with 422682 cells (row) and 7  feature variables (column):
   
@@ -45,25 +61,6 @@ Demo data sets are ```cell_x_adt``` and ```cell_x_feature``` where ```cell_x_adt
     
     - cell_type_l2: Fine level of cell type annotation using manual gating.
 
-
-``` R
-data(cell_x_adt)
-data(cell_x_feature) 
-```
-
-```cell_x_adt```:
-
-```
-  CD3  CD4 CD8 CD14 CD19 CD25 CD45RA CD56 CD127
-1  18  138  13  491    3    9    110   17     7
-2  30  119  19  472    3    5    125  248     8
-3  18  207  10 1289    8   15   5268   26    12
-4  18   11  17   20    5   15   4743  491    16
-5   5   14  14   19    4   16   4108  458    17
-6  21 1014  29 2428    7   52    227   29    15
-```
-
-```cell_x_feature```:
 
 ```
                 sample               batch sample_status   study_name

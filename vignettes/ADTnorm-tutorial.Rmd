@@ -187,7 +187,7 @@ For some cases, where CD3, CD4, and CD8 are named using other words, users can s
 
 For example, in the "Quick start" example, setting ```target_landmark_location``` to be fixed will align the negative peak to 1 and the right-most positive peak to 5.
 
-```{r quickrun, eval = FALSE}
+```{r alignfixed, eval = FALSE}
 library(ADTnorm)
 save_outpath <- "/path/to/output/location"
 run_name <- "ADTnorm_demoRun_fixedAlignment"
