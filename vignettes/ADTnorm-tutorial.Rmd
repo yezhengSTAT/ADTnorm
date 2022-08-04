@@ -23,7 +23,7 @@ Manuscript: [Zheng et al. Robust Normalization and Integration of Single-cell Pr
 
 ## ADT Normaliztion Pipeline
 
-<img src="./man/figures/pipeline_202208.png" alt="ADTnorm" width="600px">
+<img src="../man/figures/pipeline_202208.png" alt="ADTnorm" width="600px">
 
 
 ## Installation
@@ -212,7 +212,7 @@ cell_x_adt_norm = ADTnorm(
 )
 ```
 
-<img src="./man/figures/target_landmark_location.png" alt="target_landmark_location" width="1000px">
+<img src="../man/figures/target_landmark_location.png" alt="target_landmark_location" width="1000px">
 
 Remarkably, setting to fixed locations can eliminate the value range discrepancies across ADT markers. Also, when additional new samples are added, users can only run ADTnorm on the new samples and align to the same target locations for negative peaks and positives.
 
@@ -229,7 +229,7 @@ By default, ADTnorm will align the negative peaks across samples, align first va
 
 Generally, we recommend using "midpoint". However, if users observe that the negative peaks modes have obvious mis-alignment after ADTnorm (see below), users can consider using "mode" and see if a better peak alignment results can be obtained.
 
-<img src="./man/figures/peak_type.png" alt="peak_type" width="1000px">
+<img src="../man/figures/peak_type.png" alt="peak_type" width="1000px">
 
 ## 5. 
 
