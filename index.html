@@ -42,6 +42,18 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/ADTnorm-tutorial.html">ADTnorm-tutorial</a>
+    </li>
+  </ul>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -87,40 +99,88 @@
 <div class="section level2">
 <h2 id="input-data">Input Data<a class="anchor" aria-label="anchor" href="#input-data"></a>
 </h2>
-<p>Demo data sets are <code>cell_x_adt</code> and <code>cell_x_feature</code> where <code>cell_x_adt</code> contains a matrix of raw count for the cell by ADT markers.</p>
-<ul>
-<li><p><code>cell_x_adt</code> is a data frame with 422682 cells (row) and 9 ADT markers (column): CD3, CD4, CD8, CD14, CD19, CD25, CD45RA, CD56, CD127.</p></li>
-<li>
+<p>The 13 public datasets used in the <a href="https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1" class="external-link">manuscript</a> is also included in the R package as demo data set. They can be loaded by</p>
+<p><code>{r loaddata, eval = FALSE} data(cell_x_adt) data(cell_x_feature)</code></p>
+<ul><li>
+<code>cell_x_adt</code> contains a matrix of raw count for the cell by ADT markers, which is a data frame with 422682 cells (row) and 9 ADT markers (column): CD3, CD4, CD8, CD14, CD19, CD25, CD45RA, CD56, CD127.</li></ul>
+<pre><code>  CD3  CD4 CD8 CD14 CD19 CD25 CD45RA CD56 CD127
+1  18  138  13  491    3    9    110   17     7
+2  30  119  19  472    3    5    125  248     8
+3  18  207  10 1289    8   15   5268   26    12
+4  18   11  17   20    5   15   4743  491    16
+5   5   14  14   19    4   16   4108  458    17
+6  21 1014  29 2428    7   52    227   29    15</code></pre>
+<ul><li>
 <p><code>cell_x_feature</code> is a data frame with 422682 cells (row) and 7 feature variables (column):</p>
 <ul>
-<li><p>sample: Sample name.</p></li>
-<li><p>batch: Batch ID. In this demo data, the batch ID is the same as the study_name.</p></li>
+<li><p>sample: Sample name used in original data of each study.</p></li>
+<li><p>batch: Batch information provided from each study.</p></li>
 <li><p>sample_status: Sample status, i.e., Healthy, MALTtumor, HIV Vaccine, Lupus, B-ALL, AML.</p></li>
 <li><p>study_name: Name of the data set/study.</p></li>
 <li><p>ADTseqDepth: Total UMI per cell.</p></li>
 <li><p>cell_type_l1: Broad level of cell type annotation using manual gating.</p></li>
 <li><p>cell_type_l2: Fine level of cell type annotation using manual gating.</p></li>
 </ul>
-</li>
-</ul>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cell_x_adt</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cell_x_feature</span><span class="op">)</span> </span></code></pre></div>
+</li></ul>
+<pre><code>                sample               batch sample_status   study_name
+1 10X_pbmc_10k_sample1 10X_pbmc_10k_batch1       healthy 10X_pbmc_10k
+2 10X_pbmc_10k_sample1 10X_pbmc_10k_batch1       healthy 10X_pbmc_10k
+3 10X_pbmc_10k_sample1 10X_pbmc_10k_batch1       healthy 10X_pbmc_10k
+4 10X_pbmc_10k_sample1 10X_pbmc_10k_batch1       healthy 10X_pbmc_10k
+5 10X_pbmc_10k_sample1 10X_pbmc_10k_batch1       healthy 10X_pbmc_10k
+6 10X_pbmc_10k_sample1 10X_pbmc_10k_batch1       healthy 10X_pbmc_10k
+  ADTseqDepth cell_type_l1       cell_type_l2
+1         981    monocytes classical monocyte
+2        1475    monocytes classical monocyte
+3        7149    monocytes classical monocyte
+4        6831           NK           CD16+ NK
+5        6839           NK           CD16+ NK
+6        4720    monocytes classical monocyte</code></pre>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="option-1-treating-one-study-as-a-sample-and-a-batch-normalize-across-studies">Option 1. Treating one study as a sample and a batch, normalize across studies.<a class="anchor" aria-label="anchor" href="#option-1-treating-one-study-as-a-sample-and-a-batch-normalize-across-studies"></a>
+</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yezhengSTAT.github.io/ADTnorm" class="external-link">ADTnorm</a></span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">save_outpath</span> <span class="op">&lt;-</span> <span class="st">"/path/to/output/location"</span></span>
-<span><span class="va">study_name</span> <span class="op">&lt;-</span> <span class="st">"ADTnorm_demoRun"</span></span>
+<span><span class="va">run_name</span> <span class="op">&lt;-</span> <span class="st">"ADTnorm_demoRun"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cell_x_adt</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cell_x_feature</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">cell_x_feature</span><span class="op">$</span><span class="va">sample</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cell_x_feature</span><span class="op">$</span><span class="va">study_name</span><span class="op">)</span></span>
+<span><span class="va">cell_x_feature</span><span class="op">$</span><span class="va">batch</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cell_x_feature</span><span class="op">$</span><span class="va">study_name</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cell_x_adt_norm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ADTnorm.html">ADTnorm</a></span><span class="op">(</span></span>
 <span>  cell_x_adt <span class="op">=</span> <span class="va">cell_x_adt</span>, </span>
 <span>  cell_x_feature <span class="op">=</span> <span class="va">cell_x_feature</span>,</span>
 <span>  save_outpath <span class="op">=</span> <span class="va">save_outpath</span>, </span>
-<span>  study_name <span class="op">=</span> <span class="va">study_name</span>, </span>
+<span>  study_name <span class="op">=</span> <span class="va">run_name</span>, </span>
+<span>  marker_to_process <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD3"</span>, <span class="st">"CD4"</span>, <span class="st">"CD8"</span>, <span class="st">"CD45RA"</span><span class="op">)</span>, </span>
+<span>  trimodal_marker <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD4"</span>, <span class="st">"CD45RA"</span><span class="op">)</span>, </span>
+<span>  positive_peak <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ADT <span class="op">=</span> <span class="st">"CD3"</span>, sample <span class="op">=</span> <span class="st">"buus_2021_T"</span><span class="op">)</span>,</span>
+<span>  save_intermediate_fig <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="option-2-treating-one-study-as-one-batch-normalize-across-samples">Option 2. Treating one study as one batch, normalize across samples.<a class="anchor" aria-label="anchor" href="#option-2-treating-one-study-as-one-batch-normalize-across-samples"></a>
+</h3>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yezhengSTAT.github.io/ADTnorm" class="external-link">ADTnorm</a></span><span class="op">)</span></span>
+<span><span class="va">save_outpath</span> <span class="op">&lt;-</span> <span class="st">"/path/to/output/location"</span></span>
+<span><span class="va">run_name</span> <span class="op">&lt;-</span> <span class="st">"ADTnorm_demoRun"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cell_x_adt</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cell_x_feature</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">cell_x_feature</span><span class="op">$</span><span class="va">batch</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cell_x_feature</span><span class="op">$</span><span class="va">study_name</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cell_x_adt_norm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ADTnorm.html">ADTnorm</a></span><span class="op">(</span></span>
+<span>  cell_x_adt <span class="op">=</span> <span class="va">cell_x_adt</span>, </span>
+<span>  cell_x_feature <span class="op">=</span> <span class="va">cell_x_feature</span>,</span>
+<span>  save_outpath <span class="op">=</span> <span class="va">save_outpath</span>, </span>
+<span>  study_name <span class="op">=</span> <span class="va">run_name</span>, </span>
 <span>  marker_to_process <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD3"</span>, <span class="st">"CD4"</span>, <span class="st">"CD8"</span>, <span class="st">"CD45RA"</span><span class="op">)</span>, </span>
 <span>  trimodal_marker <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD4"</span>, <span class="st">"CD45RA"</span><span class="op">)</span>, </span>
 <span>  positive_peak <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ADT <span class="op">=</span> <span class="st">"CD3"</span>, sample <span class="op">=</span> <span class="st">"buus_2021_T"</span><span class="op">)</span>,</span>
@@ -129,7 +189,7 @@
 <p>Basic parameters introduction. The full parameter explanation for the <code>ADTnorm</code> function can be found at <a href="https://yezhengstat.github.io/ADTnorm/reference/ADTnorm.html" class="external-link">Reference - ADTnorm</a>.</p>
 <pre><code>cell_x_adt:         Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.
 
-cell_x_feature:     Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch related information.
+cell_x_feature:     Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch-related information.
 
 save_outpath:       The path to save the results.
 
@@ -137,34 +197,55 @@ study_name:         Name of this run.
 
 marker_to_process:  Markers to normalize. Leaving empty to process all the ADT markers in cell_x_adt matrix.
 
-bimodal_marker:     Specify ADT markers that tend to have two peaks based on researchers' prior knowledge or preliminary observation on particular data to be processed.
+bimodal_marker:     Specify ADT markers that are likely to have two peaks based on researchers' prior knowledge or preliminary observation of particular data to be processed. Leaving it as default, ADTnorm will try to find the bimodal peak in all markers that are not listed in `trimodal_marker.`
 
-trimodal_marker:    Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g. CD4) or preliminary observation on particular data to be processed.
+trimodal_marker:    Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g., CD4) or preliminary observation on particular data to be processed.
 
-positive_peak:      A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to positive peaks of other samples.
+positive_peak:      A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to the positive peaks of other samples.
 
 save_intermediate_fig:  Save the density plot figure for checking the peak and valley location detection.</code></pre>
 <p>For more detailed and typical parameter tuning examples, please visit <a href="https://yezhengstat.github.io/ADTnorm/index.html" class="external-link">tutorial website</a>. We will illustrate using the demo data.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h2>
 <p><code>ADTnorm</code> function will generate a matrix of rows of the same number as input <code>cell_x_adt</code> row number and columns are ADT markers specificed in <code>marker_to_process</code>. The value in the matrix is normalized value by ADTnorm. In the <code>save_outpath</code> specified by the users, there will be two subfolders, <code>figures</code> and <code>RDS</code>, containing the intermediate object and density plot of detected peak and valley landmarks before and after ADTnorm. Those figures can be used to check if further parameter tuning is needed for certain ADT markers.</p>
 <div class="section level3">
-<h3 id="raw-counts">Raw Counts<a class="anchor" aria-label="anchor" href="#raw-counts"></a>
+<h3 id="option-1-treating-one-study-as-a-sample-and-a-batch-normalize-across-studies-1">Option 1. Treating one study as a sample and a batch, normalize across studies.<a class="anchor" aria-label="anchor" href="#option-1-treating-one-study-as-a-sample-and-a-batch-normalize-across-studies-1"></a>
 </h3>
+<div class="section level4">
+<h4 id="raw-counts">Raw Counts<a class="anchor" aria-label="anchor" href="#raw-counts"></a>
+</h4>
 <p><img src="./reference/figures/RawCount.png" alt="RawCount" width="700px"></p>
 </div>
-<div class="section level3">
-<h3 id="adtnorm-counts">ADTnorm Counts<a class="anchor" aria-label="anchor" href="#adtnorm-counts"></a>
-</h3>
+<div class="section level4">
+<h4 id="adtnorm-counts">ADTnorm Counts<a class="anchor" aria-label="anchor" href="#adtnorm-counts"></a>
+</h4>
 <p><img src="./reference/figures/ADTnorm.png" alt="Normalization" width="700px"></p>
 </div>
 </div>
+<div class="section level3">
+<h3 id="option-2-treating-one-study-as-a-batch-normalize-across-samples">Option 2. Treating one study as a batch, normalize across samples.<a class="anchor" aria-label="anchor" href="#option-2-treating-one-study-as-a-batch-normalize-across-samples"></a>
+</h3>
+<div class="section level4">
+<h4 id="raw-counts-1">Raw Counts<a class="anchor" aria-label="anchor" href="#raw-counts-1"></a>
+</h4>
+<p><img src="./reference/figures/PublicData_samplelevel_raw.png" alt="RawCount" width="1000px"></p>
+</div>
+<div class="section level4">
+<h4 id="adtnorm-counts-1">ADTnorm Counts<a class="anchor" aria-label="anchor" href="#adtnorm-counts-1"></a>
+</h4>
+<p><img src="./reference/figures/PublicData_samplelevel_adtnorm.png" alt="Normalization" width="1000px"></p>
+</div>
+</div>
+</div>
 <div class="section level2">
-<h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
+<h2 id="contact-for-questions-discussions-or-potential-collaborations">Contact for questions, discussions or potential collaborations<a class="anchor" aria-label="anchor" href="#contact-for-questions-discussions-or-potential-collaborations"></a>
 </h2>
+<p><a href="https://yezhengstat.github.io/" class="external-link">Ye Zheng</a></p>
 <p>Email: <a href="mailto:yzheng23@fredhutch.org" class="email">yzheng23@fredhutch.org</a></p>
+<p>Twitter: @yezhengSTAT</p>
 </div>
 </div>
   </div>
@@ -198,6 +279,7 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Ye Zheng <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-8806-2761" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 

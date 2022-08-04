@@ -1,6 +1,7 @@
 pandoc: 2.7.3
 pkgdown: 2.0.6
 pkgdown_sha: ~
-articles: {}
-last_built: 2022-08-03T22:02Z
+articles:
+  ADTnorm-tutorial: ADTnorm-tutorial.html
+last_built: 2022-08-04T01:29Z
 
