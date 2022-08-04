@@ -1,5 +1,5 @@
 ---
-title: "ADTnorm-tutorial"
+title: "ADTnorm Tutorial"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ADTnorm-tutorial}
@@ -231,30 +231,56 @@ Generally, we recommend using "midpoint". However, if users observe that the neg
 
 <img src="../man/figures/peak_type.png" alt="peak_type" width="1000px">
 
-## 5. 
+## 5. Ignore the only positive peak per batch
 
 ```multi_sample_per_batch```: Set it to TRUE to discard the positive peak that only appear in one sample per batch (sample number is >=3 per batch).
 
-## 6. 
+There are cases where there is only one sample that has a detected positive peak. Therefore, there is no need to align the only positive peak across samples and imputing the rest of positive peaks is not proper. Setting ```multi_sample_per_batch``` to TRUE will remove the only detected positive peak and only align the negative peak and valley.
 
-```shoulder_valley```: Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population.
-shoulder_valley_slope The slope on the ADT marker density distribution to call shoulder valley.
+<img src="../man/figures/multi_sample_per_batch.png" alt="multi_sample_per_batch" width="1000px">
 
-## 7. 
 
-```valley_density_adjust```: Parameter for `density` function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default’ bandwidth.
-
-## 8.
-```midpoint_type```: Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley").
-
-## 9.
-
-```neg_candidate_thres```: The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large.
-
-## 10.
+## 6. Remove suspecious low signal positive peaks
 
 ```lower_peak_thres```: The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.
 
-## 11.
+Sometimes, the only positive peak can be artificial and has very week peak signal. Users can use this parameter to remove unwanted low signal positive peaks. The default minimal threshold to call a peak is 0.001. For example, for the COVID-19 data set used in the manuscript, to exclude the unwanted low signal peak of CD15, ```lower_peak_thres``` can be set to 0.01.
+
+<img src="../man/figures/lower_peak_thres.png" alt="lower_peak_thres" width="1000px">
+
+However, for markers such as CD19, we may expect to have a low signal positive peak. ```lower_peak_thres``` can be decreased to 0.001 or much smaller value to include those low signal peaks.
+
+
+## 7. Detect shoulder peak as the positive population.
+
+```shoulder_valley```: Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population.
+
+```shoulder_valley_slope``` The slope on the ADT marker density distribution to call shoulder valley.
+
+Due to technical variations, the positive population of cells may not have a very clear separation from the negative population. Instead of having a separable positive peak, those positive population may overlap largely with the negative ones, leading to a shoulder peak or heavy right tail pattern on the ADT count density distribution. ```shoulder_valley``` will allow users to turn on the detection of valley location around the "shoulder" location of the negative peak and ```shoulder_valley_slope``` will allow users to obtain a relatively more stringent shoulder valley or more relaxing shoulder valley. Setting ```shoulder_valley_slope``` to more negative value, such as -1, -2, ADTnorm will set the valley to more sharply decreasing lolcation (slope is more sharp) hence closer to the negative peak mode. Setting ```shoulder_valley_slope``` to less negative value, such as -0.5, -0.1, ADTnorm will set the valley towards the tail region of the negative peak. Users can set ```save_intermediate_fig``` to TRUE to see the ADT count density plot and the location of valleys and peaks. Those figures will help diagnoise.
+
+<img src="../man/figures/shoulder_valley_CD3.png" alt="shoulder_valley_CD3" width="1000px">
+
+
+```shoulder_valley``` mode will especially useful when the valley locations vary dramatically. For example, in the following example, CD4 middle peak can be hard to detect for some samples. If we set the valley to be local minimal between negative peak and positive peak, it may vary dramatically. Some samples may have the valley before middle peak or after middle peak. Setting ```shoulder_valley``` to be TRUE with a less negative ```shoulder_valley_slope``` (such as -0.1) will guarantee that the valley is detected before middle peak.
+
+<img src="../man/figures/shoulder_valley.png" alt="shoulder_valley" width="1000px">
+
+
+## 8. Bandwidth for the ADT count density distribution that affect the valley location deteciton
+
+```valley_density_adjust```: Parameter for `density` function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default bandwidth.
+
+## 9. Imputation method for imputing the missing first valley
+
+```midpoint_type```: Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley").
+
+## 10. General threshold to determine negative population
+
+```neg_candidate_thres```: The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large.
+
+## 11. Detect outlier valley and impute by the neighbor samples
 
 ```detect_outlier_valley```: Detect outlier valley and impute by the neighbor samples.
+
+## 12. Zero ADT count exclusion and logCPM transformation
