@@ -94,7 +94,7 @@
 <div class="section level2">
 <h2 id="adt-normaliztion-pipeline">ADT Normaliztion Pipeline<a class="anchor" aria-label="anchor" href="#adt-normaliztion-pipeline"></a>
 </h2>
-<p><img src="./reference/figures/pipeline_202208.png" alt="ADTnorm" width="600px"></p>
+<p><img src="../reference/figures/pipeline_202208.png" alt="ADTnorm" width="600px"></p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -264,7 +264,7 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 <span>    save_intermediate_fig <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    target_landmark_location <span class="op">=</span> <span class="st">"fixed"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="./reference/figures/target_landmark_location.png" alt="target_landmark_location" width="1000px"></p>
+<p><img src="../reference/figures/target_landmark_location.png" alt="target_landmark_location" width="1000px"></p>
 <p>Remarkably, setting to fixed locations can eliminate the value range discrepancies across ADT markers. Also, when additional new samples are added, users can only run ADTnorm on the new samples and align to the same target locations for negative peaks and positives.</p>
 </div>
 <div class="section level2">
@@ -278,7 +278,7 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 </h2>
 <p><code>peak_type</code>: The type of peak to be detected. Select from “midpoint” for setting the peak landmark to the midpoint of the peak region being detected or “mode” for setting the peak landmark to the mode location of the peak. “midpoint” can be generally more robust across samples and less impacted by the bandwidth. “mode” can be more accurate in determining the peak location if the bandwidth is generally ideal for the target marker.</p>
 <p>Generally, we recommend using “midpoint”. However, if users observe that the negative peaks modes have obvious mis-alignment after ADTnorm (see below), users can consider using “mode” and see if a better peak alignment results can be obtained.</p>
-<p><img src="./reference/figures/peak_type.png" alt="peak_type" width="1000px"></p>
+<p><img src="../reference/figures/peak_type.png" alt="peak_type" width="1000px"></p>
 </div>
 <div class="section level2">
 <h2 id="section">5.<a class="anchor" aria-label="anchor" href="#section"></a>
