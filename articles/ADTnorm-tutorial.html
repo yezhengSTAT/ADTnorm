@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADTnorm-tutorial • ADTnorm</title>
+<title>ADTnorm Tutorial • ADTnorm</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="ADTnorm-tutorial">
+<script src="../pkgdown.js"></script><meta property="og:title" content="ADTnorm Tutorial">
 <meta property="og:description" content="ADTnorm">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -50,7 +50,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/ADTnorm-tutorial.html">ADTnorm-tutorial</a>
+      <a href="../articles/ADTnorm-tutorial.html">ADTnorm Tutorial</a>
     </li>
   </ul>
 </li>
@@ -75,7 +75,7 @@
       </header><script src="ADTnorm-tutorial_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>ADTnorm-tutorial</h1>
+      <h1 data-toc-skip>ADTnorm Tutorial</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/yezhengSTAT/ADTnorm/blob/HEAD/vignettes/ADTnorm-tutorial.Rmd" class="external-link"><code>vignettes/ADTnorm-tutorial.Rmd</code></a></small>
@@ -281,39 +281,53 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 <p><img src="../reference/figures/peak_type.png" alt="peak_type" width="1000px"></p>
 </div>
 <div class="section level2">
-<h2 id="section">5.<a class="anchor" aria-label="anchor" href="#section"></a>
+<h2 id="ignore-the-only-positive-peak-per-batch">5. Ignore the only positive peak per batch<a class="anchor" aria-label="anchor" href="#ignore-the-only-positive-peak-per-batch"></a>
 </h2>
 <p><code>multi_sample_per_batch</code>: Set it to TRUE to discard the positive peak that only appear in one sample per batch (sample number is &gt;=3 per batch).</p>
+<p>There are cases where there is only one sample that has a detected positive peak. Therefore, there is no need to align the only positive peak across samples and imputing the rest of positive peaks is not proper. Setting <code>multi_sample_per_batch</code> to TRUE will remove the only detected positive peak and only align the negative peak and valley.</p>
+<p><img src="../reference/figures/multi_sample_per_batch.png" alt="multi_sample_per_batch" width="1000px"></p>
 </div>
 <div class="section level2">
-<h2 id="section-1">6.<a class="anchor" aria-label="anchor" href="#section-1"></a>
+<h2 id="remove-suspecious-low-signal-positive-peaks">6. Remove suspecious low signal positive peaks<a class="anchor" aria-label="anchor" href="#remove-suspecious-low-signal-positive-peaks"></a>
 </h2>
-<p><code>shoulder_valley</code>: Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population. shoulder_valley_slope The slope on the ADT marker density distribution to call shoulder valley.</p>
+<p><code>lower_peak_thres</code>: The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.</p>
+<p>Sometimes, the only positive peak can be artificial and has very week peak signal. Users can use this parameter to remove unwanted low signal positive peaks. The default minimal threshold to call a peak is 0.001. For example, for the COVID-19 data set used in the manuscript, to exclude the unwanted low signal peak of CD15, <code>lower_peak_thres</code> can be set to 0.01.</p>
+<p><img src="../reference/figures/lower_peak_thres.png" alt="lower_peak_thres" width="1000px"></p>
+<p>However, for markers such as CD19, we may expect to have a low signal positive peak. <code>lower_peak_thres</code> can be decreased to 0.001 or much smaller value to include those low signal peaks.</p>
 </div>
 <div class="section level2">
-<h2 id="section-2">7.<a class="anchor" aria-label="anchor" href="#section-2"></a>
+<h2 id="detect-shoulder-peak-as-the-positive-population-">7. Detect shoulder peak as the positive population.<a class="anchor" aria-label="anchor" href="#detect-shoulder-peak-as-the-positive-population-"></a>
 </h2>
-<p><code>valley_density_adjust</code>: Parameter for <code>density</code> function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default’ bandwidth.</p>
+<p><code>shoulder_valley</code>: Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population.</p>
+<p><code>shoulder_valley_slope</code> The slope on the ADT marker density distribution to call shoulder valley.</p>
+<p>Due to technical variations, the positive population of cells may not have a very clear separation from the negative population. Instead of having a separable positive peak, those positive population may overlap largely with the negative ones, leading to a shoulder peak or heavy right tail pattern on the ADT count density distribution. <code>shoulder_valley</code> will allow users to turn on the detection of valley location around the “shoulder” location of the negative peak and <code>shoulder_valley_slope</code> will allow users to obtain a relatively more stringent shoulder valley or more relaxing shoulder valley. Setting <code>shoulder_valley_slope</code> to more negative value, such as -1, -2, ADTnorm will set the valley to more sharply decreasing lolcation (slope is more sharp) hence closer to the negative peak mode. Setting <code>shoulder_valley_slope</code> to less negative value, such as -0.5, -0.1, ADTnorm will set the valley towards the tail region of the negative peak. Users can set <code>save_intermediate_fig</code> to TRUE to see the ADT count density plot and the location of valleys and peaks. Those figures will help diagnoise.</p>
+<p><img src="../reference/figures/shoulder_valley_CD3.png" alt="shoulder_valley_CD3" width="1000px"></p>
+<p><code>shoulder_valley</code> mode will especially useful when the valley locations vary dramatically. For example, in the following example, CD4 middle peak can be hard to detect for some samples. If we set the valley to be local minimal between negative peak and positive peak, it may vary dramatically. Some samples may have the valley before middle peak or after middle peak. Setting <code>shoulder_valley</code> to be TRUE with a less negative <code>shoulder_valley_slope</code> (such as -0.1) will guarantee that the valley is detected before middle peak.</p>
+<p><img src="../reference/figures/shoulder_valley.png" alt="shoulder_valley" width="1000px"></p>
 </div>
 <div class="section level2">
-<h2 id="section-3">8.<a class="anchor" aria-label="anchor" href="#section-3"></a>
+<h2 id="bandwidth-for-the-adt-count-density-distribution-that-affect-the-valley-location-deteciton">8. Bandwidth for the ADT count density distribution that affect the valley location deteciton<a class="anchor" aria-label="anchor" href="#bandwidth-for-the-adt-count-density-distribution-that-affect-the-valley-location-deteciton"></a>
+</h2>
+<p><code>valley_density_adjust</code>: Parameter for <code>density</code> function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default bandwidth.</p>
+</div>
+<div class="section level2">
+<h2 id="imputation-method-for-imputing-the-missing-first-valley">9. Imputation method for imputing the missing first valley<a class="anchor" aria-label="anchor" href="#imputation-method-for-imputing-the-missing-first-valley"></a>
 </h2>
 <p><code>midpoint_type</code>: Fill in the missing first valley by the midpoint of two positive peaks (“midpoint”) or impute by other valleys (“valley”).</p>
 </div>
 <div class="section level2">
-<h2 id="section-4">9.<a class="anchor" aria-label="anchor" href="#section-4"></a>
+<h2 id="general-threshold-to-determine-negative-population">10. General threshold to determine negative population<a class="anchor" aria-label="anchor" href="#general-threshold-to-determine-negative-population"></a>
 </h2>
 <p><code>neg_candidate_thres</code>: The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large.</p>
 </div>
 <div class="section level2">
-<h2 id="section-5">10.<a class="anchor" aria-label="anchor" href="#section-5"></a>
-</h2>
-<p><code>lower_peak_thres</code>: The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.</p>
-</div>
-<div class="section level2">
-<h2 id="section-6">11.<a class="anchor" aria-label="anchor" href="#section-6"></a>
+<h2 id="detect-outlier-valley-and-impute-by-the-neighbor-samples">11. Detect outlier valley and impute by the neighbor samples<a class="anchor" aria-label="anchor" href="#detect-outlier-valley-and-impute-by-the-neighbor-samples"></a>
 </h2>
 <p><code>detect_outlier_valley</code>: Detect outlier valley and impute by the neighbor samples.</p>
+</div>
+<div class="section level2">
+<h2 id="zero-adt-count-exclusion-and-logcpm-transformation">12. Zero ADT count exclusion and logCPM transformation<a class="anchor" aria-label="anchor" href="#zero-adt-count-exclusion-and-logcpm-transformation"></a>
+</h2>
 </div>
   </div>
 
