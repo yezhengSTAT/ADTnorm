@@ -308,7 +308,8 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 <div class="section level2">
 <h2 id="bandwidth-for-the-adt-count-density-distribution-that-affect-the-valley-location-deteciton">8. Bandwidth for the ADT count density distribution that affect the valley location deteciton<a class="anchor" aria-label="anchor" href="#bandwidth-for-the-adt-count-density-distribution-that-affect-the-valley-location-deteciton"></a>
 </h2>
-<p><code>valley_density_adjust</code>: Parameter for <code>density</code> function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default bandwidth.</p>
+<p><code>valley_density_adjust</code>: Parameter for <code>density</code> function: bandwidth used is adjust*bw. This makes it easy to specify values like half the default bandwidth. Lower value such as 0.5 or 1 can lead to more accurate valley location but more prone to local minimal variations. Larger value such as 3 or 5 can make the valley more consistent across samples.</p>
+<p><img src="../reference/figures/valley_density_adjust.png" alt="shoulder_valley" width="1000px"></p>
 </div>
 <div class="section level2">
 <h2 id="imputation-method-for-imputing-the-missing-first-valley">9. Imputation method for imputing the missing first valley<a class="anchor" aria-label="anchor" href="#imputation-method-for-imputing-the-missing-first-valley"></a>
@@ -319,15 +320,11 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 <h2 id="general-threshold-to-determine-negative-population">10. General threshold to determine negative population<a class="anchor" aria-label="anchor" href="#general-threshold-to-determine-negative-population"></a>
 </h2>
 <p><code>neg_candidate_thres</code>: The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large.</p>
-</div>
-<div class="section level2">
-<h2 id="detect-outlier-valley-and-impute-by-the-neighbor-samples">11. Detect outlier valley and impute by the neighbor samples<a class="anchor" aria-label="anchor" href="#detect-outlier-valley-and-impute-by-the-neighbor-samples"></a>
-</h2>
-<p><code>detect_outlier_valley</code>: Detect outlier valley and impute by the neighbor samples.</p>
-</div>
-<div class="section level2">
-<h2 id="zero-adt-count-exclusion-and-logcpm-transformation">12. Zero ADT count exclusion and logCPM transformation<a class="anchor" aria-label="anchor" href="#zero-adt-count-exclusion-and-logcpm-transformation"></a>
-</h2>
+<!-- ## 11. Detect outlier valley and impute by the neighbor samples
+
+```detect_outlier_valley```: Detect outlier valley and impute by the neighbor samples.
+
+## 12. Zero ADT count exclusion and logCPM transformation -->
 </div>
   </div>
 
