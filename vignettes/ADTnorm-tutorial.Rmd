@@ -269,7 +269,9 @@ Due to technical variations, the positive population of cells may not have a ver
 
 ## 8. Bandwidth for the ADT count density distribution that affect the valley location deteciton
 
-```valley_density_adjust```: Parameter for `density` function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default bandwidth.
+```valley_density_adjust```: Parameter for `density` function: bandwidth used is adjust*bw. This makes it easy to specify values like half the default bandwidth. Lower value such as 0.5 or 1 can lead to more accurate valley location but more prone to local minimal variations. Larger value such as 3 or 5 can make the valley more consistent across samples.
+
+<img src="../man/figures/valley_density_adjust.png" alt="shoulder_valley" width="1000px">
 
 ## 9. Imputation method for imputing the missing first valley
 
@@ -279,8 +281,8 @@ Due to technical variations, the positive population of cells may not have a ver
 
 ```neg_candidate_thres```: The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large.
 
-## 11. Detect outlier valley and impute by the neighbor samples
+<!-- ## 11. Detect outlier valley and impute by the neighbor samples
 
 ```detect_outlier_valley```: Detect outlier valley and impute by the neighbor samples.
 
-## 12. Zero ADT count exclusion and logCPM transformation
+## 12. Zero ADT count exclusion and logCPM transformation -->
