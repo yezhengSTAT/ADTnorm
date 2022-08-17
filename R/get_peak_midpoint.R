@@ -231,7 +231,7 @@ get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marke
                                     from = from,
                                     to = to
                                 )
-                                if(is.na(peak_info$midpoint) || (length(peak_info$midpoint) >= 2 && peak_info$midpoint[2] - peak_info$midpoint[1] < 0.5)){
+                                if(any(is.na(peak_info$midpoint)) || (length(peak_info$midpoint) >= 2 && peak_info$midpoint[2] - peak_info$midpoint[1] < 0.5)){
 
                                     ## smallest bw may lead to NA midpoint or peaks that are too close due to discrete value
                                     peak_info = flowStats:::curvPeaks(
@@ -263,8 +263,7 @@ get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marke
                                 from = from,
                                 to = to
                             )
-                            peak_info$midpoint = peak_info$midpoint
-                            if(is.na(peak_info$midpoint) || (length(peak_info$midpoint) >= 2 && peak_info$midpoint[2] - peak_info$midpoint[1] < 0.5)){
+                            if(any(is.na(peak_info$midpoint)) || (length(peak_info$midpoint) >= 2 && peak_info$midpoint[2] - peak_info$midpoint[1] < 0.5)){
                                     peak_info = flowStats:::curvPeaks(
                                         x = fres1,
                                         dat =  adt_expression,
