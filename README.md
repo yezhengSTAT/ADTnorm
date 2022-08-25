@@ -2,6 +2,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/yezhengSTAT/ADTnorm/workflows/R-CMD-check/badge.svg)](https://github.com/yezhengSTAT/ADTnorm/actions)
+[![docker](https://github.com/yezhengSTAT/ADTnorm/workflows/docker/badge.svg)](https://github.com/yezhengSTAT/ADTnorm/pkgs/container/adtnorm)
 <!-- badges: end -->
 
 ## What is `ADTnorm`?
@@ -23,8 +24,24 @@ Manuscript: [Zheng et al. Robust Normalization and Integration of Single-cell Pr
 remotes::install_github("yezhengSTAT/ADTnorm", build_vignettes = FALSE)
 ```
 
-## Input Data
+### Using Docker
 
+There are many dependencies in `ADTnorm`, so it takes a long time to install them all. Instead, you can use the Docker image of `ADTnorm`.
+
+``` sh
+docker pull ghcr.io/yezhengstat/adtnorm:latest
+docker run \
+  -it \
+  --user rstudio \
+  --volume <yourDataDirectory>:/home/rstudio/data \
+  yezhengstat/adtnorm:latest \
+  R
+```
+
+Replace `<yourDataDirectory>` with the local directory path (absolute path) where you have the input data and would like to store the output files. For more information on using docker containers, please read [this documentation](https://github.com/Bioconductor/bioconductor_docker/blob/master/README.md#using-the-containers) by Bioconductor.
+
+
+## Input Data
 
 The 13 public datasets used in the [manuscript](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1) is also included in the R package as demo data set. They can be loaded by
 
