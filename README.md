@@ -12,7 +12,7 @@ CITE-seq technology enables the direct measurement of protein expression, known 
 Manuscript: [Zheng et al. Robust Normalization and Integration of Single-cell Protein Expression across CITE-seq Datasets. BioRxiv. 2022](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1)
 
 
-## ADT Normaliztion Pipeline
+## ADT Normalization Pipeline
 
 <img src="./man/figures/pipeline_202208.png" alt="ADTnorm" width="600px">
 
@@ -43,14 +43,14 @@ Replace `<yourDataDirectory>` with the local directory path (absolute path) wher
 
 ## Input Data
 
-The 13 public datasets used in the [manuscript](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1) is also included in the R package as demo data set. They can be loaded by
+The 13 public datasets used in the [manuscript](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1) are also included in the R package as demo data set. They can be loaded by
 
 ```{r loaddata, eval = FALSE}
 data(cell_x_adt)
 data(cell_x_feature) 
 ```
 
-- ```cell_x_adt``` contains a matrix of raw count for the cell by ADT markers, which is a data frame with 422682 cells (row) and 9 ADT markers (column): CD3, CD4, CD8, CD14, CD19, CD25, CD45RA, CD56, CD127.
+- ```cell_x_adt``` contains raw counts for ADT markers in each cell.  It is a data frame with 422682 cells (rows) and 9 ADT markers (columns): CD3, CD4, CD8, CD14, CD19, CD25, CD45RA, CD56, CD127.
 
 ```
   CD3  CD4 CD8 CD14 CD19 CD25 CD45RA CD56 CD127
@@ -62,7 +62,7 @@ data(cell_x_feature)
 6  21 1014  29 2428    7   52    227   29    15
 ```
 
-- ```cell_x_feature``` is a data frame with 422682 cells (row) and 7  feature variables (column):
+- ```cell_x_feature``` is a data frame with 422682 cells (rows) and 7  feature variables (columns):
   
     - sample: Sample name used in original data of each study.
     
@@ -156,13 +156,13 @@ save_outpath:       The path to save the results.
 
 study_name:         Name of this run.
 
-marker_to_process:  Markers to normalize. Leaving empty to process all the ADT markers in cell_x_adt matrix.
+marker_to_process:  Markers to normalize. Leave empty to process all the ADT markers in cell_x_adt matrix.
 
-bimodal_marker:     Specify ADT markers that are likely to have two peaks based on researchers' prior knowledge or preliminary observation of particular data to be processed. Leaving it as default, ADTnorm will try to find the bimodal peak in all markers that are not listed in `trimodal_marker.`
+bimodal_marker:     Specify ADT markers that are likely to have two peaks based on researchers' prior knowledge or preliminary observation of the particular data to be processed. Leaving it as default, ADTnorm will try to find the bimodal peak in all markers that are not listed in `trimodal_marker.`
 
-trimodal_marker:    Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g., CD4) or preliminary observation on particular data to be processed.
+trimodal_marker:    Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g., CD4) or preliminary observation of the particular data to be processed.
 
-positive_peak:      A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to the positive peaks of other samples.
+positive_peak:      A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells the only CD3 peak should be aligned to the positive peaks of other samples.
 
 save_intermediate_fig:  Save the density plot figure for checking the peak and valley location detection.
 ```

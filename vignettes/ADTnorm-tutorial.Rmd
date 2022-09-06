@@ -37,14 +37,14 @@ remotes::install_github("yezhengSTAT/ADTnorm", build_vignettes = FALSE)
 
 ## Input Data
 
-The 13 public datasets used in the [manuscript](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1) is also included in the R package as demo data set. They can be loaded by
+The 13 public datasets used in the [manuscript](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1) are also included in the R package as a demo data set. They can be loaded by
 
 ```{r loaddata, eval = FALSE}
 data(cell_x_adt)
 data(cell_x_feature) 
 ```
 
-- ```cell_x_adt``` contains a matrix of raw count for the cell by ADT markers, which is a data frame with 422682 cells (row) and 9 ADT markers (column): CD3, CD4, CD8, CD14, CD19, CD25, CD45RA, CD56, CD127.
+- ```cell_x_adt``` contains raw counts for the ADT markers in each cell, as a data frame with 422682 cells (rows) and 9 ADT markers (columns): CD3, CD4, CD8, CD14, CD19, CD25, CD45RA, CD56, CD127.
 
 ```
   CD3  CD4 CD8 CD14 CD19 CD25 CD45RA CD56 CD127
@@ -56,7 +56,7 @@ data(cell_x_feature)
 6  21 1014  29 2428    7   52    227   29    15
 ```
 
-- ```cell_x_feature``` is a data frame with 422682 cells (row) and 7  feature variables (column):
+- ```cell_x_feature``` is a data frame with 422682 cells (rows) and 7  feature variables (columns):
   
     - sample: Sample name used in original data of each study.
     
@@ -92,7 +92,7 @@ data(cell_x_feature)
 
 ## Quick start
 
-For a quick start of using ADTnorm, we will treate all the cells from one study as one sample and normalize across studies.
+For a quick introduction to using ADTnorm, we will treate all the cells from one study as one sample and normalize across studies.
 
 ### ADTnorm general usage
 
@@ -131,13 +131,13 @@ save_outpath:       The path to save the results.
 
 study_name:         Name of this run.
 
-marker_to_process:  Markers to normalize. Leaving empty to process all the ADT markers in cell_x_adt matrix.
+marker_to_process:  Markers to normalize. Leave empty to process all the ADT markers in cell_x_adt matrix.
 
-bimodal_marker:     Specify ADT markers that are likely to have two peaks based on researchers' prior knowledge or preliminary observation of particular data to be processed. Leaving it as default, ADTnorm will try to find the bimodal peak in all markers that are not listed in `trimodal_marker.`
+bimodal_marker:     Specify ADT markers that are likely to have two peaks based on researchers' prior knowledge or preliminary observation of the particular data to be processed. Leaving it as default, ADTnorm will try to find the bimodal peak in all markers that are not listed in `trimodal_marker.`
 
 trimodal_marker:    Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g., CD4) or preliminary observation on particular data to be processed.
 
-positive_peak:      A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to the positive peaks of other samples.
+positive_peak:      A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells the only CD3 peak should be aligned to the positive peaks of other samples.
 
 save_intermediate_fig:  Save the density plot figure for checking the peak and valley location detection.
 ```
@@ -171,7 +171,7 @@ Additionally, in the `save_outpath` specified by the users, there will be two su
 
 ### 1. Clean ADT marker name
 
-ADTnorm provide a quick and naive ADT marker cleaning and unify function, ```clean_adt_name```, which will be able to remove unwanted suffix such as "_TotalSeqB", "_PROT" or prefix such as "ADT_". Or, if there is no "CD8" marker detected, look for "CD8A" or "CD8a" to work as "CD8".  Users need to clean and unify the ADT marker names first before running ADTnorm (for example, "PDL1" may also be named as "CD274". Choose one and use it consistently) and please do not rely too much on this function to clean ADT marker names across study. Users may also refer to [AbName](https://github.com/HelenLindsay/AbNames) package to match antibody names to gene or protein identifiers, and to help standardise names across data sets.
+ADTnorm provides a quick and naive ADT marker cleaning and unify function, ```clean_adt_name```, which will be able to remove unwanted suffixes such as "_TotalSeqB", "_PROT" or prefix such as "ADT_". Or, if there is no "CD8" marker detected, look for "CD8A" or "CD8a" to work as "CD8".  Users need to clean and unify the ADT marker names first before running ADTnorm (for example, "PDL1" may also be named as "CD274". Choose one and use it consistently) and please do not rely too much on this function to clean ADT marker names across study. Users may also refer to [AbNames](https://github.com/HelenLindsay/AbNames) package to match antibody names to gene or protein identifiers, and to help standardise names across data sets.
 
 For some cases, where CD3, CD4, and CD8 are named using other words, users can specify the column index in ```cell_x_adt``` so that ADTnorm can still recognize those three markers and customize parameters for identifying the peaks and valleys.
 
@@ -220,14 +220,14 @@ Remarkably, setting to fixed locations can eliminate the value range discrepanci
 
 ```landmark_align_type```: Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes.
 
-By default, ADTnorm will align the negative peaks across samples, align first valleys across samples and algin the right-most positive peaks simultenously. However, ADTnorm do have options to only align negative peaks across samples (landmark_align_type = "negpeak"), or only align negative peaks and first valleys (landmark_align_type = "negPeak_valley"), or only align the first valleys across samples (landmark_align_type = "valley"). We strongly recommend using the default option, "negPeak_valley_posPeak", unless you have strong reason to choose other option.
+By default, ADTnorm will align the negative peaks across samples, align first valleys across samples and align the right-most positive peaks simultaneously. However, ADTnorm does have options to only align negative peaks across samples (landmark_align_type = "negpeak"), or only align negative peaks and first valleys (landmark_align_type = "negPeak_valley"), or only align the first valleys across samples (landmark_align_type = "valley"). We strongly recommend using the default option, "negPeak_valley_posPeak", unless you have strong reason to choose another option.
 
 
 ## 4. Definition of the "peak"
 
 ```peak_type```: The type of peak to be detected. Select from "midpoint" for setting the peak landmark to the midpoint of the peak region being detected or "mode" for setting the peak landmark to the mode location of the peak. "midpoint" can be generally more robust across samples and less impacted by the bandwidth. "mode" can be more accurate in determining the peak location if the bandwidth is generally ideal for the target marker.
 
-Generally, we recommend using "midpoint". However, if users observe that the negative peaks modes have obvious mis-alignment after ADTnorm (see below), users can consider using "mode" and see if a better peak alignment results can be obtained.
+Generally, we recommend using "midpoint". However, if users observe that the negative peaks modes have obvious mis-alignment after ADTnorm (see below), users can consider using "mode" and see if a better peak alignment result can be obtained.
 
 <img src="../man/figures/peak_type.png" alt="peak_type" width="1000px">
 
@@ -242,7 +242,7 @@ There are cases where there is only one sample that has a detected positive peak
 
 ## 6. Remove suspecious low signal positive peaks
 
-```lower_peak_thres```: The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.
+```lower_peak_thres```: The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but usually real positive peaks, especially for markers like CD19.
 
 Sometimes, the only positive peak can be artificial and has very week peak signal. Users can use this parameter to remove unwanted low signal positive peaks. The default minimal threshold to call a peak is 0.001. For example, for the COVID-19 data set used in the manuscript, to exclude the unwanted low signal peak of CD15, ```lower_peak_thres``` can be set to 0.01.
 
@@ -269,7 +269,7 @@ Due to technical variations, the positive population of cells may not have a ver
 
 ## 8. Bandwidth for the ADT count density distribution that affect the valley location deteciton
 
-```valley_density_adjust```: Parameter for `density` function: bandwidth used is adjust*bw. This makes it easy to specify values like half the default bandwidth. Lower value such as 0.5 or 1 can lead to more accurate valley location but more prone to local minimal variations. Larger value such as 3 or 5 can make the valley more consistent across samples.
+```valley_density_adjust```: Parameter for `density` function: bandwidth used is adjust*bw. This makes it easy to specify values like half the default bandwidth. Lower value such as 0.5 or 1 can lead to more accurate valley location but more prone to local minimal variations. Larger values such as 3 or 5 can make the valley more consistent across samples.
 
 <img src="../man/figures/valley_density_adjust.png" alt="shoulder_valley" width="1000px">
 
