@@ -44,7 +44,10 @@ plot_adt_density_with_peak_valley_each = function(adt_count, cell_x_feature, pea
     # peak_landmark_list = parameter_list$peak_landmark_list
     # valley_landmark_list = parameter_list$valley_landmark_list
     # brewer_palettes = parameter_list$brewer_palettes
-
+  
+    # If there is no batch, add a dummy variable
+    if (! "batch" %in% colnames(cell_x_feature)){ cell_x_feature$batch <- 1 }
+      
     tmpProfile = data.frame(counts = adt_count) %>%
         mutate(
             sample = rep(cell_x_feature$sample, 1),
