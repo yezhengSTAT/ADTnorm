@@ -86,8 +86,14 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         stop("Please specify the peak type to be either 'mode' or 'midpoint'.")
     }
 
+    ## Remove ADT with zero counts
+    col_sums <- colSums(cell_x_adt)
+    if (any(col_sums == 0)){
+        message("Markers with zero counts will be ignored")
+        cell_x_adt = cell_x_adt[, col_sums > 0, drop = FALSE] 
+    }
+    
     ## preprocess the input data
-    cell_x_adt = cell_x_adt[, colSums(cell_x_adt) > 0, drop = FALSE] ## Remove ADT with zero counts
     cell_x_adt = arcsinh_transform(cell_x_adt = cell_x_adt) ## Arcsinh transformation
     all_marker_name = colnames(cell_x_adt) ## save the original marker name
     if(!is.factor(cell_x_feature$sample)){
