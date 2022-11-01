@@ -368,7 +368,7 @@ get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marke
     ## initiate landmark to record peak mode location
     landmark = matrix(NA, ncol = peak_num, nrow = length(sample_name_list))
     landmarkRegion = list()
-    for (i in seq_along(peak_num)) {
+    for (i in seq_len(peak_num)) {
         landmarkRegion[[i]] = matrix(NA, ncol = 2, nrow = length(sample_name_list))
         rownames(landmarkRegion[[i]]) = sample_name_list
     }
