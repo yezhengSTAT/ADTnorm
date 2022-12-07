@@ -167,7 +167,7 @@ positive_peak:      A list variable containing a vector of ADT marker(s) and a c
 save_intermediate_fig:  Save the density plot figure for checking the peak and valley location detection.
 ```
 
-For more detailed and typical parameter tuning examples, please visit [tutorial website](https://yezhengstat.github.io/ADTnorm/index.html). We will illustrate using the demo data.
+**For more detailed and typical parameter tuning examples, please visit [tutorial website](https://yezhengstat.github.io/ADTnorm/articles/ADTnorm-tutorial.html). We will illustrate using the demo data.**
 
 
 ## Results
