@@ -99,6 +99,9 @@ data(cell_x_feature)
 ## Usage
 
 
+**For more detailed and typical parameter tuning examples, please visit [tutorial website](https://yezhengstat.github.io/ADTnorm/articles/ADTnorm-tutorial.html). We will illustrate using the demo data.**
+
+
 ### Option 1. Treating one study as a sample and a batch, normalize across studies.
 ```R
 library(ADTnorm)
