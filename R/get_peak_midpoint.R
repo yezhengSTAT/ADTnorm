@@ -26,8 +26,15 @@
 #' }
 # require(flowStats)
 # require(dplyr)
-get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marker_select = NULL, adt_marker_index = NULL, bwFac_smallest = 1.1, bimodal_marker_index = NULL, trimodal_marker_index = NULL, positive_peak = NULL, neg_candidate_thres = asinh(10/5 + 1), lower_peak_thres = 0.001, cd3_index = NULL, cd4_index = NULL, cd8_index = NULL) {
+get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marker_select = NULL, adt_marker_index = NULL,
+                             bwFac_smallest = 1.1, bimodal_marker_index = NULL, trimodal_marker_index = NULL,
+                             positive_peak = NULL, neg_candidate_thres = asinh(10/5 + 1), lower_peak_thres = 0.001,
+                             cd3_index = NULL, cd4_index = NULL, cd8_index = NULL) {
 
+    if (length(adt_marker_select) > 1){
+        stop("adt_marker_select should be a single marker name")
+    }
+    
     ## set parameters
     bwFac = 1.2
     border = 0.01
@@ -361,7 +368,7 @@ get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marke
     ## initiate landmark to record peak mode location
     landmark = matrix(NA, ncol = peak_num, nrow = length(sample_name_list))
     landmarkRegion = list()
-    for (i in 1:peak_num) {
+    for (i in seq_len(peak_num)) {
         landmarkRegion[[i]] = matrix(NA, ncol = 2, nrow = length(sample_name_list))
         rownames(landmarkRegion[[i]]) = sample_name_list
     }
