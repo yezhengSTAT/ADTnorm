@@ -49,6 +49,10 @@ plot_adt_density_with_peak_valley = function(cell_x_adt, cell_x_feature, adt_mar
     if(is.null(adt_marker_select)){
         adt_marker_select = colnames(cell_x_adt)
     }
+    
+    # If there is no batch, add a dummy variable
+    if (! "batch" %in% colnames(cell_x_feature)){ cell_x_feature$batch <- 1 }
+    
     tmpProfile = cell_x_adt %>% data.frame %>%
         dplyr::select(all_of(adt_marker_select)) %>%
         data.frame() %>%

@@ -84,11 +84,21 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         stop("Please specify the peak type to be either 'mode' or 'midpoint'.")
     }
     
+    ## Remove ADT with zero counts
+    col_sums <- colSums(cell_x_adt)
+    if (any(col_sums == 0)){
+        message("Markers with zero counts will be ignored")
+        cell_x_adt = cell_x_adt[, col_sums > 0, drop = FALSE] 
+    }
     if(exclude_zeroes){
         na_mask = is.na(cell_x_adt)
         # Set all cell_x_adt to NA to avoid transformation during arcsin (if used)
         cell_x_adt[cell_x_adt==0] <- NA
+
     }
+
+
+    
     
     ## preprocess the input data
     if(input_raw_counts){
