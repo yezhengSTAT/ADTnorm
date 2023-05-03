@@ -61,7 +61,7 @@ peak_alignment = function(cell_x_adt, cell_x_feature = NULL, landmark_matrix = N
   fdobj = fda::Data2fd(arg_vals, density_y, wbasis)
 
   if (ncol(landmark_matrix) == 1) { ## only one peak no valley: offset
-    offsets = landmark_matrix - stats::median(landmark_matrix)
+    offsets = landmark_matrix - stats::median(landmark_matrix, na.rm = TRUE)
     names(offsets) = samples
     funs = funsBack = vector("list", nrow(landmark_matrix))
     names(funs) = samples

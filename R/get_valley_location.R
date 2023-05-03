@@ -66,7 +66,7 @@ get_valley_location = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_mar
 
             density_res = stats::density(
                 cell_x_adt[which(cell_x_feature$sample == sample_name), adt_marker_select],
-                adjust = adjust
+                adjust = adjust, na.rm = TRUE
             )
             x = density_res$x
             y = density_res$y
@@ -130,7 +130,7 @@ get_valley_location = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_mar
 
                     }else{
                         ## check if no valley is detected due to shoulder peak
-                        if(length(y_valley[x_valley >  real_peak[1]]) == 0 || (y_valley[x_valley >  real_peak[1] + 0.1][1] < 0.05)){
+                        if(length(y_valley[x_valley > real_peak[1]]) == 0 || (y_valley[x_valley >  real_peak[1] + 0.1][1] < 0.05)){
                             ## if one peak consider the shoulder point
                             shoulder_cand_index = which(diff(y)/diff(x) > shoulder_valley_slope)
                             first_peak_index = (which(x > max(x_peak[1], real_peak[1])) %>% min) + 50
@@ -143,8 +143,8 @@ get_valley_location = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_mar
                     }
                 } else { ## one peak is positive peak
                     real_valley = x[which((y < max(y) / min_fc) | (y < lower_peak_thres))[which((y < max(y) / min_fc) | (y < lower_peak_thres))< min(which(y == max(y)), which(x < real_peak[1]) %>% max())] %>% max()]
-                    peak_landmark_list[sample_name, ] = asinh(0/5 + 1)
-                    peak_landmark_list[sample_name, ncol(peak_landmark_list)] = real_peak[1]
+                    # peak_landmark_list[sample_name, ] = asinh(0/5 + 1)
+                    # peak_landmark_list[sample_name, ncol(peak_landmark_list)] = real_peak[1]
                     real_valley = min(real_valley, asinh(0/5 + 1))
                 }
             } else { ## no peak
