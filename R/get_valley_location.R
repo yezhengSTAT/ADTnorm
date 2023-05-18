@@ -13,13 +13,14 @@
 #' @param shoulder_valley_slope The slope on the ADT marker density distribution to call shoulder valley.
 #' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples are large.
 #' @param lower_peak_thres The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid suspecious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.
+#' @param arcsine_transform_flag The flag indicating if input is raw count and arcsine transformation is implemented.
 #' @examples
 #' \dontrun{
 #' get_valley_location(cell_x_adt, cell_x_feature, peak_mode_res)
 #' }
 #' @export
 #' @importFrom magrittr %$%
-get_valley_location = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marker_select = NULL, peak_mode_res = NULL, shoulder_valley = TRUE, positive_peak = NULL, multi_sample_per_batch = FALSE, adjust = 1.5, min_fc = 20, shoulder_valley_slope = -1, lower_peak_thres = 0.01, neg_candidate_thres = asinh(10/5 + 1)) {
+get_valley_location = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marker_select = NULL, peak_mode_res = NULL, shoulder_valley = TRUE, positive_peak = NULL, multi_sample_per_batch = FALSE, adjust = 1.5, min_fc = 20, shoulder_valley_slope = -1, lower_peak_thres = 0.01, neg_candidate_thres = asinh(10/5 + 1), arcsine_transform_flag = TRUE) {
 
     peak_landmark_list = peak_mode_res
 
@@ -52,7 +53,11 @@ get_valley_location = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_mar
         cell_ind = cell_ind_tmp[cell_notNA]
         if(length(cell_ind) > 0){
             peak_landmark = peak_landmark_list[sample_name, ]
-            zero_prop = sum(cell_x_adt[cell_ind, adt_marker_select] < 2) / length(cell_x_adt[cell_ind, adt_marker_select])
+            if(arcsine_transform_flag){
+                zero_prop = sum(cell_x_adt[cell_ind, adt_marker_select] < 2) / length(cell_x_adt[cell_ind, adt_marker_select])
+            }else{
+                zero_prop = sum(cell_x_adt[cell_ind, adt_marker_select] < neg_candidate_thres) / length(cell_x_adt[cell_ind, adt_marker_select])
+            }
 
             ## check if user define single peak to be positive peak
             pos_marker_index = which(paste0("tmpName", positive_peak$ADT_index) == adt_marker_select)
@@ -130,12 +135,18 @@ get_valley_location = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_mar
 
                     }else{
                         ## check if no valley is detected due to shoulder peak
-                        if(length(y_valley[x_valley > real_peak[1]]) == 0 || (y_valley[x_valley >  real_peak[1] + 0.1][1] < 0.05)){
-                            ## if one peak consider the shoulder point
+                        # if(length(y_valley[x_valley > real_peak[1]]) == 0 || (y_valley[x_valley >  real_peak[1] + 0.1][1] < 0.05)){
+                        #     ## if one peak consider the shoulder point
+                        #     shoulder_cand_index = which(diff(y)/diff(x) > shoulder_valley_slope)
+                        #     first_peak_index = (which(x > max(x_peak[1], real_peak[1])) %>% min) + 50
+                        #     x_shoulder = x[shoulder_cand_index[shoulder_cand_index > first_peak_index][1]]
+                        #     real_valley = min(x_shoulder, real_valley, na.rm = T)
+                        # }
+                        if (length(y_valley[!is.na(x_valley) & x_valley > real_peak[1]]) == 0 || (y_valley[!is.na(x_valley) & x_valley > real_peak[1] + 0.1][1] < 0.05)) {
                             shoulder_cand_index = which(diff(y)/diff(x) > shoulder_valley_slope)
                             first_peak_index = (which(x > max(x_peak[1], real_peak[1])) %>% min) + 50
                             x_shoulder = x[shoulder_cand_index[shoulder_cand_index > first_peak_index][1]]
-                            real_valley = min(x_shoulder, real_valley, na.rm = T)
+                            real_valley = min(x_shoulder, real_valley, na.rm = TRUE)
                         }
                     }
                     if (zero_prop > 0.8) {
@@ -145,7 +156,7 @@ get_valley_location = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_mar
                     real_valley = x[which((y < max(y) / min_fc) | (y < lower_peak_thres))[which((y < max(y) / min_fc) | (y < lower_peak_thres))< min(which(y == max(y)), which(x < real_peak[1]) %>% max())] %>% max()]
                     # peak_landmark_list[sample_name, ] = asinh(0/5 + 1)
                     # peak_landmark_list[sample_name, ncol(peak_landmark_list)] = real_peak[1]
-                    real_valley = min(real_valley, asinh(0/5 + 1))
+                    # real_valley = min(real_valley, min(cell_x_adt[cell_ind, adt_marker_select])) #min(real_valley, asinh(0/5 + 1))
                 }
             } else { ## no peak
                 real_valley = NA

@@ -52,7 +52,7 @@ plot_adt_density_with_peak_valley_each = function(adt_count, cell_x_feature, pea
         mutate(
             sample = rep(cell_x_feature$sample, 1),
             batch = rep(cell_x_feature$batch, 1)
-        )
+        ) #%>% dplyr::filter(!is.na(counts))
 
     peak_location = list()
     valley_location = list()

@@ -11,6 +11,7 @@
 #' @param positive_peak A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to positive peaks of other samples.
 #' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples are large.
 #' @param lower_peak_thres The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid suspecious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.
+#' @param arcsine_transform_flag The flag indicating if input is raw count and arcsine transformation is implemented.
 #' @export
 #' @examples
 #' \dontrun{
@@ -23,7 +24,7 @@
 #' }
 # require(flowStats)
 # require(dplyr)
-get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marker_select = NULL, adt_marker_index = NULL, bwFac_smallest = 1.1, bimodal_marker_index = NULL, trimodal_marker_index = NULL, positive_peak = NULL, neg_candidate_thres = asinh(10/5 + 1), lower_peak_thres = 0.001) {
+get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marker_select = NULL, adt_marker_index = NULL, bwFac_smallest = 1.1, bimodal_marker_index = NULL, trimodal_marker_index = NULL, positive_peak = NULL, neg_candidate_thres = asinh(10/5 + 1), lower_peak_thres = 0.001, arcsine_transform_flag = TRUE) {
 
     if (length(adt_marker_select) > 1){
         stop("adt_marker_select should be a single marker name")
@@ -67,7 +68,12 @@ get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marke
                     print(paste0("Warning: ", sample_name, " only has a single unique value!"))
             } else {
                 ## get the proportion of cells near zero to diagnoise the negative peak enrichment
-                zero_prop = sum(cell_x_adt[cell_ind, adt_marker_select] < 2) / length(cell_x_adt[cell_ind, adt_marker_select])
+                if(arcsine_transform_flag){
+                    zero_prop = sum(cell_x_adt[cell_ind, adt_marker_select] < 2) / length(cell_x_adt[cell_ind, adt_marker_select])
+                }else{
+                    zero_prop = sum(cell_x_adt[cell_ind, adt_marker_select] < neg_candidate_thres) / length(cell_x_adt[cell_ind, adt_marker_select])
+                }
+                
                 # zero_prop_list[[sample_name]] = zero_prop ## zero proportion
                 adt_expression = cell_x_adt[cell_ind, adt_marker_select] ## adt value for this marker and this sample
 
@@ -331,10 +337,17 @@ get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marke
 
                 ## remove small negative peak around 0
                 if (length(res) > 1 && zero_prop < 0.3 && (sum(res < neg_candidate_thres) < length(res))) {
-                    if (peak_info$peaks[1, "x"] < 0.9 && peak_info$peaks[1, "y"] < 1 && peak_info$peaks[2, "x"] > 2 && peak_info$peaks[2, "y"] / peak_info$peaks[1, "y"] > 5) {
-                        res = res[-1]
-                        res_region = res_region[-1, ]
+                    check_index = which(res < neg_candidate_thres)
+                    for(check_item in check_index){
+                        if(peak_info$peaks[check_item, "y"] < 1 && peak_info$peak[max(check_index)+1, "y"]/peak_info$peak[check_item, "y"] > 5){
+                            res = res[-1]
+                            res_region = res_region[-1, ]
+                        }
                     }
+                    # if (peak_info$peaks[1, "x"] < 0.9 && peak_info$peaks[1, "y"] < 1 && peak_info$peaks[2, "x"] > 2 && peak_info$peaks[2, "y"] / peak_info$peaks[1, "y"] > 5) {
+                    #     res = res[-1]
+                    #     res_region = res_region[-1, ]
+                    # }
                 }
 
                 ## all the peaks around 2 and zero proportion very large. Highly likely to have only one peak.

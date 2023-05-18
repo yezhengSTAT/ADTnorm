@@ -16,7 +16,7 @@
 #' @param quantile_clip Implement an upper quantile clipping to avoid warping function errors caused by outlier measurement of extremely high expression. Provide the quantile threshold to remove outlier points above such qunatile. Default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.
 #' @param peak_type The type of peak to be detected. Select from "midpoint" for setting the peak landmark to the midpoint of the peak region being detected or "mode" for setting the peak landmark to the mode location of the peak. "midpoint" can be generally more robust across samples and less impacted by the bandwidth. "mode" can be more accurate in determining the peak location if the bandwidth is generally ideal for the target marker.
 #' @param multi_sample_per_batch Set it to TRUE to discard the positive peak that only appear in one sample per batch (sample number is >=3 per batch).
-#' @param shoulder_valley Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population.
+#' @param shoulder_valley Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population. Default is TRUE.
 #' @param shoulder_valley_slope The slope on the ADT marker density distribution to call shoulder valley.
 #' @param valley_density_adjust Parameter for `density` function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default’ bandwidth.
 #' @param landmark_align_type Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes.
@@ -43,7 +43,7 @@
 #' }
 #' @export
 #' @import dplyr ggplot2
-ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL, study_name = "ADTnorm", marker_to_process = NULL, exclude_zeroes = FALSE, bimodal_marker = NULL, trimodal_marker = NULL, positive_peak = NULL, bw_smallest_bi = 1.1, bw_smallest_tri = 0.8, bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8), quantile_clip = 1, peak_type = "midpoint", multi_sample_per_batch = FALSE, shoulder_valley = TRUE, shoulder_valley_slope = -0.5, valley_density_adjust = 3, landmark_align_type = "negPeak_valley_posPeak", midpoint_type = "valley", neg_candidate_thres = asinh(8/5 + 1), lower_peak_thres = 0.001, brewer_palettes = "Set1", save_intermediate_rds = FALSE, save_intermediate_fig = TRUE, detect_outlier_valley = FALSE, target_landmark_location = NULL, clean_adt_name = FALSE, customized_landmark = FALSE, verbose = FALSE){
+ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL, study_name = "ADTnorm", marker_to_process = NULL, exclude_zeroes = FALSE, bimodal_marker = NULL, trimodal_marker = NULL, positive_peak = NULL, bw_smallest_bi = 1.1, bw_smallest_tri = 0.8, bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8), quantile_clip = 1, peak_type = "midpoint", multi_sample_per_batch = FALSE, shoulder_valley = TRUE, shoulder_valley_slope = -0.5, valley_density_adjust = 3, landmark_align_type = "negPeak_valley_posPeak", midpoint_type = "valley", neg_candidate_thres = NULL, lower_peak_thres = 0.001, brewer_palettes = "Set1", save_intermediate_rds = FALSE, save_intermediate_fig = TRUE, detect_outlier_valley = FALSE, target_landmark_location = NULL, clean_adt_name = FALSE, customized_landmark = FALSE, verbose = FALSE){
     
     ## =========================
     ## INPUT PARAMETER CHECKING
@@ -55,14 +55,23 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         as_int = as.matrix(cell_x_adt)
         mode(as_int) = "integer"
         if(any(as_int[!is.na(as_int)] != matrix[!is.na(matrix)])){ ## if any input count is not integer
-            print("Note: Input ADT count matrix values are not all integer hence not considered as raw count data. ADTnorm will assume transformation or scaling has been done and will skip the arcsine transformation......")
+            print("Note: Input ADT count matrix values are not all integer hence the input is NOT considered as raw count data. ADTnorm will assume transformation or scaling has been done and will skip the arcsine transformation......")
             arcsine_transform_flag = FALSE
+            if(is.null(neg_candidate_thres)){
+                print("neg_candidate_thres is not set hence the suspecious negative peak candidate filtering function will be diabled. Come back to set it if several negative peaks are mistakenly detected due to the discrete values around 0.")
+                neg_candidate_thres = min(matrix) ## disable the negative peak candidates filtering
+            }
+           
 
         }else{ ## all input counts are integer, check if counts are nonnegative
             if(any(matrix[!is.na(matrix)] < 0)){
                 stop("ADTnorm detects integer input ADT count matrix and hence assume input is raw count. Please check why there is non-negative value in the raw count matrix.")
             }
             arcsine_transform_flag = TRUE
+
+            if(is.null(neg_candidate_thres)){
+                neg_candidate_thres = asinh(8/5 + 1) ## give the default value for neg_candidate_thres for raw count input
+            }
             
         }
     }
@@ -202,24 +211,14 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
             print(paste0("Normalizing marker: ", adt_marker_select_name))
         }
 
-        # if(exclude_zeroes){ ## ==** need to check if we can do all the downstream normalizaiton with NA value without subsetting the matrices.
-        #     exclude_zeroes_mask <- !(is.na(cell_x_adt[adt_marker_select]))
-        #     cell_x_adt_total <- cell_x_adt
-        #     cell_x_adt <- subset(cell_x_adt,exclude_zeroes_mask)
-        #     cell_x_adt_norm_total <- cell_x_adt_norm
-        #     cell_x_adt_norm <- subset(cell_x_adt_norm,exclude_zeroes_mask)
-        #     cell_x_feature_total <- cell_x_feature
-        #     cell_x_feature <- subset(cell_x_feature,exclude_zeroes_mask)
-        #     if(verbose){
-        #         print("Zeroes are excluded......")
-        #     }
-        # }
-        if(quantile_clip < 1){ ## ==** need to check if quantile clipping is still necessary if warp function is fixed.
+
+        if(quantile_clip < 1){ 
+            quant = quantile(cell_x_adt[[adt_marker_select]], quantile_clip, na.rm = TRUE)
             if(verbose){
-                print("Performing quantile clip......")
+                print(paste0("Performing quantile clip to remove outliers beyond the claimed quantile ", quantile_clip, ":", quant, "......"))
             }
-            quant = quantile(cell_x_adt[[adt_marker_select]], quantile_clip)
-            cell_x_adt[cell_x_adt[adt_marker_select] > quant, adt_marker_select] <- quant
+            
+            cell_x_adt[[adt_marker_select]][which(cell_x_adt[[adt_marker_select]] > quant)] <- NA
         }
         
         ## smallest bw for density curve
@@ -237,13 +236,13 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
 
         ## get the peak mode location    
         if(peak_type == "mode"){
-            peak_mode_res = get_peak_mode(cell_x_adt, cell_x_feature, adt_marker_select, adt_marker_index, bwFac_smallest, bimodal_marker_index, trimodal_marker_index, positive_peak, neg_candidate_thres = neg_candidate_thres, lower_peak_thres = lower_peak_thres)
+            peak_mode_res = get_peak_mode(cell_x_adt, cell_x_feature, adt_marker_select, adt_marker_index, bwFac_smallest, bimodal_marker_index, trimodal_marker_index, positive_peak, neg_candidate_thres = neg_candidate_thres, lower_peak_thres = lower_peak_thres, arcsine_transform_flag = arcsine_transform_flag)
         } else if(peak_type == "midpoint"){
-            peak_mode_res = get_peak_midpoint(cell_x_adt, cell_x_feature, adt_marker_select, adt_marker_index, bwFac_smallest, bimodal_marker_index, trimodal_marker_index, positive_peak, neg_candidate_thres = neg_candidate_thres, lower_peak_thres = lower_peak_thres)
+            peak_mode_res = get_peak_midpoint(cell_x_adt, cell_x_feature, adt_marker_select, adt_marker_index, bwFac_smallest, bimodal_marker_index, trimodal_marker_index, positive_peak, neg_candidate_thres = neg_candidate_thres, lower_peak_thres = lower_peak_thres, arcsine_transform_flag = arcsine_transform_flag)
         }
 
         ## get the valley location
-        peak_valley_list = get_valley_location(cell_x_adt, cell_x_feature, adt_marker_select, peak_mode_res, shoulder_valley, positive_peak, multi_sample_per_batch, adjust = valley_density_adjust, min_fc = 20, shoulder_valley_slope = shoulder_valley_slope, neg_candidate_thres = neg_candidate_thres)
+        peak_valley_list = get_valley_location(cell_x_adt, cell_x_feature, adt_marker_select, peak_mode_res, shoulder_valley, positive_peak, multi_sample_per_batch, adjust = valley_density_adjust, min_fc = 20, shoulder_valley_slope = shoulder_valley_slope, neg_candidate_thres = neg_candidate_thres, arcsine_transform_flag = arcsine_transform_flag)
         
         valley_location_res = peak_valley_list$valley_location_list
         peak_mode_res = peak_valley_list$peak_landmark_list
@@ -251,8 +250,6 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         if(detect_outlier_valley){ ## detect if valley is outlier and impute by neighbor samples if found
             valley_location_res = detect_impute_outlier_valley(valley_location_res, adt_marker_select, cell_x_adt, cell_x_feature, scale = 3, method = "MAD", nearest_neighbor_n = 3, nearest_neighbor_threshold = 0.75)
         }
-        
-
         ## Manual overwrite the peak location - peak and valley 
         if(customized_landmark){
             cell_x_adt_sample = data.frame(adt = cell_x_adt[, adt_marker_select], sample = cell_x_feature[, "sample"], batch = cell_x_feature[, "batch"])
@@ -265,37 +262,21 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
             colnames(landmark_pos)[seq(1, num_landmark, 2)] = paste0("peak", 1:ncol(peak_mode_res))
             colnames(landmark_pos)[seq(2, num_landmark, 2)] = paste0("valley", 1:ncol(valley_location_res))
 
-            landmark_pos_customized = get_customize_landmark(cell_x_adt_sample, landmark_pos, bw = 0.1)
+            landmark_pos_customized = get_customize_landmark(cell_x_adt_sample, landmark_pos, bw = 0.2, adt_marker_select_name = adt_marker_select_name)
             peak_mode_res = landmark_pos_customized[, seq(1, num_landmark, 2), drop = FALSE]
             valley_location_res = landmark_pos_customized[, seq(2, num_landmark, 2), drop = FALSE]
 
-            
+            peak_mode_res_na <- apply(peak_mode_res, 2, function(x) all(is.na(x)))
+            if(any(peak_mode_res_na)){
+                peak_mode_res_filter <- peak_mode_res[, -which(peak_mode_res_na), drop = FALSE]
+                peak_mode_res <- peak_mode_res_filter
+            }
+            if(verbose){
+                print("Customized landmark positions:")
+                print(landmark_pos_customized)
+            }
+        }   
 
-        }
-
-
-        # if(adt_marker_select_name %in% names(manual_peak_overrides)){
-        #     peak_overrides <- manual_peak_overrides[[adt_marker_select_name]]
-        #     peak_mode_res
-        #     for(sample in rownames(peak_mode_res)){
-        #         if(sample %in% names(peak_overrides)){
-        #             len_needed = length(peak_mode_res[sample,])
-        #             len_provided = length(peak_overrides[[sample]])
-        #             overrides <- peak_overrides[[sample]][0:len_needed]
-        #             ddata <- cell_x_adt[(cell_x_feature$sample == sample),c(adt_marker_select)] 
-        #             if ((max(overrides,na.rm = TRUE)>max(ddata,na.rm = TRUE)) | (min(overrides,na.rm = TRUE) < min(ddata,na.rm = TRUE)) | (is.unsorted(overrides,na.rm=TRUE,TRUE))){
-        #                 stop(paste0("Peak overrides must be within the bounds of the data (",min(ddata,na.rm = TRUE),', ',max(ddata,na.rm = TRUE),") and must be strictly increasing.",
-        #                             "\n You submitted: ",list(overrides)," for marker: ", adt_marker_select_name))
-        #             }
-        #             peak_mode_res[sample,] <- overrides
-        #         }
-        #     }
-            
-        # }
-        # if(verbose){
-        #     print(peak_mode_res)
-        # }
-        
         
         ## density plot for peak and valley location checking
         if(arcsine_transform_flag){
@@ -390,22 +371,11 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
             print(density_norm_plot)
             grDevices::dev.off()
         }
-        # if(exclude_zeroes){ # Insert zeroes back into their proper places
-        #     cell_x_adt_total[exclude_zeroes_mask,] <- cell_x_adt
-        #     cell_x_adt_norm_total[exclude_zeroes_mask,] <- cell_x_adt_norm
-        #     cell_x_adt <- cell_x_adt_total
-        #     cell_x_adt_norm <- cell_x_adt_norm_total
-        #     cell_x_feature <- cell_x_feature_total
-        # }
+
     }
-    
-    # if(exclude_zeroes){
-    #     # Set all cell_x_adt NAs back to 0
-    #     cell_x_adt_norm[is.na(cell_x_adt_norm)] <- 0
-    #     cell_x_adt_norm[na_mask] <- NA
-    # }
     colnames(cell_x_adt_norm) = all_marker_name[adt_marker_index_list]
     return(cell_x_adt_norm)
+  
     
 }
 
