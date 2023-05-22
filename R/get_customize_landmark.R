@@ -4,7 +4,10 @@
 #' @param cell_x_adt_sample Matrix of adt counts of seleted marker, with columns of sample and batch information for each row of cells.
 #' @param landmark_pos Matrix of landmark location including peaks and valleys.
 #' @param bw Bandwidth for the density plot.
+#' @param adt_marker_select_name The adt marker needed to be manually processed to set the landmarks.
+#' @param brewer_palettes Set the color scheme of color brewer. Default is "Set1".
 #' @export
+#' @import shiny ggplot2 ggridges DT
 #' @examples
 #' \dontrun{
 #' get_peak_mode(
@@ -18,7 +21,6 @@
 # require(ggridges)
 # require(shiny)
 # require(DT)
-
 
 flat_table <- function(tab) {
   tmp <- lapply(1:nrow(tab), function(i) {

@@ -6,7 +6,7 @@
 #' @param cell_x_adt Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.
 #' @param cell_x_feature Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch related information.
 #' @param scale Scale level to defining outlier. Larger scale value corresponds to more severe ourliers.
-#' @param method Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range).
+#' @param method Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Default is MAD.
 #' @param nearest_neighbor_n Number of top nearest neighbor samples to detect.
 #' @param nearest_neighbor_threshold Threshold to call neighbor samples.
 #' @examples
@@ -17,6 +17,10 @@
 # require(dplyr)
 #' @export
 detect_impute_outlier_valley <- function(valley_location_res, adt_marker_select, cell_x_adt, cell_x_feature, scale = 3, method = "MAD", nearest_neighbor_n = 3, nearest_neighbor_threshold = 0.75){
+
+    if(!(method %in% c("MAD", "IQR"))){
+        stop("Please choose the outlier valley detection method to be 'MAD' or 'IQR'.")
+    }
     ## get batch information
     valley_df <- valley_location_res %>% data.frame %>% mutate(sample = rownames(valley_location_res))
     valley_df <- left_join(valley_df, cell_x_feature %>% select(sample, batch) %>% unique, by = "sample")

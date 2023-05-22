@@ -16,7 +16,8 @@ get_valley_location(
   min_fc = 20,
   shoulder_valley_slope = -1,
   lower_peak_thres = 0.01,
-  neg_candidate_thres = asinh(10/5 + 1)
+  neg_candidate_thres = asinh(10/5 + 1),
+  arcsine_transform_flag = TRUE
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ get_valley_location(
 \item{lower_peak_thres}{The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid suspecious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.}
 
 \item{neg_candidate_thres}{The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95\% quantile of IgG samples are large.}
+
+\item{arcsine_transform_flag}{The flag indicating if input is raw count and arcsine transformation is implemented.}
 }
 \description{
 This function detect the valley locations either between every two peak landmarks or cut at the right heavy tails. If specified positive uni-peak, the valley location will be set at the left side of the uni-peak.

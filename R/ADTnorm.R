@@ -17,20 +17,20 @@
 #' @param peak_type The type of peak to be detected. Select from "midpoint" for setting the peak landmark to the midpoint of the peak region being detected or "mode" for setting the peak landmark to the mode location of the peak. "midpoint" can be generally more robust across samples and less impacted by the bandwidth. "mode" can be more accurate in determining the peak location if the bandwidth is generally ideal for the target marker.
 #' @param multi_sample_per_batch Set it to TRUE to discard the positive peak that only appear in one sample per batch (sample number is >=3 per batch).
 #' @param shoulder_valley Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population. Default is TRUE.
-#' @param shoulder_valley_slope The slope on the ADT marker density distribution to call shoulder valley.
-#' @param valley_density_adjust Parameter for `density` function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default’ bandwidth.
-#' @param landmark_align_type Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes.
-#' @param midpoint_type Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley").
-#' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large.
-#' @param lower_peak_thres The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.
-#' @param brewer_palettes Set the color scheme of color brewer.
-#' @param save_intermediate_rds Save the rds file for the intermediate objects.
-#' @param save_intermediate_fig Save the density plot figure for checking the peak and valley location detection.
-#' @param detect_outlier_valley Detect outlier valley and impute by the neighbor samples.
+#' @param shoulder_valley_slope The slope on the ADT marker density distribution to call shoulder valley. Default is -0.5
+#' @param valley_density_adjust Parameter for `density` function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default’ bandwidth. Default is 3.
+#' @param landmark_align_type Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes. Default is "negPeak_valley_posPeak".
+#' @param midpoint_type Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley"). Default is valley.
+#' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large. Default is asinh(8/5+1) for raw count input. This filtering will be disabled if input is not raw count data. 
+#' @param lower_peak_thres The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19. Default is 0.001.
+#' @param brewer_palettes Set the color scheme of color brewer. Default is "Set1".
+#' @param save_intermediate_rds Save the rds file for the intermediate objects. Default is FALSE
+#' @param save_intermediate_fig Save the density plot figure for checking the peak and valley location detection. Default is TRUE.
+#' @param detect_outlier_valley Detect outlier valley and impute by the neighbor samples. Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Recommend trying "MAD" first if needed. Default is FALSE.
 #' @param target_landmark_location Align the landmarks to a fixed location or, by default, align to the mean across samples for each landmark. The default value is NULL. Setting it to "fixed" will align the negative peak to 1 and the right-most positive peak to 5. Users can also assign a two-element vector indicating the location of the negative and most positive peaks to be aligned.
-#' @param clean_adt_name Clean the ADT marker name
+#' @param clean_adt_name Clean the ADT marker name. Default is FALSE.
 #' @param customized_landmark By setting it to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameters tuning attempt. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to marker_to_process as the interactive function will pop out for every marker being processed. Default is FALSE.
-#' @param verbose Set the verbosity of the function.
+#' @param verbose Set the verbosity of the function. Default is FALSE.
 #' @examples
 #' \dontrun{
 #' ADTnorm(
@@ -42,7 +42,7 @@
 #'  )
 #' }
 #' @export
-#' @import dplyr ggplot2
+#' @import dplyr ggplot2 shiny
 ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL, study_name = "ADTnorm", marker_to_process = NULL, exclude_zeroes = FALSE, bimodal_marker = NULL, trimodal_marker = NULL, positive_peak = NULL, bw_smallest_bi = 1.1, bw_smallest_tri = 0.8, bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8), quantile_clip = 1, peak_type = "midpoint", multi_sample_per_batch = FALSE, shoulder_valley = TRUE, shoulder_valley_slope = -0.5, valley_density_adjust = 3, landmark_align_type = "negPeak_valley_posPeak", midpoint_type = "valley", neg_candidate_thres = NULL, lower_peak_thres = 0.001, brewer_palettes = "Set1", save_intermediate_rds = FALSE, save_intermediate_fig = TRUE, detect_outlier_valley = FALSE, target_landmark_location = NULL, clean_adt_name = FALSE, customized_landmark = FALSE, verbose = FALSE){
     
     ## =========================
@@ -247,8 +247,8 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         valley_location_res = peak_valley_list$valley_location_list
         peak_mode_res = peak_valley_list$peak_landmark_list
         
-        if(detect_outlier_valley){ ## detect if valley is outlier and impute by neighbor samples if found
-            valley_location_res = detect_impute_outlier_valley(valley_location_res, adt_marker_select, cell_x_adt, cell_x_feature, scale = 3, method = "MAD", nearest_neighbor_n = 3, nearest_neighbor_threshold = 0.75)
+        if(detect_outlier_valley != FALSE){ ## detect if valley is outlier and impute by neighbor samples if found
+            valley_location_res = detect_impute_outlier_valley(valley_location_res, adt_marker_select, cell_x_adt, cell_x_feature, scale = 3, method = detect_outlier_valley, nearest_neighbor_n = 3, nearest_neighbor_threshold = 0.75)
         }
         ## Manual overwrite the peak location - peak and valley 
         if(customized_landmark){

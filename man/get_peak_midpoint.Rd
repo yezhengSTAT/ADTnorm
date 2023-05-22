@@ -15,9 +15,7 @@ get_peak_midpoint(
   positive_peak = NULL,
   neg_candidate_thres = asinh(10/5 + 1),
   lower_peak_thres = 0.001,
-  cd3_index = NULL,
-  cd4_index = NULL,
-  cd8_index = NULL
+  arcsine_transform_flag = TRUE
 )
 }
 \arguments{
@@ -41,11 +39,7 @@ get_peak_midpoint(
 
 \item{lower_peak_thres}{The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid suspecious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.}
 
-\item{cd3_index}{Index for CD3 marker. If the ADT marker is named "CD3", the program can detect the index automatically. If users named CD3 in a unique way, please provide the index for CD3 markers in the colname of cell_x_adt.}
-
-\item{cd4_index}{Index for CD4 marker. If the ADT marker is named "CD4", the program can detect the index automatically. If users named CD4 in a unique way, please provide the index for CD4 markers in the colname of cell_x_adt.}
-
-\item{cd8_index}{Index for CD8 marker. If the ADT marker is named "CD8", the program can detect the index automatically. If users named CD8 in a unique way, please provide the index for CD8 markers in the colname of cell_x_adt.}
+\item{arcsine_transform_flag}{The flag indicating if input is raw count and arcsine transformation is implemented.}
 }
 \description{
 This function detect the peak landmark locations for each sample per ADT markers based on the midpoint of the peak region. Using the peak midpoint instead of the peak mode can be more stable across samples and less affected by the bandwidth.

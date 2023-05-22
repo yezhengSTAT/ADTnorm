@@ -173,13 +173,6 @@ Additionally, in the `save_outpath` specified by the users, there will be two su
 
 ADTnorm provides a quick and naive ADT marker cleaning and unify function, ```clean_adt_name```, which will be able to remove unwanted suffixes such as "_TotalSeqB", "_PROT" or prefix such as "ADT_". Or, if there is no "CD8" marker detected, look for "CD8A" or "CD8a" to work as "CD8".  Users need to clean and unify the ADT marker names first before running ADTnorm (for example, "PDL1" may also be named as "CD274". Choose one and use it consistently) and please do not rely too much on this function to clean ADT marker names across study. Users may also refer to [AbNames](https://github.com/HelenLindsay/AbNames) package to match antibody names to gene or protein identifiers, and to help standardise names across data sets.
 
-For some cases, where CD3, CD4, and CD8 are named using other words, users can specify the column index in ```cell_x_adt``` so that ADTnorm can still recognize those three markers and customize parameters for identifying the peaks and valleys.
-
-```cd3_index```: Index for CD3 marker. If the ADT marker is named "CD3", the program can detect the index automatically. If users named CD3 in a unique way, please provide the index for CD3 markers in the colname of cell_x_adt.
-
-```cd4_index```: Index for CD4 marker. If the ADT marker is named "CD4", the program can detect the index automatically. If users named CD4 in a unique way, please provide the index for CD4 markers in the colname of cell_x_adt.
-
-```cd8_index```: Index for CD8 marker. If the ADT marker is named "CD8", the program can detect the index automatically. If users named CD8 in a unique way, please provide the index for CD8 markers in the colname of cell_x_adt.
 
 ## 2. Align the negative peak and the right-most positive peak to fixed location
 
@@ -279,10 +272,22 @@ Due to technical variations, the positive population of cells may not have a ver
 
 ## 10. General threshold to determine negative population
 
-```neg_candidate_thres```: The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large.
+```neg_candidate_thres```: The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large. Default is asinh(8/5+1) for raw count input. This filtering function will be disabled if input is not raw count data and rely on user to decide whether to give a negative peak upper bound to avoid too many suspecious positive peaks that are closer to low ADT count.
 
-<!-- ## 11. Detect outlier valley and impute by the neighbor samples
+## 11. Detect outlier valley and impute by the neighbor samples
 
-```detect_outlier_valley```: Detect outlier valley and impute by the neighbor samples.
+```detect_outlier_valley```: Detect outlier valley and impute by the neighbor samples. Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Recommend trying "MAD" first if needed.
 
-## 12. Zero ADT count exclusion and logCPM transformation -->
+## 12. Zero ADT count exclusion and other scaling or transformation as input
+
+```exclude_zeroes```: Indicator to consider zeros as NA, i.e., missing values. Recommend TRUE if zeroes in the data represent dropout, likely for large ADT panels, big datasets, or undersequenced data. Additionally, if one marker (possibly IgG) only has zero value, this marker will be exluded from the downstream processing.
+
+```cell_x_adt```: Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format. By default, ADTnorm expects raw counts to be provided and arcsin transformation to be performed by ADTnorm internally. If ADTnorm detects that the input count matrix is non-integer, it will skipped the arcsine transformation. Also, please note that user need to tune the parameters, such as ```neg_candidate_thres```, ```bw_smallest_*```, ```quantile_clip```, and etc., to fit their input transformation.
+
+## 13. Ignore the cells with the extremely large ADT count
+
+```quantile_clip```: Implement an upper quantile clipping to avoid warping function errors caused by outlier measurement of extremely high expression. Provide the quantile threshold to remove outlier points above such qunatile. Default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.
+
+## 14. Manual tuning of peaks and valleys location
+
+```customized_landmark```: By setting it to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameters tuning attempt. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to marker_to_process as the interactive function will pop out for every marker being processed. 

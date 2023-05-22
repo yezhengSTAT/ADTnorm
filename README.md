@@ -110,8 +110,8 @@ run_name <- "ADTnorm_demoRun"
 data(cell_x_adt)
 data(cell_x_feature) 
 
-cell_x_feature$sample = factor(cell_x_feature$study_name)
-cell_x_feature$batch = factor(cell_x_feature$study_name)
+cell_x_feature$sample = factor(cell_x_feature$study_name) ## consider each study as one sample
+cell_x_feature$batch = factor(cell_x_feature$study_name) ## consider each study as a batch
 
 cell_x_adt_norm <- ADTnorm(
   cell_x_adt = cell_x_adt, 
@@ -133,7 +133,7 @@ run_name <- "ADTnorm_demoRun"
 data(cell_x_adt)
 data(cell_x_feature) 
 
-cell_x_feature$batch = factor(cell_x_feature$study_name)
+cell_x_feature$batch = factor(cell_x_feature$study_name) ## consider each study as a batch
 
 cell_x_adt_norm <- ADTnorm(
   cell_x_adt = cell_x_adt, 
@@ -197,6 +197,7 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 #### ADTnorm Counts
 
 <img src="./man/figures/PublicData_samplelevel_adtnorm.png" alt="Normalization" width="1000px">
+
 
 
 ## Contact for questions, discussions or potential collaborations

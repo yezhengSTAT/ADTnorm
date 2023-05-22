@@ -26,7 +26,7 @@ detect_impute_outlier_valley(
 
 \item{scale}{Scale level to defining outlier. Larger scale value corresponds to more severe ourliers.}
 
-\item{method}{Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range).}
+\item{method}{Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Default is MAD.}
 
 \item{nearest_neighbor_n}{Number of top nearest neighbor samples to detect.}
 
