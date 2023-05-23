@@ -71,9 +71,7 @@
 <span>  positive_peak <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  neg_candidate_thres <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">asinh</a></span><span class="op">(</span><span class="fl">10</span><span class="op">/</span><span class="fl">5</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  lower_peak_thres <span class="op">=</span> <span class="fl">0.001</span>,</span>
-<span>  cd3_index <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cd4_index <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cd8_index <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  arcsine_transform_flag <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -119,16 +117,8 @@
 <dd><p>The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid suspecious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.</p></dd>
 
 
-<dt>cd3_index</dt>
-<dd><p>Index for CD3 marker. If the ADT marker is named "CD3", the program can detect the index automatically. If users named CD3 in a unique way, please provide the index for CD3 markers in the colname of cell_x_adt.</p></dd>
-
-
-<dt>cd4_index</dt>
-<dd><p>Index for CD4 marker. If the ADT marker is named "CD4", the program can detect the index automatically. If users named CD4 in a unique way, please provide the index for CD4 markers in the colname of cell_x_adt.</p></dd>
-
-
-<dt>cd8_index</dt>
-<dd><p>Index for CD8 marker. If the ADT marker is named "CD8", the program can detect the index automatically. If users named CD8 in a unique way, please provide the index for CD8 markers in the colname of cell_x_adt.</p></dd>
+<dt>arcsine_transform_flag</dt>
+<dd><p>The flag indicating if input is raw count and arcsine transformation is implemented.</p></dd>
 
 </dl></div>
 

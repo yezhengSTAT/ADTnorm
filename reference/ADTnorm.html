@@ -66,43 +66,42 @@
 <span>  save_outpath <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  study_name <span class="op">=</span> <span class="st">"ADTnorm"</span>,</span>
 <span>  marker_to_process <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  exclude_zeroes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  bimodal_marker <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  trimodal_marker <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  positive_peak <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  bw_smallest_cd3 <span class="op">=</span> <span class="fl">0.8</span>,</span>
-<span>  bw_smallest_cd4 <span class="op">=</span> <span class="fl">0.8</span>,</span>
-<span>  bw_smallest_cd8 <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  bw_smallest_bi <span class="op">=</span> <span class="fl">1.1</span>,</span>
 <span>  bw_smallest_tri <span class="op">=</span> <span class="fl">0.8</span>,</span>
-<span>  cd3_index <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cd4_index <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cd8_index <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bw_smallest_adjustments <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CD3 <span class="op">=</span> <span class="fl">0.8</span>, CD4 <span class="op">=</span> <span class="fl">0.8</span>, CD8 <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>,</span>
+<span>  quantile_clip <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  peak_type <span class="op">=</span> <span class="st">"midpoint"</span>,</span>
 <span>  multi_sample_per_batch <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  shoulder_valley <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  shoulder_valley <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  shoulder_valley_slope <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>,</span>
 <span>  valley_density_adjust <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  landmark_align_type <span class="op">=</span> <span class="st">"negPeak_valley_posPeak"</span>,</span>
 <span>  midpoint_type <span class="op">=</span> <span class="st">"valley"</span>,</span>
-<span>  neg_candidate_thres <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">asinh</a></span><span class="op">(</span><span class="fl">8</span><span class="op">/</span><span class="fl">5</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  neg_candidate_thres <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lower_peak_thres <span class="op">=</span> <span class="fl">0.001</span>,</span>
 <span>  brewer_palettes <span class="op">=</span> <span class="st">"Set1"</span>,</span>
 <span>  save_intermediate_rds <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save_intermediate_fig <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  detect_outlier_valley <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  target_landmark_location <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  clean_adt_name <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  clean_adt_name <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  customized_landmark <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>cell_x_adt</dt>
-<dd><p>Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.</p></dd>
+<dd><p>Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format. By default, ADTnorm expects raw counts to be provided and arcsin transformation to be performed by ADTnorm internally. If ADTnorm detects that the input count matrix is non-integer, it will skipped the arcsine transformation and user need to tune the parameters to fit their input transformation.</p></dd>
 
 
 <dt>cell_x_feature</dt>
-<dd><p>Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch-related information.</p></dd>
+<dd><p>Matrix of cells (rows) by cell features (columns) such as sample, batch or other cell-type related information. Please ensure that cell_x_feature matrix at least contains sample and batch columns with the exact "sample" and "batch" column name. Also one sample should only has one unique batch label to avoid confusion in the final normalization results visualization.</p></dd>
 
 
 <dt>save_outpath</dt>
@@ -117,6 +116,10 @@
 <dd><p>Markers to normalize. Leaving empty to process all the ADT markers in cell_x_adt matrix.</p></dd>
 
 
+<dt>exclude_zeroes</dt>
+<dd><p>Indicator to consider zeros as NA, i.e., missing values. Recommend TRUE if zeroes in the data represent dropout, likely for large ADT panels, big datasets, or undersequenced data. Default is FALSE.</p></dd>
+
+
 <dt>bimodal_marker</dt>
 <dd><p>Specify ADT markers that are likely to have two peaks based on researchers' prior knowledge or preliminary observation of particular data to be processed. Leaving it as default, ADTnorm will try to find the bimodal peak in all markers that are not listed in <code>trimodal_marker.</code></p></dd>
 
@@ -129,18 +132,6 @@
 <dd><p>A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to the positive peaks of other samples.</p></dd>
 
 
-<dt>bw_smallest_cd3</dt>
-<dd><p>The smallest bandwidth parameter value for CD3. Recommend 0.5 or 0.8.</p></dd>
-
-
-<dt>bw_smallest_cd4</dt>
-<dd><p>The smallest bandwidth parameter value for CD4. Recommend 0.5 or 0.8.</p></dd>
-
-
-<dt>bw_smallest_cd8</dt>
-<dd><p>The smallest bandwidth parameter value for CD8. Recommend 0.5 or 0.8.</p></dd>
-
-
 <dt>bw_smallest_bi</dt>
 <dd><p>The smallest bandwidth parameter value for bi-modal peaks. Recommend 1.1.</p></dd>
 
@@ -149,16 +140,12 @@
 <dd><p>The smallest bandwidth parameter value for tri-modal peaks. Recommend the same value for CD4, such as 0.5.</p></dd>
 
 
-<dt>cd3_index</dt>
-<dd><p>Index for CD3 marker. If the ADT marker is named "CD3", the program can detect the index automatically. If users named CD3 uniquely, please provide the index for CD3 markers in the column name of cell_x_adt.</p></dd>
+<dt>bw_smallest_adjustments</dt>
+<dd><p>A named list of floats, with names matching marker names, specifying the smallest bandwidth parameter value. The default value is bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8). Recommend 0.5 or 0.8 for common multi-modal marker.</p></dd>
 
 
-<dt>cd4_index</dt>
-<dd><p>Index for CD4 marker. If the ADT marker is named "CD4", the program can detect the index automatically. If users named CD4 uniquely, please provide the index for CD4 markers in the column name of cell_x_adt.</p></dd>
-
-
-<dt>cd8_index</dt>
-<dd><p>Index for CD8 marker. If the ADT marker is named "CD8", the program can detect the index automatically. If users named CD8 uniquely, please provide the index for CD8 markers in the column name of cell_x_adt.</p></dd>
+<dt>quantile_clip</dt>
+<dd><p>Implement an upper quantile clipping to avoid warping function errors caused by outlier measurement of extremely high expression. Provide the quantile threshold to remove outlier points above such qunatile. Default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.</p></dd>
 
 
 <dt>peak_type</dt>
@@ -170,47 +157,47 @@
 
 
 <dt>shoulder_valley</dt>
-<dd><p>Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population.</p></dd>
+<dd><p>Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population. Default is TRUE.</p></dd>
 
 
 <dt>shoulder_valley_slope</dt>
-<dd><p>The slope on the ADT marker density distribution to call shoulder valley.</p></dd>
+<dd><p>The slope on the ADT marker density distribution to call shoulder valley. Default is -0.5</p></dd>
 
 
 <dt>valley_density_adjust</dt>
-<dd><p>Parameter for <code>density</code> function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default’ bandwidth.</p></dd>
+<dd><p>Parameter for <code>density</code> function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default’ bandwidth. Default is 3.</p></dd>
 
 
 <dt>landmark_align_type</dt>
-<dd><p>Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes.</p></dd>
+<dd><p>Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes. Default is "negPeak_valley_posPeak".</p></dd>
 
 
 <dt>midpoint_type</dt>
-<dd><p>Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley").</p></dd>
+<dd><p>Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley"). Default is valley.</p></dd>
 
 
 <dt>neg_candidate_thres</dt>
-<dd><p>The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large.</p></dd>
+<dd><p>The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large. Default is asinh(8/5+1) for raw count input. This filtering will be disabled if input is not raw count data.</p></dd>
 
 
 <dt>lower_peak_thres</dt>
-<dd><p>The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.</p></dd>
+<dd><p>The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19. Default is 0.001.</p></dd>
 
 
 <dt>brewer_palettes</dt>
-<dd><p>Set the color scheme of color brewer.</p></dd>
+<dd><p>Set the color scheme of color brewer. Default is "Set1".</p></dd>
 
 
 <dt>save_intermediate_rds</dt>
-<dd><p>Save the rds file for the intermediate objects.</p></dd>
+<dd><p>Save the rds file for the intermediate objects. Default is FALSE</p></dd>
 
 
 <dt>save_intermediate_fig</dt>
-<dd><p>Save the density plot figure for checking the peak and valley location detection.</p></dd>
+<dd><p>Save the density plot figure for checking the peak and valley location detection. Default is TRUE.</p></dd>
 
 
 <dt>detect_outlier_valley</dt>
-<dd><p>Detect outlier valley and impute by the neighbor samples.</p></dd>
+<dd><p>Detect outlier valley and impute by the neighbor samples. Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Recommend trying "MAD" first if needed. Default is FALSE.</p></dd>
 
 
 <dt>target_landmark_location</dt>
@@ -218,7 +205,15 @@
 
 
 <dt>clean_adt_name</dt>
-<dd><p>Clean the ADT marker name</p></dd>
+<dd><p>Clean the ADT marker name. Default is FALSE.</p></dd>
+
+
+<dt>customized_landmark</dt>
+<dd><p>By setting it to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameters tuning attempt. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to marker_to_process as the interactive function will pop out for every marker being processed. Default is FALSE.</p></dd>
+
+
+<dt>verbose</dt>
+<dd><p>Set the verbosity of the function. Default is FALSE.</p></dd>
 
 </dl></div>
 
