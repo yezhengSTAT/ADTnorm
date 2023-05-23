@@ -296,4 +296,4 @@ Due to technical variations, the positive population of cells may not have a ver
 
 ```customized_landmark```: By setting it to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameters tuning attempt. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to marker_to_process as the interactive function will pop out for every marker being processed. The procedure to adjust the landmarks (peaks and valleys) are indicated below. If zigzag discrete negative peaks are observed, user can first adjust the "Density plot bandwidth" at the top of right panel to smooth out the discrete negative peaks before setting the landmarks.
 
-<img src="../man/figures/shinyR.png" alt="ShinyR" width="1000px">
+<img src="../man/figures/ShinyR.png" alt="ShinyR" width="1000px">
