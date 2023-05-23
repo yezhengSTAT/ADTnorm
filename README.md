@@ -202,7 +202,7 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 
 By setting ```customized_landmark``` to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out an R Shiny application for user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameters tuning attempt. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to marker_to_process as the interactive function will pop out for every marker being processed. The procedure to adjust the landmarks (peaks and valleys) are indicated below. 
 
-<img src="../man/figures/ShinyR.png" alt="ShinyR" width="1000px">
+<img src="./man/figures/ShinyR.png" alt="ShinyR" width="1000px">
 
 If zigzag discrete negative peaks are observed, user can first adjust the "Density plot bandwidth" at the top of right panel to smooth out the discrete negative peaks before setting the landmarks.
 
