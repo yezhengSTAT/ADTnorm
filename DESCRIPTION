@@ -29,7 +29,9 @@ Depends:
     dplyr,
     tidyr,
     ggplot2,
-    shiny
+    shiny,
+    DT,
+    ggridges
 Imports:
     grDevices,
     stats,
@@ -42,7 +44,8 @@ Imports:
     RColorBrewer,
     ggpubr,
     ggridges,
-    shiny
+    shiny,
+    DT
 Suggests:
     knitr,
     rmarkdown,

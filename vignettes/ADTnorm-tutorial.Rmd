@@ -284,10 +284,16 @@ Due to technical variations, the positive population of cells may not have a ver
 
 ```cell_x_adt```: Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format. By default, ADTnorm expects raw counts to be provided and arcsin transformation to be performed by ADTnorm internally. If ADTnorm detects that the input count matrix is non-integer, it will skipped the arcsine transformation. Also, please note that user need to tune the parameters, such as ```neg_candidate_thres```, ```bw_smallest_*```, ```quantile_clip```, and etc., to fit their input transformation.
 
+<img src="../man/figures/ArcsinhTransform_log10_CD4.png" alt="logTranformation" width="1000px">
+
 ## 13. Ignore the cells with the extremely large ADT count
 
-```quantile_clip```: Implement an upper quantile clipping to avoid warping function errors caused by outlier measurement of extremely high expression. Provide the quantile threshold to remove outlier points above such qunatile. Default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.
+```quantile_clip```: Implement an upper quantile clipping to avoid warping function errors caused by outlier measurement of extremely high expression. Provide the quantile threshold to remove outlier points above such qunatile. Default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard. This filtering can be very helpful when you observe a very long right tail that cause the postive peaks and negative peaks are squeezed to one narrow peak or just a line in the density plot.
+
+
 
 ## 14. Manual tuning of peaks and valleys location
 
-```customized_landmark```: By setting it to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameters tuning attempt. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to marker_to_process as the interactive function will pop out for every marker being processed. 
+```customized_landmark```: By setting it to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameters tuning attempt. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to marker_to_process as the interactive function will pop out for every marker being processed. The procedure to adjust the landmarks (peaks and valleys) are indicated below. If zigzag discrete negative peaks are observed, user can first adjust the "Density plot bandwidth" at the top of right panel to smooth out the discrete negative peaks before setting the landmarks.
+
+<img src="../man/figures/shinyR.png" alt="ShinyR" width="1000px">
