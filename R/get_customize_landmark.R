@@ -6,9 +6,6 @@
 #' @param bw Bandwidth for the density plot.
 #' @param adt_marker_select_name The adt marker needed to be manually processed to set the landmarks.
 #' @param brewer_palettes Set the color scheme of color brewer. Default is "Set1".
-#' @export
-#' @import shiny ggplot2 ggridges
-#' @importFrom DT dataTableOutput renderDataTable datatable formatRound
 #' @examples
 #' \dontrun{
 #' get_customize_landmark(
@@ -19,7 +16,7 @@
 #' brewer_palettes = "Set1"
 #' )}
 #' @export
-#' @import ggplot2 ggridges shiny DT
+#' @import ggplot2 ggridges shiny
 get_customize_landmark = function(cell_x_adt_sample, landmark_pos, bw, adt_marker_select_name, brewer_palettes = "Set1"){
 
   max_value = ceiling(max(cell_x_adt_sample[, 1], na.rm = TRUE)) + 2
