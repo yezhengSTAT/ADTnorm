@@ -13,7 +13,7 @@
 #' @param bw_smallest_bi The smallest bandwidth parameter value for bi-modal peaks. Recommend 1.1.
 #' @param bw_smallest_tri The smallest bandwidth parameter value for tri-modal peaks. Recommend the same value for CD4, such as 0.5.
 #' @param bw_smallest_adjustments A named list of floats, with names matching marker names, specifying the smallest bandwidth parameter value. The default value is bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8). Recommend 0.5 or 0.8 for common multi-modal marker.
-#' @param quantile_clip Implement an upper quantile clipping to avoid warping function errors caused by outlier measurement of extremely high expression. Provide the quantile threshold to remove outlier points above such qunatile. Default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.
+#' @param quantile_clip Implement an upper quantile clipping to avoid warping function errors caused by outlier measurement of extremely high expression. Provide the quantile threshold to remove outlier points above such quantile. Default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.
 #' @param peak_type The type of peak to be detected. Select from "midpoint" for setting the peak landmark to the midpoint of the peak region being detected or "mode" for setting the peak landmark to the mode location of the peak. "midpoint" can be generally more robust across samples and less impacted by the bandwidth. "mode" can be more accurate in determining the peak location if the bandwidth is generally ideal for the target marker.
 #' @param multi_sample_per_batch Set it to TRUE to discard the positive peak that only appear in one sample per batch (sample number is >=3 per batch).
 #' @param shoulder_valley Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population. Default is TRUE.
@@ -42,7 +42,8 @@
 #'  )
 #' }
 #' @export
-#' @import dplyr ggplot2 shiny DT ggridges
+#' @import dplyr tidyr ggplot2 shiny ggridges flowCore flowStats
+#' @importFrom stats quantile
 ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL, study_name = "ADTnorm", marker_to_process = NULL, exclude_zeroes = FALSE, bimodal_marker = NULL, trimodal_marker = NULL, positive_peak = NULL, bw_smallest_bi = 1.1, bw_smallest_tri = 0.8, bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8), quantile_clip = 1, peak_type = "midpoint", multi_sample_per_batch = FALSE, shoulder_valley = TRUE, shoulder_valley_slope = -0.5, valley_density_adjust = 3, landmark_align_type = "negPeak_valley_posPeak", midpoint_type = "valley", neg_candidate_thres = NULL, lower_peak_thres = 0.001, brewer_palettes = "Set1", save_intermediate_rds = FALSE, save_intermediate_fig = TRUE, detect_outlier_valley = FALSE, target_landmark_location = NULL, clean_adt_name = FALSE, customized_landmark = FALSE, verbose = FALSE){
     
     ## =========================

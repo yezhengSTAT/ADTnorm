@@ -7,20 +7,34 @@
 #' @param adt_marker_select_name The adt marker needed to be manually processed to set the landmarks.
 #' @param brewer_palettes Set the color scheme of color brewer. Default is "Set1".
 #' @export
-#' @import shiny ggplot2 ggridges DT
+#' @import shiny ggplot2 ggridges
+#' @importFrom DT dataTableOutput renderDataTable datatable formatRound
 #' @examples
 #' \dontrun{
-#' get_peak_mode(
-#'   cell_x_adt = cell_x_adt,
-#'   cell_x_feature = cell_x_feature,
-#'   adt_marker_select = "CD3",
-#'   neg_candidate_thres = asinh(6/5+1)
-#' )
-#' }
-# require(ggplot2)
-# require(ggridges)
-# require(shiny)
-# require(DT)
+#' get_customize_landmark(
+#' cell_x_adt_sample, 
+#' landmark_pos, 
+#' bw, 
+#' adt_marker_select_name, 
+#' brewer_palettes = "Set1"
+#' )}
+#' @export
+#' @import ggplot2 ggridges shiny DT
+get_customize_landmark = function(cell_x_adt_sample, landmark_pos, bw, adt_marker_select_name, brewer_palettes = "Set1"){
+
+  max_value = ceiling(max(cell_x_adt_sample[, 1], na.rm = TRUE)) + 2
+  cell_x_adt_sample_filter = cell_x_adt_sample #%>% dplyr::filter(!is.na(adt))
+  sample_num = levels(cell_x_adt_sample$sample) %>% length
+  plot_height = paste0(sample_num * 50, "px")
+  ## Create an example UI
+  ui <- create_ui(landmark_pos, max_value, bw, plot_height)
+  server <- create_server(landmark_pos, cell_x_adt_sample_filter, bw, adt_marker_select_name, brewer_palettes, max_value)
+
+  ## Return user input, vals can change
+  res <- shiny::runApp(shinyApp(ui, server))
+  return(res)
+
+}
 
 flat_table <- function(tab) {
   tmp <- lapply(1:nrow(tab), function(i) {
@@ -77,7 +91,7 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
         bw_value <- input$bandwidth_slider
         # no_mis_idx = !is.na(cell_x_adt_sample$adt)
             
-        vals$fig <- ggplot(cell_x_adt_sample, aes(x = adt, y = sample)) + 
+        vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample")) + 
           ggridges::geom_density_ridges2(aes(fill = factor(batch)), bandwidth = bw_value) +
           theme_bw(base_size = 20) +
           ggpubr::rotate_x_text(angle = 90) +
@@ -86,7 +100,7 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
           ylab("Sample") +
           scale_fill_manual(values = fillColor) +
           scale_x_continuous(breaks = seq(0, max_value, 0.5)) + 
-          geom_point(data = vals$slider_values, aes(x = x, y = y), size = 5)
+          geom_point(data = vals$slider_values, aes_string(x = "x", y = "y"), size = 5)
         vals$fig
       })
 
@@ -138,7 +152,7 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
         output$plot <- renderPlot({
           bw_value <- input$bandwidth_slider
           
-          vals$fig <- ggplot(cell_x_adt_sample, aes(x = adt, y = sample)) + 
+          vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = sample)) + 
             ggridges::geom_density_ridges2(aes(fill = factor(batch)), bandwidth = bw_value) +
             theme_bw(base_size = 20) +
             ggpubr::rotate_x_text(angle = 90) +
@@ -147,7 +161,7 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
             ylab("Sample") +
             scale_fill_manual(values = fillColor) +
             scale_x_continuous(breaks = seq(0, max_value, 0.5)) + 
-            geom_point(data = slider_values, aes(x = x, y = y), size = 5)
+            geom_point(data = slider_values, aes_string(x = "x", y = "y"), size = 5)
           vals$fig
           })
     })
@@ -163,20 +177,5 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
 
 
 
-get_customize_landmark = function(cell_x_adt_sample, landmark_pos, bw, adt_marker_select_name, brewer_palettes = "Set1"){
-
-  max_value = ceiling(max(cell_x_adt_sample[, 1], na.rm = TRUE)) + 2
-  cell_x_adt_sample_filter = cell_x_adt_sample #%>% dplyr::filter(!is.na(adt))
-  sample_num = levels(cell_x_adt_sample$sample) %>% length
-  plot_height = paste0(sample_num * 50, "px")
-  ## Create an example UI
-  ui <- create_ui(landmark_pos, max_value, bw, plot_height)
-  server <- create_server(landmark_pos, cell_x_adt_sample_filter, bw, adt_marker_select_name, brewer_palettes, max_value)
-
-  ## Return user input, vals can change
-  res <- shiny::runApp(shinyApp(ui, server))
-  return(res)
-
-}
 
 

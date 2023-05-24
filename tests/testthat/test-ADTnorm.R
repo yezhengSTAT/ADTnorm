@@ -14,7 +14,7 @@ test_that("ADTnorm works", {
     )
   })
 
-  expect_type(res, "double")
+  expect_type(res, "list")
   expect_equal(nrow(res), 422682)
   expect_equal(ncol(res), 3)
 })

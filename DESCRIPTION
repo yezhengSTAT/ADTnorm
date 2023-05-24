@@ -1,6 +1,8 @@
 Package: ADTnorm
 Title: Robust Normalization and Integration of Single-cell Protein Expression across CITE-seq Datasets
 Version: 1.0
+Author: Ye Zheng <yzheng23@fredhutch.org>
+Maintainer: Ye Zheng <yzheng23@fredhutch.org>
 Authors@R: 
     c(person(given = "Ye",
            family = "Zheng",
@@ -25,13 +27,7 @@ Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
 Depends:
-    R (>= 4.0.0),
-    dplyr,
-    tidyr,
-    ggplot2,
-    shiny,
-    DT,
-    ggridges
+    R (>= 4.0.0)
 Imports:
     grDevices,
     stats,
@@ -45,7 +41,10 @@ Imports:
     ggpubr,
     ggridges,
     shiny,
-    DT
+    DT,
+    dplyr,
+    tidyr,
+    ggplot2
 Suggests:
     knitr,
     rmarkdown,

@@ -62,7 +62,7 @@ ADTnorm(
 
 \item{bw_smallest_adjustments}{A named list of floats, with names matching marker names, specifying the smallest bandwidth parameter value. The default value is bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8). Recommend 0.5 or 0.8 for common multi-modal marker.}
 
-\item{quantile_clip}{Implement an upper quantile clipping to avoid warping function errors caused by outlier measurement of extremely high expression. Provide the quantile threshold to remove outlier points above such qunatile. Default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.}
+\item{quantile_clip}{Implement an upper quantile clipping to avoid warping function errors caused by outlier measurement of extremely high expression. Provide the quantile threshold to remove outlier points above such quantile. Default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.}
 
 \item{peak_type}{The type of peak to be detected. Select from "midpoint" for setting the peak landmark to the midpoint of the peak region being detected or "mode" for setting the peak landmark to the mode location of the peak. "midpoint" can be generally more robust across samples and less impacted by the bandwidth. "mode" can be more accurate in determining the peak location if the bandwidth is generally ideal for the target marker.}
 

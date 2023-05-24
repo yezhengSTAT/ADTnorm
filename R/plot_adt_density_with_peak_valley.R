@@ -84,7 +84,7 @@ plot_adt_density_with_peak_valley = function(cell_x_adt, cell_x_feature, adt_mar
     }
     fillColor = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, brewer_palettes))(length(unique(tmpProfile$batch)))
 
-    resPlot = ggplot(tmpProfile, aes(x = counts, y = sample)) +
+    resPlot = ggplot(tmpProfile, aes_string(x = "counts", y = "sample")) +
         ggridges::geom_density_ridges(aes(fill = factor(batch)), bandwidth = bw) +
         geom_segment(data = peak_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1) +
         geom_segment(data = valley_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1, color = "grey") +
