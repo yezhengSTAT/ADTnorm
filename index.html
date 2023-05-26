@@ -112,7 +112,7 @@
 <div class="section level2">
 <h2 id="input-data">Input Data<a class="anchor" aria-label="anchor" href="#input-data"></a>
 </h2>
-<p>The 13 public datasets used in the <a href="https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1" class="external-link">manuscript</a> are also included in the R package as demo data set. They can be loaded by</p>
+<p>The 13 public datasets used in the <a href="https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1" class="external-link">manuscript</a> are also included in the R package as a demo data set. They can be loaded by</p>
 <p><code>{r loaddata, eval = FALSE} data(cell_x_adt) data(cell_x_feature)</code></p>
 <ul><li>
 <code>cell_x_adt</code> contains raw counts for ADT markers in each cell. It is a data frame with 422682 cells (rows) and 9 ADT markers (columns): CD3, CD4, CD8, CD14, CD19, CD25, CD45RA, CD56, CD127.</li></ul>
@@ -155,7 +155,7 @@
 </h2>
 <p><strong>For more detailed and typical parameter tuning examples, please visit <a href="https://yezhengstat.github.io/ADTnorm/articles/ADTnorm-tutorial.html" class="external-link">tutorial website</a>. We will illustrate using the demo data.</strong></p>
 <div class="section level3">
-<h3 id="option-1-treating-one-study-as-a-sample-and-a-batch-normalize-across-studies">Option 1. Treating one study as a sample and a batch, normalize across studies.<a class="anchor" aria-label="anchor" href="#option-1-treating-one-study-as-a-sample-and-a-batch-normalize-across-studies"></a>
+<h3 id="case-1-consider-one-study-as-a-sample-and-normalize-across-studies">Case 1. Consider one study as a sample and normalize across studies.<a class="anchor" aria-label="anchor" href="#case-1-consider-one-study-as-a-sample-and-normalize-across-studies"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yezhengSTAT.github.io/ADTnorm" class="external-link">ADTnorm</a></span><span class="op">)</span></span>
@@ -175,11 +175,11 @@
 <span>  marker_to_process <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD3"</span>, <span class="st">"CD4"</span>, <span class="st">"CD8"</span>, <span class="st">"CD45RA"</span><span class="op">)</span>, </span>
 <span>  trimodal_marker <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD4"</span>, <span class="st">"CD45RA"</span><span class="op">)</span>, </span>
 <span>  positive_peak <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ADT <span class="op">=</span> <span class="st">"CD3"</span>, sample <span class="op">=</span> <span class="st">"buus_2021_T"</span><span class="op">)</span>,</span>
-<span>  save_intermediate_fig <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  save_fig <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="option-2-treating-one-study-as-one-batch-normalize-across-samples">Option 2. Treating one study as one batch, normalize across samples.<a class="anchor" aria-label="anchor" href="#option-2-treating-one-study-as-one-batch-normalize-across-samples"></a>
+<h3 id="case-2-consider-each-healthy-donorpatient-per-time-pointconditionresponseetc-as-one-sample-and-normalize-across-the-individual-sample">Case 2. Consider each healthy donor/patient per time point/condition/response/etc as one sample and normalize across the individual sample.<a class="anchor" aria-label="anchor" href="#case-2-consider-each-healthy-donorpatient-per-time-pointconditionresponseetc-as-one-sample-and-normalize-across-the-individual-sample"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yezhengSTAT.github.io/ADTnorm" class="external-link">ADTnorm</a></span><span class="op">)</span></span>
@@ -198,35 +198,35 @@
 <span>  marker_to_process <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD3"</span>, <span class="st">"CD4"</span>, <span class="st">"CD8"</span>, <span class="st">"CD45RA"</span><span class="op">)</span>, </span>
 <span>  trimodal_marker <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD4"</span>, <span class="st">"CD45RA"</span><span class="op">)</span>, </span>
 <span>  positive_peak <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ADT <span class="op">=</span> <span class="st">"CD3"</span>, sample <span class="op">=</span> <span class="st">"buus_2021_T"</span><span class="op">)</span>,</span>
-<span>  save_intermediate_fig <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  save_fig <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Basic parameters introduction. The full parameter explanation for the <code>ADTnorm</code> function can be found at <a href="https://yezhengstat.github.io/ADTnorm/reference/ADTnorm.html" class="external-link">Reference - ADTnorm</a>.</p>
 <pre><code>cell_x_adt:         Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.
 
-cell_x_feature:     Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch-related information.
+cell_x_feature:     Matrix of cells (rows) by cell features (columns) such as sample, batch, and cell type-related information. Please note "sample" column is mandatory and should be the smallest unit to group the cells. At this resolution, ADTnorm will identify peaks and valleys to implement normalization. Please ensure the samples have different names across batches/conditions/studies. "batch" column is optional. It can be batches/conditions/studies/etc, that group the samples based on whether the samples are collected from the same batch run or experiment. This column is needed if the ```multi_sample_per_batch``` parameter is turned on to remove outlier positive peaks per batch or ```detect_outlier_valley``` for detecting and imputing outlier valleys per batch. If the "batch" column is not provided, it will be set as the same as the "sample" column. In the intermediate density plots that ADTnorm provides, density plots will be colored by the "batch" column.
 
 save_outpath:       The path to save the results.
 
 study_name:         Name of this run.
 
-marker_to_process:  Markers to normalize. Leave empty to process all the ADT markers in cell_x_adt matrix.
+marker_to_process:  Markers to normalize. Leave empty to process all the ADT markers in the cell_x_adt matrix.
 
 bimodal_marker:     Specify ADT markers that are likely to have two peaks based on researchers' prior knowledge or preliminary observation of the particular data to be processed. Leaving it as default, ADTnorm will try to find the bimodal peak in all markers that are not listed in `trimodal_marker.`
 
 trimodal_marker:    Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g., CD4) or preliminary observation of the particular data to be processed.
 
-positive_peak:      A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells the only CD3 peak should be aligned to the positive peaks of other samples.
+positive_peak:      A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells, the only CD3 peak should be aligned to the positive peaks of other samples.
 
-save_intermediate_fig:  Save the density plot figure for checking the peak and valley location detection.</code></pre>
+save_fig:  Save the density plot figure for checking the peak and valley location detection.</code></pre>
 <p><strong>For more detailed and typical parameter tuning examples, please visit <a href="https://yezhengstat.github.io/ADTnorm/articles/ADTnorm-tutorial.html" class="external-link">tutorial website</a>. We will illustrate using the demo data.</strong></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h2>
-<p><code>ADTnorm</code> function will generate a matrix of rows of the same number as input <code>cell_x_adt</code> row number and columns are ADT markers specificed in <code>marker_to_process</code>. The value in the matrix is normalized value by ADTnorm. In the <code>save_outpath</code> specified by the users, there will be two subfolders, <code>figures</code> and <code>RDS</code>, containing the intermediate object and density plot of detected peak and valley landmarks before and after ADTnorm. Those figures can be used to check if further parameter tuning is needed for certain ADT markers.</p>
+<p><code>ADTnorm</code> function will generate a matrix of rows of the same number as input <code>cell_x_adt</code> row number and columns are ADT markers specified in <code>marker_to_process</code>. The value in the matrix is normalized value by ADTnorm. In the <code>save_outpath</code> specified by the users, there will be two subfolders, <code>figures</code> and <code>RDS</code>, containing the intermediate object and density plot of detected peak and valley landmarks before and after ADTnorm. Those figures can be used to check whether certain ADT markers need further parameter tuning.</p>
 <div class="section level3">
-<h3 id="option-1-treating-one-study-as-a-sample-and-a-batch-normalize-across-studies-1">Option 1. Treating one study as a sample and a batch, normalize across studies.<a class="anchor" aria-label="anchor" href="#option-1-treating-one-study-as-a-sample-and-a-batch-normalize-across-studies-1"></a>
+<h3 id="case-1-consider-one-study-as-a-sample-and-normalize-across-studies-1">Case 1. Consider one study as a sample and normalize across studies.<a class="anchor" aria-label="anchor" href="#case-1-consider-one-study-as-a-sample-and-normalize-across-studies-1"></a>
 </h3>
 <div class="section level4">
 <h4 id="raw-counts">Raw Counts<a class="anchor" aria-label="anchor" href="#raw-counts"></a>
@@ -240,11 +240,12 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 </div>
 </div>
 <div class="section level3">
-<h3 id="option-2-treating-one-study-as-a-batch-normalize-across-samples">Option 2. Treating one study as a batch, normalize across samples.<a class="anchor" aria-label="anchor" href="#option-2-treating-one-study-as-a-batch-normalize-across-samples"></a>
+<h3 id="case-2-consider-each-healthy-donorpatient-per-time-pointconditionresponseetc-as-one-sample-and-normalize-across-the-individual-sample-1">Case 2. Consider each healthy donor/patient per time point/condition/response/etc as one sample and normalize across the individual sample.<a class="anchor" aria-label="anchor" href="#case-2-consider-each-healthy-donorpatient-per-time-pointconditionresponseetc-as-one-sample-and-normalize-across-the-individual-sample-1"></a>
 </h3>
 <div class="section level4">
 <h4 id="raw-counts-1">Raw Counts<a class="anchor" aria-label="anchor" href="#raw-counts-1"></a>
 </h4>
+<p>Color-coded by studies as batches.</p>
 <p><img src="./reference/figures/PublicData_samplelevel_raw.png" alt="RawCount" width="1000px"></p>
 </div>
 <div class="section level4">
@@ -253,16 +254,22 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 <p><img src="./reference/figures/PublicData_samplelevel_adtnorm.png" alt="Normalization" width="1000px"></p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="option-3-manual-adjustment-of-landmark-locations-by-r-shiny">Option 3. Manual Adjustment of Landmark Locations by R Shiny<a class="anchor" aria-label="anchor" href="#option-3-manual-adjustment-of-landmark-locations-by-r-shiny"></a>
-</h3>
-<p>By setting <code>customized_landmark</code> to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out an R Shiny application for user’s manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameters tuning attempt. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to marker_to_process as the interactive function will pop out for every marker being processed. The procedure to adjust the landmarks (peaks and valleys) are indicated below.</p>
-<p><img src="./reference/figures/ShinyR.png" alt="ShinyR" width="1000px"></p>
-<p>If zigzag discrete negative peaks are observed, user can first adjust the “Density plot bandwidth” at the top of right panel to smooth out the discrete negative peaks before setting the landmarks.</p>
-</div>
 </div>
 <div class="section level2">
-<h2 id="contact-for-questions-discussions-or-potential-collaborations">Contact for questions, discussions or potential collaborations<a class="anchor" aria-label="anchor" href="#contact-for-questions-discussions-or-potential-collaborations"></a>
+<h2 id="manual-adjustment-of-landmark-locations-by-r-shiny">Manual Adjustment of Landmark Locations by R Shiny<a class="anchor" aria-label="anchor" href="#manual-adjustment-of-landmark-locations-by-r-shiny"></a>
+</h2>
+<p><code>customize_landmark</code>: By setting it to TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for the user’s manual setting of peak and valley locations. The procedure for adjusting the landmarks (peaks and valleys) is below.</p>
+<p><img src="../reference/figures/ShinyR.png" alt="ShinyR" width="1000px"></p>
+<p>Please note:</p>
+<ul>
+<li><p>We recommend using this function after initial rounds of ADTnorm normalization with a few parameter tuning attempts. It is better to narrow down a few ADT markers that need manual tuning and provide the list to <code>marker_to_process</code> as the interactive function will pop out for every marker being processed.</p></li>
+<li><p>If zigzag discrete negative peaks are observed, users can first increase the “Bandwidth for Density Visualization” at the top of the right panel to smooth out the discrete negative peaks before setting the landmarks.</p></li>
+<li><p>Currently, the shiny browser support setting any landmark (peaks or valleys) to NA as missing. However, it does not support inserting new landmark(s). For example, if the marker density distribution shows a triple peak pattern but ADTnorm only detects two peaks across all the samples. Shiny browser does not allow manual insertion of a new peak and valley, but the user can tune the other parameters to push ADTnorm to detect three peaks: specify the target marker as <code>trimodal_marker</code>, reducing the <code>bw_smallest_tri</code> or setting smaller bandwidth value and specify for the target ADT marker through <code>bw_smallest_adjustments</code>.</p></li>
+</ul>
+<p><strong>For more detailed and typical parameter tuning examples, please visit <a href="https://yezhengstat.github.io/ADTnorm/articles/ADTnorm-tutorial.html" class="external-link">tutorial website</a>. We will illustrate using the demo data.</strong></p>
+</div>
+<div class="section level2">
+<h2 id="contact-for-questions-discussions-or-potential-collaborations">Contact for questions, discussions, or potential collaborations<a class="anchor" aria-label="anchor" href="#contact-for-questions-discussions-or-potential-collaborations"></a>
 </h2>
 <p><a href="https://yezhengstat.github.io/" class="external-link">Ye Zheng</a></p>
 <p>Email: <a href="mailto:yzheng23@fredhutch.org" class="email">yzheng23@fredhutch.org</a></p>
