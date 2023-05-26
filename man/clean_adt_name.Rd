@@ -10,7 +10,7 @@ clean_adt_name(adt_name)
 \item{adt_name}{A vector of ADT marker name.}
 }
 \description{
-This function enables the general ADT name clearning but users should try cleaning and unifying their ADT marker name first. Please also make sure there is no "/" in the ADT name such as "TCRγ/δ".
+This function enables the general cleaning of ADT marker names. Regardless, users should try cleaning and unifying their ADT marker name first. Please also ensure there is no "/" in the ADT name, such as "TCRγ/δ".
 }
 \examples{
 \dontrun{

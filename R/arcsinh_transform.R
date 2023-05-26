@@ -1,6 +1,6 @@
 #' Arcsine transformation.
 #'
-#' This function arcsine transform the input cell_x_adt matrix with co-factor 5. The definition of this function is x_new <- asinh(a + b * x) + c)
+#' This function transforms the input cell_x_adt matrix by arcsine with co-factor 5. The definition of this function is x_new <- asinh(a + b * x) + c)
 #' @param cell_x_adt Matrix where rows are cells and columns are ADT markers.
 #' @param parameter_list Parameter list for a: positive double that corresponds to a shift about 0; b: positive double that corresponds to a scale factor; c: positive double. By default a = 1, b = 1/5 and c = 0.
 #' @export

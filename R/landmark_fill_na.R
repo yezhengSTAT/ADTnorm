@@ -1,11 +1,11 @@
-#' Merge the peak and valley landmarks locations and fill in NA if landmark is not detected.
+#' Merge locations of peak and valley landmarks
 #'
-#' This function detect the valley locations either between every two peak landmarks or cut at the right heavy tails. If specified positive uni-peak, the valley location will be set at the left side of the uni-peak.
-#' @param peak_landmark_list Matrix of peak landmark detection results. Rows are samples and column(s) are the peak locations.
-#' @param valley_landmark_list Matrix of valley landmark detection results. Rows are samples and column(s) are the valley locations.
+#' This function merges the peak and valley landmarks locations and fills in NA if the landmark is not detected.
+#' @param peak_landmark_list Matrix of peak landmark detection results. Rows are samples, and column(s) are the peak locations.
+#' @param valley_landmark_list Matrix of valley landmark detection results. Rows are samples, and column(s) are the valley locations.
 #' @param landmark_align_type Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes.
-#' @param midpoint_type Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valley ("valley").
-#' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples are large.
+#' @param midpoint_type Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley").
+#' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large.
 #' @export
 #' @examples
 #' \dontrun{

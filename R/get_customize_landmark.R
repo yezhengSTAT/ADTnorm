@@ -1,11 +1,11 @@
-#' Get the user-customized peaks and valleys location for each sample
+#' Prompt Shiny browser to manually customize peaks and valleys locations.
 #'
-#' This function will launch a shiny app to allow user to manually set the peaks and valleys location. The function will output the landmark positions that user has set.
-#' @param cell_x_adt_sample Matrix of adt counts of seleted marker, with columns of sample and batch information for each row of cells.
+#' This function will launch a shiny app allowing the user to set the location of peaks and valleys manually. The function will output the landmark positions that the user has set.
+#' @param cell_x_adt_sample Matrix of ADT counts of the selected marker, with columns of sample and batch information for each row of cells.
 #' @param landmark_pos Matrix of landmark location including peaks and valleys.
 #' @param bw Bandwidth for the density plot.
-#' @param adt_marker_select_name The adt marker needed to be manually processed to set the landmarks.
-#' @param brewer_palettes Set the color scheme of color brewer. Default is "Set1".
+#' @param adt_marker_select_name The ADT marker needed to be manually processed to set the landmarks.
+#' @param brewer_palettes Set the color scheme of the color brewer. The default is "Set1".
 #' @examples
 #' \dontrun{
 #' get_customize_landmark(
@@ -20,12 +20,13 @@
 get_customize_landmark = function(cell_x_adt_sample, landmark_pos, bw, adt_marker_select_name, brewer_palettes = "Set1"){
 
   max_value = ceiling(max(cell_x_adt_sample[, 1], na.rm = TRUE)) + 2
-  cell_x_adt_sample_filter = cell_x_adt_sample #%>% dplyr::filter(!is.na(adt))
+  # cell_x_adt_sample_filter = cell_x_adt_sample %>% dplyr::filter(!is.na(adt))
   sample_num = levels(cell_x_adt_sample$sample) %>% length
   plot_height = paste0(sample_num * 50, "px")
+  cell_x_adt_sample$sample_rev = factor(cell_x_adt_sample$sample, levels = rev(levels(cell_x_adt_sample$sample)))
   ## Create an example UI
   ui <- create_ui(landmark_pos, max_value, bw, plot_height)
-  server <- create_server(landmark_pos, cell_x_adt_sample_filter, bw, adt_marker_select_name, brewer_palettes, max_value)
+  server <- create_server(landmark_pos, cell_x_adt_sample, bw, adt_marker_select_name, brewer_palettes, max_value)
 
   ## Return user input, vals can change
   res <- shiny::runApp(shinyApp(ui, server))
@@ -40,7 +41,8 @@ flat_table <- function(tab) {
       x = sapply(1:ncol(tab), function(j) {
         tab[i,j]
       }),
-      name = colnames(tab)
+      name = colnames(tab),
+      type = sub("\\d+$", "", colnames(tab))
     )
   })
   do.call(rbind, tmp)
@@ -57,7 +59,7 @@ create_ui <- function(landmark_pos, max_value, bw, plot_height) {
       ),
       mainPanel(
         sliderInput(inputId = "bandwidth_slider",
-                    label = "Density plot bandwidth:",
+                    label = "Bandwidth for Density Visualization Below:",
                     min = 0,
                     max = 3,
                     value = bw,
@@ -75,6 +77,7 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
   
   fillColor <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, brewer_palettes))(length(unique(cell_x_adt_sample$batch)))
 
+  
   server <- function(input, output, session) {
     vals <- shiny::reactiveValues(
       landmark_pos = landmark_pos,
@@ -87,8 +90,8 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
       output$plot <- renderPlot({
         bw_value <- input$bandwidth_slider
         # no_mis_idx = !is.na(cell_x_adt_sample$adt)
-            
-        vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample")) + 
+        
+        vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample_rev")) + 
           ggridges::geom_density_ridges2(aes(fill = factor(batch)), bandwidth = bw_value) +
           theme_bw(base_size = 20) +
           ggpubr::rotate_x_text(angle = 90) +
@@ -96,8 +99,10 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
           xlab(paste0(adt_marker_select_name, " ADT Counts")) +
           ylab("Sample") +
           scale_fill_manual(values = fillColor) +
-          scale_x_continuous(breaks = seq(0, max_value, 0.5)) + 
-          geom_point(data = vals$slider_values, aes_string(x = "x", y = "y"), size = 5)
+          scale_x_continuous(breaks = seq(0, max_value, 0.5)) +
+          geom_point(data = vals$slider_values, aes_string(x = "x", y = "y", shape = "type"), size = 5)
+          
+
         vals$fig
       })
 
@@ -149,16 +154,16 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
         output$plot <- renderPlot({
           bw_value <- input$bandwidth_slider
           
-          vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = sample)) + 
+          vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample_rev")) + 
             ggridges::geom_density_ridges2(aes(fill = factor(batch)), bandwidth = bw_value) +
             theme_bw(base_size = 20) +
             ggpubr::rotate_x_text(angle = 90) +
             ggpubr::rremove("legend") +
-            xlab("ADT Counts") +
+            xlab(paste0(adt_marker_select_name, " ADT Counts")) +
             ylab("Sample") +
             scale_fill_manual(values = fillColor) +
             scale_x_continuous(breaks = seq(0, max_value, 0.5)) + 
-            geom_point(data = slider_values, aes_string(x = "x", y = "y"), size = 5)
+            geom_point(data = slider_values, aes_string(x = "x", y = "y", shape = "type"), size = 5) 
           vals$fig
           })
     })

@@ -43,7 +43,7 @@ Replace `<yourDataDirectory>` with the local directory path (absolute path) wher
 
 ## Input Data
 
-The 13 public datasets used in the [manuscript](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1) are also included in the R package as demo data set. They can be loaded by
+The 13 public datasets used in the [manuscript](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1) are also included in the R package as a demo data set. They can be loaded by
 
 ```{r loaddata, eval = FALSE}
 data(cell_x_adt)
@@ -102,7 +102,7 @@ data(cell_x_feature)
 **For more detailed and typical parameter tuning examples, please visit [tutorial website](https://yezhengstat.github.io/ADTnorm/articles/ADTnorm-tutorial.html). We will illustrate using the demo data.**
 
 
-### Option 1. Treating one study as a sample and a batch, normalize across studies.
+### Case 1. Consider one study as a sample and normalize across studies.
 ```R
 library(ADTnorm)
 save_outpath <- "/path/to/output/location"
@@ -121,11 +121,11 @@ cell_x_adt_norm <- ADTnorm(
   marker_to_process = c("CD3", "CD4", "CD8", "CD45RA"), 
   trimodal_marker = c("CD4", "CD45RA"), 
   positive_peak = list(ADT = "CD3", sample = "buus_2021_T"),
-  save_intermediate_fig = TRUE
+  save_fig = TRUE
 )
 ```
 
-### Option 2. Treating one study as one batch, normalize across samples.
+### Case 2. Consider each healthy donor/patient per time point/condition/response/etc as one sample and normalize across the individual sample. 
 ``` R
 library(ADTnorm)
 save_outpath <- "/path/to/output/location"
@@ -143,7 +143,7 @@ cell_x_adt_norm <- ADTnorm(
   marker_to_process = c("CD3", "CD4", "CD8", "CD45RA"), 
   trimodal_marker = c("CD4", "CD45RA"), 
   positive_peak = list(ADT = "CD3", sample = "buus_2021_T"),
-  save_intermediate_fig = TRUE
+  save_fig = TRUE
 )
 ```
 
@@ -153,21 +153,21 @@ Basic parameters introduction. The full parameter explanation for the ```ADTnorm
 ```
 cell_x_adt:         Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.
 
-cell_x_feature:     Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch-related information.
+cell_x_feature:     Matrix of cells (rows) by cell features (columns) such as sample, batch, and cell type-related information. Please note "sample" column is mandatory and should be the smallest unit to group the cells. At this resolution, ADTnorm will identify peaks and valleys to implement normalization. Please ensure the samples have different names across batches/conditions/studies. "batch" column is optional. It can be batches/conditions/studies/etc, that group the samples based on whether the samples are collected from the same batch run or experiment. This column is needed if the ```multi_sample_per_batch``` parameter is turned on to remove outlier positive peaks per batch or ```detect_outlier_valley``` for detecting and imputing outlier valleys per batch. If the "batch" column is not provided, it will be set as the same as the "sample" column. In the intermediate density plots that ADTnorm provides, density plots will be colored by the "batch" column.
 
 save_outpath:       The path to save the results.
 
 study_name:         Name of this run.
 
-marker_to_process:  Markers to normalize. Leave empty to process all the ADT markers in cell_x_adt matrix.
+marker_to_process:  Markers to normalize. Leave empty to process all the ADT markers in the cell_x_adt matrix.
 
 bimodal_marker:     Specify ADT markers that are likely to have two peaks based on researchers' prior knowledge or preliminary observation of the particular data to be processed. Leaving it as default, ADTnorm will try to find the bimodal peak in all markers that are not listed in `trimodal_marker.`
 
 trimodal_marker:    Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g., CD4) or preliminary observation of the particular data to be processed.
 
-positive_peak:      A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells the only CD3 peak should be aligned to the positive peaks of other samples.
+positive_peak:      A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells, the only CD3 peak should be aligned to the positive peaks of other samples.
 
-save_intermediate_fig:  Save the density plot figure for checking the peak and valley location detection.
+save_fig:  Save the density plot figure for checking the peak and valley location detection.
 ```
 
 **For more detailed and typical parameter tuning examples, please visit [tutorial website](https://yezhengstat.github.io/ADTnorm/articles/ADTnorm-tutorial.html). We will illustrate using the demo data.**
@@ -175,9 +175,9 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 
 ## Results
 
-```ADTnorm``` function will generate a matrix of rows of the same number as input ```cell_x_adt``` row number and columns are ADT markers specificed in ```marker_to_process```. The value in the matrix is normalized value by ADTnorm.  In the `save_outpath` specified by the users, there will be two subfolders, `figures` and `RDS`, containing the intermediate object and density plot of detected peak and valley landmarks before and after ADTnorm. Those figures can be used to check if further parameter tuning is needed for certain ADT markers.  
+```ADTnorm``` function will generate a matrix of rows of the same number as input ```cell_x_adt``` row number and columns are ADT markers specified in ```marker_to_process```. The value in the matrix is normalized value by ADTnorm. In the `save_outpath` specified by the users, there will be two subfolders, `figures` and `RDS`, containing the intermediate object and density plot of detected peak and valley landmarks before and after ADTnorm. Those figures can be used to check whether certain ADT markers need further parameter tuning.  
 
-### Option 1. Treating one study as a sample and a batch, normalize across studies.
+### Case 1. Consider one study as a sample and normalize across studies.
 
 #### Raw Counts 
 
@@ -187,10 +187,12 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 
 <img src="./man/figures/ADTnorm.png" alt="Normalization" width="700px">
 
-### Option 2. Treating one study as a batch, normalize across samples.
+### Case 2. Consider each healthy donor/patient per time point/condition/response/etc as one sample and normalize across the individual sample. 
 
 
 #### Raw Counts 
+
+Color-coded by studies as batches.
 
 <img src="./man/figures/PublicData_samplelevel_raw.png" alt="RawCount" width="1000px">
 
@@ -198,15 +200,23 @@ save_intermediate_fig:  Save the density plot figure for checking the peak and v
 
 <img src="./man/figures/PublicData_samplelevel_adtnorm.png" alt="Normalization" width="1000px">
 
-### Option 3. Manual Adjustment of Landmark Locations by R Shiny
+## Manual Adjustment of Landmark Locations by R Shiny
 
-By setting ```customized_landmark``` to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out an R Shiny application for user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameters tuning attempt. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to marker_to_process as the interactive function will pop out for every marker being processed. The procedure to adjust the landmarks (peaks and valleys) are indicated below. 
+```customize_landmark```: By setting it to TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for the user's manual setting of peak and valley locations. The procedure for adjusting the landmarks (peaks and valleys) is below.
 
-<img src="./man/figures/ShinyR.png" alt="ShinyR" width="1000px">
+<img src="../man/figures/ShinyR.png" alt="ShinyR" width="1000px">
 
-If zigzag discrete negative peaks are observed, user can first adjust the "Density plot bandwidth" at the top of right panel to smooth out the discrete negative peaks before setting the landmarks.
+Please note:
 
-## Contact for questions, discussions or potential collaborations
+- We recommend using this function after initial rounds of ADTnorm normalization with a few parameter tuning attempts. It is better to narrow down a few ADT markers that need manual tuning and provide the list to ```marker_to_process``` as the interactive function will pop out for every marker being processed. 
+
+- If zigzag discrete negative peaks are observed, users can first increase the "Bandwidth for Density Visualization" at the top of the right panel to smooth out the discrete negative peaks before setting the landmarks.
+
+- Currently, the shiny browser support setting any landmark (peaks or valleys) to NA as missing. However, it does not support inserting new landmark(s). For example, if the marker density distribution shows a triple peak pattern but ADTnorm only detects two peaks across all the samples. Shiny browser does not allow manual insertion of a new peak and valley, but the user can tune the other parameters to push ADTnorm to detect three peaks: specify the target marker as ```trimodal_marker```, reducing the ```bw_smallest_tri``` or setting smaller bandwidth value and specify for the target ADT marker through ```bw_smallest_adjustments```.
+
+**For more detailed and typical parameter tuning examples, please visit [tutorial website](https://yezhengstat.github.io/ADTnorm/articles/ADTnorm-tutorial.html). We will illustrate using the demo data.**
+
+## Contact for questions, discussions, or potential collaborations
 
 [Ye Zheng](https://yezhengstat.github.io/)
 

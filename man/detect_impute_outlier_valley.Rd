@@ -2,7 +2,7 @@
 % Please edit documentation in R/detect_impute_outlier_valley.R
 \name{detect_impute_outlier_valley}
 \alias{detect_impute_outlier_valley}
-\title{Identify the valley outliers and impute by valley by closet neighbor samples on the graph.}
+\title{Identify the valley outliers and impute by valley by closet neighbors.}
 \usage{
 detect_impute_outlier_valley(
   valley_location_res,
@@ -18,22 +18,22 @@ detect_impute_outlier_valley(
 \arguments{
 \item{valley_location_res}{Matrix of valley landmark locations with rows being samples and columns being the valleys.}
 
-\item{adt_marker_select}{The marker whose valley need to be imputed. Fine the neighbor samples whose density distribution is close to the target sample of the same ADT marker.}
+\item{adt_marker_select}{The marker whose valley needs to be imputed. Find the neighbor samples whose density distribution is close to the target sample of the same ADT marker.}
 
 \item{cell_x_adt}{Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.}
 
-\item{cell_x_feature}{Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch related information.}
+\item{cell_x_feature}{Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch-related information.}
 
-\item{scale}{Scale level to defining outlier. Larger scale value corresponds to more severe ourliers.}
+\item{scale}{Scale level to defining outlier. A larger scale value corresponds to more severe outliers.}
 
-\item{method}{Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Default is MAD.}
+\item{method}{Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). The default is MAD.}
 
 \item{nearest_neighbor_n}{Number of top nearest neighbor samples to detect.}
 
 \item{nearest_neighbor_threshold}{Threshold to call neighbor samples.}
 }
 \description{
-This function identify the valley that tend to be outliers compared to other valley locations and try to find the closest samples that have similar density distribution to impute the valley. If no neighbor sample is detected, the valley will remain as original.
+This function identifies the valley(s) that tend to be outliers compared to other valley locations and tries to find the closest samples with similar density distribution to impute the valley. If no neighbor sample is detected, the valley will remain as original.
 }
 \examples{
 \dontrun{

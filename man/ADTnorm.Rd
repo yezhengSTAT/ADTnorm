@@ -18,7 +18,7 @@ ADTnorm(
   bw_smallest_tri = 0.8,
   bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8),
   quantile_clip = 1,
-  peak_type = "midpoint",
+  peak_type = "mode",
   multi_sample_per_batch = FALSE,
   shoulder_valley = TRUE,
   shoulder_valley_slope = -0.5,
@@ -28,78 +28,84 @@ ADTnorm(
   neg_candidate_thres = NULL,
   lower_peak_thres = 0.001,
   brewer_palettes = "Set1",
-  save_intermediate_rds = FALSE,
-  save_intermediate_fig = TRUE,
+  save_landmark = FALSE,
+  save_fig = TRUE,
   detect_outlier_valley = FALSE,
   target_landmark_location = NULL,
   clean_adt_name = FALSE,
-  customized_landmark = FALSE,
+  customize_landmark = FALSE,
+  override_landmark = NULL,
   verbose = FALSE
 )
 }
 \arguments{
-\item{cell_x_adt}{Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format. By default, ADTnorm expects raw counts to be provided and arcsin transformation to be performed by ADTnorm internally. If ADTnorm detects that the input count matrix is non-integer, it will skipped the arcsine transformation and user need to tune the parameters to fit their input transformation.}
+\item{cell_x_adt}{Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format. By default, ADTnorm expects raw counts as input data and arcsin transformation to be performed by ADTnorm internally. If ADTnorm detects that the input count matrix is a non-integer matrix, it will skip the arcsine transformation. Therefore, users also need to tune the parameters to fit their input transformation.}
 
-\item{cell_x_feature}{Matrix of cells (rows) by cell features (columns) such as sample, batch or other cell-type related information. Please ensure that cell_x_feature matrix at least contains sample and batch columns with the exact "sample" and "batch" column name. Also one sample should only has one unique batch label to avoid confusion in the final normalization results visualization.}
+\item{cell_x_feature}{Matrix of cells (rows) by cell features (columns) such as sample, batch, or other cell-type related information. Please ensure that the cell_x_feature matrix at least contains a sample column with the exact "sample" column name. Please note that "sample" should be the smallest unit to group the cells. At this resolution, ADTnorm will identify peaks and valleys to implement normalization. Please ensure the samples have different names across batches/conditions/studies. "batch" column is optional. It can be batches/conditions/studies etc, that group the samples based on whether the samples are collected from the same batch run or experiment. This column is needed if \code{multi_sample_per_batch} parameter is turned on to remove outlier positive peaks per batch or \code{detect_outlier_valley} for detecting and imputing outlier valleys per batch. If "batch" column is not provided, it will be set as the same as "sample" column. In the intermediate density plots that ADTnorm provides, density plots will be colored by the "batch" column.}
 
 \item{save_outpath}{The path to save the results.}
 
 \item{study_name}{Name of this run.}
 
-\item{marker_to_process}{Markers to normalize. Leaving empty to process all the ADT markers in cell_x_adt matrix.}
+\item{marker_to_process}{Markers to normalize. Leaving empty to process all the ADT markers in the cell_x_adt matrix.}
 
-\item{exclude_zeroes}{Indicator to consider zeros as NA, i.e., missing values. Recommend TRUE if zeroes in the data represent dropout, likely for large ADT panels, big datasets, or undersequenced data. Default is FALSE.}
+\item{exclude_zeroes}{Indicator to consider zeros as NA, i.e., missing values. Recommend TRUE if zeroes in the data represent dropout, likely for large ADT panels, big datasets, or under-sequenced data. The default is FALSE.}
 
 \item{bimodal_marker}{Specify ADT markers that are likely to have two peaks based on researchers' prior knowledge or preliminary observation of particular data to be processed. Leaving it as default, ADTnorm will try to find the bimodal peak in all markers that are not listed in \code{trimodal_marker.}}
 
 \item{trimodal_marker}{Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g., CD4) or preliminary observation on particular data to be processed.}
 
-\item{positive_peak}{A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to the positive peaks of other samples.}
+\item{positive_peak}{A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned with the positive peaks of other samples.}
 
 \item{bw_smallest_bi}{The smallest bandwidth parameter value for bi-modal peaks. Recommend 1.1.}
 
 \item{bw_smallest_tri}{The smallest bandwidth parameter value for tri-modal peaks. Recommend the same value for CD4, such as 0.5.}
 
-\item{bw_smallest_adjustments}{A named list of floats, with names matching marker names, specifying the smallest bandwidth parameter value. The default value is bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8). Recommend 0.5 or 0.8 for common multi-modal marker.}
+\item{bw_smallest_adjustments}{A named list of floats, with names matching marker names, specifying the smallest bandwidth parameter value. The default value is bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8). Recommend 0.5 or 0.8 for the common multi-modal marker.}
 
-\item{quantile_clip}{Implement an upper quantile clipping to avoid warping function errors caused by outlier measurement of extremely high expression. Provide the quantile threshold to remove outlier points above such quantile. Default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.}
+\item{quantile_clip}{Implement an upper quantile clipping to avoid warping function errors caused by outlier measurements of extremely high expression. Provide the quantile threshold to remove outlier points above such a quantile. The default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.}
 
-\item{peak_type}{The type of peak to be detected. Select from "midpoint" for setting the peak landmark to the midpoint of the peak region being detected or "mode" for setting the peak landmark to the mode location of the peak. "midpoint" can be generally more robust across samples and less impacted by the bandwidth. "mode" can be more accurate in determining the peak location if the bandwidth is generally ideal for the target marker.}
+\item{peak_type}{The type of peak to be detected. Select from "midpoint" for setting the peak landmark to the midpoint of the peak region being detected or "mode" for setting the peak landmark to the mode location of the peak. "midpoint" can generally be more robust across samples and less impacted by the bandwidth. "mode" can be more accurate in determining the peak location if the bandwidth is generally ideal for the target marker. The default is "mode".}
 
-\item{multi_sample_per_batch}{Set it to TRUE to discard the positive peak that only appear in one sample per batch (sample number is >=3 per batch).}
+\item{multi_sample_per_batch}{Set it to TRUE to discard the positive peak that only appears in one sample per batch (sample number is >=3 per batch).}
 
-\item{shoulder_valley}{Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population. Default is TRUE.}
+\item{shoulder_valley}{Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population. The default is TRUE.}
 
 \item{shoulder_valley_slope}{The slope on the ADT marker density distribution to call shoulder valley. Default is -0.5}
 
-\item{valley_density_adjust}{Parameter for \code{density} function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default’ bandwidth. Default is 3.}
+\item{valley_density_adjust}{Parameter for \code{density} function: bandwidth used is adjust*bw. This makes it easy to specify values like 'half the default' bandwidth. The default is 3.}
 
-\item{landmark_align_type}{Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes. Default is "negPeak_valley_posPeak".}
+\item{landmark_align_type}{Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes. The default is "negPeak_valley_posPeak".}
 
-\item{midpoint_type}{Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley"). Default is valley.}
+\item{midpoint_type}{Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley"). The default is "valley".}
 
-\item{neg_candidate_thres}{The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95\% quantile of IgG samples is large. Default is asinh(8/5+1) for raw count input. This filtering will be disabled if input is not raw count data.}
+\item{neg_candidate_thres}{The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95\% quantile of IgG samples is large. The default is asinh(8/5+1) for raw count input. This filtering will be disabled if the input is not raw count data.}
 
-\item{lower_peak_thres}{The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19. Default is 0.001.}
+\item{lower_peak_thres}{The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19. The default is 0.001.}
 
-\item{brewer_palettes}{Set the color scheme of color brewer. Default is "Set1".}
+\item{brewer_palettes}{Set the color scheme of the color brewer. The default is "Set1".}
 
-\item{save_intermediate_rds}{Save the rds file for the intermediate objects. Default is FALSE}
+\item{save_landmark}{Save the peak and valley locations in rds format. The default is FALSE.}
 
-\item{save_intermediate_fig}{Save the density plot figure for checking the peak and valley location detection. Default is TRUE.}
+\item{save_fig}{Save the density plot figure for checking the peak and valley location detection. We highly recommend checking the intermediate peak and valley locations identification on those density plots to visually check if the detection is accurate and if manual tuning is needed. The default is TRUE.}
 
-\item{detect_outlier_valley}{Detect outlier valley and impute by the neighbor samples. Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Recommend trying "MAD" first if needed. Default is FALSE.}
+\item{detect_outlier_valley}{Detect the outlier valley within each batch of samples and impute by the neighbor samples' valley location. For outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Recommend trying "MAD" first if needed. The default is FALSE.}
 
 \item{target_landmark_location}{Align the landmarks to a fixed location or, by default, align to the mean across samples for each landmark. The default value is NULL. Setting it to "fixed" will align the negative peak to 1 and the right-most positive peak to 5. Users can also assign a two-element vector indicating the location of the negative and most positive peaks to be aligned.}
 
-\item{clean_adt_name}{Clean the ADT marker name. Default is FALSE.}
+\item{clean_adt_name}{Clean the ADT marker name. The default is FALSE.}
 
-\item{customized_landmark}{By setting it to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameters tuning attempt. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to marker_to_process as the interactive function will pop out for every marker being processed. Default is FALSE.}
+\item{customize_landmark}{By setting it to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for the user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameter tuning attempts. It is better to narrow down a few ADT markers that need manual tuning and provide the list to marker_to_process, as the interactive function will pop out for every marker being processed. The default is FALSE.}
 
-\item{verbose}{Set the verbosity of the function. Default is FALSE.}
+\item{override_landmark}{Override the peak and valley locations if prior information is available or the user wants to manually adjust the peak and valley locations for certain markers. Input is in the format of list, i.e., list(CD3 = list(peak_landmark_list = customized_peak_landmark_list, valley_landmark_list = customized_valley_landmark_list), CD4 = list(peak_landmark_list = customized_peak_landmark_list, valley_landmark_list = customized_valley_landmark_list)). "customized_peak_landmark_list" and "customized_valley_landmark_list" are matrices of customized landmark locations with matching sample names as the rownames. The default is NULL.}
+
+\item{verbose}{Set the verbosity of the function. The default is FALSE.}
+}
+\value{
+A data frame list containing normalized count for the ADT markers specified to be normalized. To output the peak and valley locations before and after ADTnorm normalization, please set \code{save_landmark} to TRUE, and the landmarks will be saved as an rds file in the "save_outpath" directory.
 }
 \description{
-This function removes the technical variations such as batch effect, sequencing depth biases, antibody selection difference and antibody concentration differences, etc. The normalized samples are ready for integration across studies.
+This function removes the technical variations such as batch effect, sequencing depth biases, antibody selection differences and antibody concentration differences, etc. The normalized samples are ready for integration across studies.
 }
 \examples{
 \dontrun{

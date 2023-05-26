@@ -1,36 +1,38 @@
 #' ADTnorm normalization to remove the technical variations across samples for each ADT marker.
 #'
-#' This function removes the technical variations such as batch effect, sequencing depth biases, antibody selection difference and antibody concentration differences, etc. The normalized samples are ready for integration across studies.
-#' @param cell_x_adt Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format. By default, ADTnorm expects raw counts to be provided and arcsin transformation to be performed by ADTnorm internally. If ADTnorm detects that the input count matrix is non-integer, it will skipped the arcsine transformation and user need to tune the parameters to fit their input transformation.
-#' @param cell_x_feature Matrix of cells (rows) by cell features (columns) such as sample, batch or other cell-type related information. Please ensure that cell_x_feature matrix at least contains sample and batch columns with the exact "sample" and "batch" column name. Also one sample should only has one unique batch label to avoid confusion in the final normalization results visualization.
+#' This function removes the technical variations such as batch effect, sequencing depth biases, antibody selection differences and antibody concentration differences, etc. The normalized samples are ready for integration across studies.
+#' @param cell_x_adt Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format. By default, ADTnorm expects raw counts as input data and arcsin transformation to be performed by ADTnorm internally. If ADTnorm detects that the input count matrix is a non-integer matrix, it will skip the arcsine transformation. Therefore, users also need to tune the parameters to fit their input transformation.
+#' @param cell_x_feature Matrix of cells (rows) by cell features (columns) such as sample, batch, or other cell-type related information. Please ensure that the cell_x_feature matrix at least contains a sample column with the exact "sample" column name. Please note that "sample" should be the smallest unit to group the cells. At this resolution, ADTnorm will identify peaks and valleys to implement normalization. Please ensure the samples have different names across batches/conditions/studies. "batch" column is optional. It can be batches/conditions/studies etc, that group the samples based on whether the samples are collected from the same batch run or experiment. This column is needed if ```multi_sample_per_batch``` parameter is turned on to remove outlier positive peaks per batch or ```detect_outlier_valley``` for detecting and imputing outlier valleys per batch. If "batch" column is not provided, it will be set as the same as "sample" column. In the intermediate density plots that ADTnorm provides, density plots will be colored by the "batch" column.
 #' @param save_outpath The path to save the results.
 #' @param study_name Name of this run.
-#' @param marker_to_process Markers to normalize. Leaving empty to process all the ADT markers in cell_x_adt matrix.
-#' @param exclude_zeroes Indicator to consider zeros as NA, i.e., missing values. Recommend TRUE if zeroes in the data represent dropout, likely for large ADT panels, big datasets, or undersequenced data. Default is FALSE.
+#' @param marker_to_process Markers to normalize. Leaving empty to process all the ADT markers in the cell_x_adt matrix.
+#' @param exclude_zeroes Indicator to consider zeros as NA, i.e., missing values. Recommend TRUE if zeroes in the data represent dropout, likely for large ADT panels, big datasets, or under-sequenced data. The default is FALSE.
 #' @param bimodal_marker Specify ADT markers that are likely to have two peaks based on researchers' prior knowledge or preliminary observation of particular data to be processed. Leaving it as default, ADTnorm will try to find the bimodal peak in all markers that are not listed in `trimodal_marker.`
 #' @param trimodal_marker Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g., CD4) or preliminary observation on particular data to be processed.
-#' @param positive_peak A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to the positive peaks of other samples.
+#' @param positive_peak A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned with the positive peaks of other samples.
 #' @param bw_smallest_bi The smallest bandwidth parameter value for bi-modal peaks. Recommend 1.1.
 #' @param bw_smallest_tri The smallest bandwidth parameter value for tri-modal peaks. Recommend the same value for CD4, such as 0.5.
-#' @param bw_smallest_adjustments A named list of floats, with names matching marker names, specifying the smallest bandwidth parameter value. The default value is bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8). Recommend 0.5 or 0.8 for common multi-modal marker.
-#' @param quantile_clip Implement an upper quantile clipping to avoid warping function errors caused by outlier measurement of extremely high expression. Provide the quantile threshold to remove outlier points above such quantile. Default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.
-#' @param peak_type The type of peak to be detected. Select from "midpoint" for setting the peak landmark to the midpoint of the peak region being detected or "mode" for setting the peak landmark to the mode location of the peak. "midpoint" can be generally more robust across samples and less impacted by the bandwidth. "mode" can be more accurate in determining the peak location if the bandwidth is generally ideal for the target marker.
-#' @param multi_sample_per_batch Set it to TRUE to discard the positive peak that only appear in one sample per batch (sample number is >=3 per batch).
-#' @param shoulder_valley Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population. Default is TRUE.
+#' @param bw_smallest_adjustments A named list of floats, with names matching marker names, specifying the smallest bandwidth parameter value. The default value is bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8). Recommend 0.5 or 0.8 for the common multi-modal marker.
+#' @param quantile_clip Implement an upper quantile clipping to avoid warping function errors caused by outlier measurements of extremely high expression. Provide the quantile threshold to remove outlier points above such a quantile. The default is 1, meaning no filtering. 0.99 means 99th quantile and points above 99th quantile will be discard.
+#' @param peak_type The type of peak to be detected. Select from "midpoint" for setting the peak landmark to the midpoint of the peak region being detected or "mode" for setting the peak landmark to the mode location of the peak. "midpoint" can generally be more robust across samples and less impacted by the bandwidth. "mode" can be more accurate in determining the peak location if the bandwidth is generally ideal for the target marker. The default is "mode".
+#' @param multi_sample_per_batch Set it to TRUE to discard the positive peak that only appears in one sample per batch (sample number is >=3 per batch).
+#' @param shoulder_valley Indicator to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as a positive population. The default is TRUE.
 #' @param shoulder_valley_slope The slope on the ADT marker density distribution to call shoulder valley. Default is -0.5
-#' @param valley_density_adjust Parameter for `density` function: bandwidth used is adjust*bw. This makes it easy to specify values like ‘half the default’ bandwidth. Default is 3.
-#' @param landmark_align_type Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes. Default is "negPeak_valley_posPeak".
-#' @param midpoint_type Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley"). Default is valley.
-#' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large. Default is asinh(8/5+1) for raw count input. This filtering will be disabled if input is not raw count data. 
-#' @param lower_peak_thres The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19. Default is 0.001.
-#' @param brewer_palettes Set the color scheme of color brewer. Default is "Set1".
-#' @param save_intermediate_rds Save the rds file for the intermediate objects. Default is FALSE
-#' @param save_intermediate_fig Save the density plot figure for checking the peak and valley location detection. Default is TRUE.
-#' @param detect_outlier_valley Detect outlier valley and impute by the neighbor samples. Outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Recommend trying "MAD" first if needed. Default is FALSE.
+#' @param valley_density_adjust Parameter for `density` function: bandwidth used is adjust*bw. This makes it easy to specify values like 'half the default' bandwidth. The default is 3.
+#' @param landmark_align_type Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes. The default is "negPeak_valley_posPeak".
+#' @param midpoint_type Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley"). The default is "valley".
+#' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large. The default is asinh(8/5+1) for raw count input. This filtering will be disabled if the input is not raw count data. 
+#' @param lower_peak_thres The minimal ADT marker density height of calling it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19. The default is 0.001.
+#' @param brewer_palettes Set the color scheme of the color brewer. The default is "Set1".
+#' @param save_landmark Save the peak and valley locations in rds format. The default is FALSE.
+#' @param save_fig Save the density plot figure for checking the peak and valley location detection. We highly recommend checking the intermediate peak and valley locations identification on those density plots to visually check if the detection is accurate and if manual tuning is needed. The default is TRUE.
+#' @param detect_outlier_valley Detect the outlier valley within each batch of samples and impute by the neighbor samples' valley location. For outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Recommend trying "MAD" first if needed. The default is FALSE.
 #' @param target_landmark_location Align the landmarks to a fixed location or, by default, align to the mean across samples for each landmark. The default value is NULL. Setting it to "fixed" will align the negative peak to 1 and the right-most positive peak to 5. Users can also assign a two-element vector indicating the location of the negative and most positive peaks to be aligned.
-#' @param clean_adt_name Clean the ADT marker name. Default is FALSE.
-#' @param customized_landmark By setting it to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameters tuning attempt. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to marker_to_process as the interactive function will pop out for every marker being processed. Default is FALSE.
-#' @param verbose Set the verbosity of the function. Default is FALSE.
+#' @param clean_adt_name Clean the ADT marker name. The default is FALSE.
+#' @param customize_landmark By setting it to be TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for the user's manual setting of the peaks and valleys location. We recommend using this function after initial rounds of ADTnorm normalization with a few parameter tuning attempts. It is better to narrow down a few ADT markers that need manual tuning and provide the list to marker_to_process, as the interactive function will pop out for every marker being processed. The default is FALSE.
+#' @param override_landmark Override the peak and valley locations if prior information is available or the user wants to manually adjust the peak and valley locations for certain markers. Input is in the format of list, i.e., list(CD3 = list(peak_landmark_list = customized_peak_landmark_list, valley_landmark_list = customized_valley_landmark_list), CD4 = list(peak_landmark_list = customized_peak_landmark_list, valley_landmark_list = customized_valley_landmark_list)). "customized_peak_landmark_list" and "customized_valley_landmark_list" are matrices of customized landmark locations with matching sample names as the rownames. The default is NULL.
+#' @param verbose Set the verbosity of the function. The default is FALSE.
+#' @return A data frame list containing normalized count for the ADT markers specified to be normalized. To output the peak and valley locations before and after ADTnorm normalization, please set ```save_landmark``` to TRUE, and the landmarks will be saved as an rds file in the "save_outpath" directory.
 #' @examples
 #' \dontrun{
 #' ADTnorm(
@@ -42,9 +44,9 @@
 #'  )
 #' }
 #' @export
-#' @import dplyr tidyr ggplot2 shiny ggridges flowCore
+#' @import dplyr tidyr ggplot2 shiny ggridges
 #' @importFrom stats quantile
-ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL, study_name = "ADTnorm", marker_to_process = NULL, exclude_zeroes = FALSE, bimodal_marker = NULL, trimodal_marker = NULL, positive_peak = NULL, bw_smallest_bi = 1.1, bw_smallest_tri = 0.8, bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8), quantile_clip = 1, peak_type = "midpoint", multi_sample_per_batch = FALSE, shoulder_valley = TRUE, shoulder_valley_slope = -0.5, valley_density_adjust = 3, landmark_align_type = "negPeak_valley_posPeak", midpoint_type = "valley", neg_candidate_thres = NULL, lower_peak_thres = 0.001, brewer_palettes = "Set1", save_intermediate_rds = FALSE, save_intermediate_fig = TRUE, detect_outlier_valley = FALSE, target_landmark_location = NULL, clean_adt_name = FALSE, customized_landmark = FALSE, verbose = FALSE){
+ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL, study_name = "ADTnorm", marker_to_process = NULL, exclude_zeroes = FALSE, bimodal_marker = NULL, trimodal_marker = NULL, positive_peak = NULL, bw_smallest_bi = 1.1, bw_smallest_tri = 0.8, bw_smallest_adjustments = list(CD3 = 0.8, CD4 = 0.8, CD8 = 0.8), quantile_clip = 1, peak_type = "mode", multi_sample_per_batch = FALSE, shoulder_valley = TRUE, shoulder_valley_slope = -0.5, valley_density_adjust = 3, landmark_align_type = "negPeak_valley_posPeak", midpoint_type = "valley", neg_candidate_thres = NULL, lower_peak_thres = 0.001, brewer_palettes = "Set1", save_landmark = FALSE, save_fig = TRUE, detect_outlier_valley = FALSE, target_landmark_location = NULL, clean_adt_name = FALSE, customize_landmark = FALSE, override_landmark = NULL, verbose = FALSE){
     
     ## =========================
     ## INPUT PARAMETER CHECKING
@@ -56,17 +58,17 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         as_int = as.matrix(cell_x_adt)
         mode(as_int) = "integer"
         if(any(as_int[!is.na(as_int)] != matrix[!is.na(matrix)])){ ## if any input count is not integer
-            print("Note: Input ADT count matrix values are not all integer hence the input is NOT considered as raw count data. ADTnorm will assume transformation or scaling has been done and will skip the arcsine transformation......")
+            print("Note: Input ADT count matrix values are not all integer, hence the input is NOT considered as raw count data. ADTnorm will assume transformation or scaling has been done and will skip the arcsine transformation......")
             arcsine_transform_flag = FALSE
             if(is.null(neg_candidate_thres)){
-                print("neg_candidate_thres is not set hence the suspecious negative peak candidate filtering function will be diabled. Come back to set it if several negative peaks are mistakenly detected due to the discrete values around 0.")
+                print("neg_candidate_thres is not set; hence the suspicious negative peak candidate filtering function will be disabled. Return to set it if several negative peaks are mistakenly detected due to the discrete values around 0.")
                 neg_candidate_thres = min(matrix) ## disable the negative peak candidates filtering
             }
            
 
         }else{ ## all input counts are integer, check if counts are nonnegative
             if(any(matrix[!is.na(matrix)] < 0)){
-                stop("ADTnorm detects integer input ADT count matrix and hence assume input is raw count. Please check why there is non-negative value in the raw count matrix.")
+                stop("ADTnorm detects integer input ADT count matrix and assumes the input is raw count. Please check why there is any non-negative values in the raw count matrix.")
             }
             arcsine_transform_flag = TRUE
 
@@ -77,18 +79,17 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         }
     }
     if(nrow(cell_x_adt) < ncol(cell_x_adt)){ ## ensure the input matrix in the right format: cell as row and adt marker as column
-        stop("Please check if the ADT raw count matrix has cell as row and adt marker as column.")
+        stop("Please check if the ADT raw count matrix has the cell as the row and the ADT marker as the column.")
     }
     if(is.null(cell_x_feature)){ ## check if feature information is provided that include sample and/or batch
-        stop("Please provide cell meta information including the sample and/or batch.")
+        stop("Please provide cell meta information, including the sample and/or batch.")
     }else{
         if(!("sample" %in% colnames(cell_x_feature))){ ## ensure that feature matrix has a column indicating the sample label
-            stop("Please provide the label for each sample and name the column 'sample'. sample is the smallest unit that you want to group the cells. It can be a donor or a donor under one condition or within one batch run. Please note that one sample should only has one unique batch label to avoid confusion in the normalization.")
-        }else{
-            print("Reminder: Please note that one sample should only has one unique batch label to avoid confusion in the normalization and visualization......")
+            stop("Please ensure that the 'cell_x_feature' matrix at least contains a sample column with the exact 'sample' column name. Please note that 'sample' should be the smallest unit to group the cells. At this resolution, ADTnorm will identify peaks and valleys to implement normalization. Please ensure the samples have different names across batches/conditions/studies.")
         }
         if(!("batch" %in% colnames(cell_x_feature))){ ## check 
-            stop("Please provide the label for each batch run and name the column 'batch'. batch refers to the experimental run or scenarios where unwanted technical noise was introduced. Please note that one sample should only has one unique batch label to avoid confusion in the normalization.")
+            print("'batch' column is not provided. It will be set as the same as the 'sample' column.")
+            cell_x_feature$batch = cell_x_feature$sample
         }
         if(nrow(cell_x_feature) != nrow(cell_x_adt)){
             stop("Please check if the cell number matches between cell_x_adt and cell_x_feature matrices.")
@@ -105,15 +106,15 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         print("The remaining existing markers will be processed. Stop the job and rerun if you want to modify marker_to_process......")
     }
     if(sum(!(bimodal_marker %in% colnames(cell_x_adt))) > 0){ ## check if adt marker provided are not among the input adt count matrix columns.
-        stop("Please provide consistent bimodal marker name as the column name of input ADT count matrix.")
+        stop("Please provide a consistent bimodal marker name as the column name of the input ADT count matrix.")
     }
     if(sum(!(trimodal_marker %in% colnames(cell_x_adt))) > 0){ ## check if adt marker provided are not among the input adt count matrix columns.
-        stop("Please provide consistent trimodal marker name as the column name of input ADT count matrix.")
+        stop("Please provide a consistent trimodal marker name as the column name of the input ADT count matrix.")
     }
-    if(save_intermediate_rds && is.null(save_outpath)){ ## check the output path to save intermediate data
-        stop("Please provide the save_outpath to save the intermediate results in rds.")
+    if(save_landmark && is.null(save_outpath)){ ## check the output path to save intermediate data
+        stop("Please provide the save_outpath to save the landmark identification results in rds.")
     }
-    if(save_intermediate_fig && is.null(save_outpath)){ ## check the output path to save intermediate figures
+    if(save_fig && is.null(save_outpath)){ ## check the output path to save intermediate figures
         stop("Please provide the save_outpath to save the intermediate figures in pdf.")
     }
     if(!is.null(target_landmark_location)){ ## Check if user wants to align to a fixed location. 
@@ -251,8 +252,8 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         if(detect_outlier_valley != FALSE){ ## detect if valley is outlier and impute by neighbor samples if found
             valley_location_res = detect_impute_outlier_valley(valley_location_res, adt_marker_select, cell_x_adt, cell_x_feature, scale = 3, method = detect_outlier_valley, nearest_neighbor_n = 3, nearest_neighbor_threshold = 0.75)
         }
-        ## Manual overwrite the peak location - peak and valley 
-        if(customized_landmark){
+        ## Manual tune the landmark location - peak and valley 
+        if(customize_landmark){
             cell_x_adt_sample = data.frame(adt = cell_x_adt[, adt_marker_select], sample = cell_x_feature[, "sample"], batch = cell_x_feature[, "batch"])
             num_landmark = ncol(peak_mode_res) + ncol(valley_location_res)
 
@@ -277,13 +278,64 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
                 print(landmark_pos_customized)
             }
         }   
+        ## override the landmark location
+        if(adt_marker_select_name %in% names(override_landmark)){
+            if("peak_landmark_list" %in% names(override_landmark[[adt_marker_select_name]])){ ## override peaks
+                override_peak = override_landmark[[adt_marker_select_name]]$peak_landmark_list
+                len_needed = ncol(peak_mode_res)
+                len_provided = ncol(override_peak)
 
+                if(len_needed > len_provided){
+                    print(paste0("Identified ", len_needed, " peaks but only ", len_provided, " peak locations are provided. Will only overlap the first ", len_provided, " peaks detected by ADTnorm."))
+                    peak_replace_len = len_provided
+                    provide_replace_len = len_provided
+                }else if(len_needed < len_provided){
+                    print(paste0("Identified ", len_needed, " peaks but more peaks (", len_provided, ") are provided. Will only use the first ", len_needed, " peaks provided to override the peaks detected by ADTnorm."))
+                    peak_replace_len = len_needed
+                    provide_replace_len = len_needed
+                }else{
+                    peak_replace_len = len_needed
+                    provide_replace_len = len_provided
+                }
+                for(each_item in rownames(override_peak)){
+                    if(each_item %in% rownames(peak_mode_res)){ 
+                        peak_mode_res[each_item, 1:peak_replace_len] = override_peak[each_item, 1:provide_replace_len]
+                    }  
+                }
+            }
+            if("valley_landmark_list" %in% names(override_landmark[[adt_marker_select_name]])){ ## override valleys
+                override_valley = override_landmark[[adt_marker_select_name]]$valley_landmark_list
+                len_needed = ncol(valley_location_res)
+                len_provided = ncol(override_valley)
+
+                if(len_needed > len_provided){
+                    print(paste0("Identified ", len_needed, " valleys but only ", len_provided, " valley locations are provided. Will only overlap the first ", len_provided, " valleys detected by ADTnorm."))
+                    valley_replace_len = len_provided
+                    provide_replace_len = len_provided
+                }else if(len_needed < len_provided){
+                    print(paste0("Identified ", len_needed, " valleys but more valleys (", len_provided, ") are provided. Will only use the first ", len_needed, " valleys provided to override the valleys detected by ADTnorm."))
+                    valley_replace_len = len_needed
+                    provide_replace_len = len_needed
+                }else{
+                    valley_replace_len = len_needed
+                    provide_replace_len = len_provided
+                }
+                for(each_item in rownames(override_valley)){
+                    if(each_item %in% rownames(valley_location_res)){ 
+                        valley_location_res[each_item, 1:valley_replace_len] = override_valley[each_item, 1:provide_replace_len]
+                    }                   
+                }
+            }
+        }
+      
         
         ## density plot for peak and valley location checking
         if(arcsine_transform_flag){
             run_label = "Arcsinh Transformation"
+            run_label_name = "ArcsinhTransformation"
         }else{
             run_label = "Input Transformation"
+            run_label_name = "InputTransformation"
         }
         density_plot = plot_adt_density_with_peak_valley_each(cell_x_adt[, adt_marker_select], cell_x_feature, peak_landmark_list = peak_mode_res, valley_landmark_list = valley_location_res, brewer_palettes = brewer_palettes, parameter_list = list(
             bw = 0.1,
@@ -295,21 +347,21 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
             peak_landmark_list = peak_mode_res,
             valley_landmark_list = valley_location_res
         )
-        if(save_intermediate_rds){
+        if(save_landmark){
             if(!dir.exists(paste0(save_outpath, "/RDS"))){
                 dir.create(paste0(save_outpath, "/RDS"), recursive = TRUE)
             }
             
-            saveRDS(peak_valley, file = paste0(save_outpath, "/RDS/peak_valley_raw_", adt_marker_select_name, "_", study_name, ".rds"), compress = FALSE)
-            saveRDS(density_plot, file = paste0(save_outpath, "/RDS/density_raw_", adt_marker_select_name, "_", study_name, ".rds"), compress = FALSE)
+            saveRDS(peak_valley, file = paste0(save_outpath, "/RDS/peak_valley_locations_", adt_marker_select_name, "_", study_name, ".rds"), compress = FALSE)
+            # saveRDS(density_plot, file = paste0(save_outpath, "/RDS/density_object_", adt_marker_select_name, "_", study_name, ".rds"), compress = FALSE)
             
         }
-        if(save_intermediate_fig){
+        if(save_fig){
             if(!dir.exists(paste0(save_outpath, "/figures"))){
                 dir.create(paste0(save_outpath, "/figures"), recursive = TRUE)
             }
             
-            grDevices::pdf(paste0(save_outpath, "/figures/ArcsinhTransform_", adt_marker_select_name, "_", study_name, ".pdf"), width = 11, height = ceiling(length(levels(cell_x_feature$sample)) * 0.4))
+            grDevices::pdf(paste0(save_outpath, "/figures/", run_label_name, "_", adt_marker_select_name, "_", study_name, ".pdf"), width = 11, height = ceiling(length(levels(cell_x_feature$sample)) * 0.4))
             print(density_plot)
             grDevices::dev.off()
         }
@@ -364,10 +416,17 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
                 run_label = "ADTnorm"
             )
         )
-        if(save_intermediate_rds){
-            saveRDS(density_norm_plot, file = paste0(save_outpath, "/RDS/density_ADTnorm_", adt_marker_select_name, "_", study_name, ".rds"), compress = FALSE)
+        if(save_landmark){
+            ## save peak and valley objects
+            peak_valley_norm = list(
+                peak_landmark_list = peak_mode_norm_res,
+                valley_landmark_list = valley_location_norm_res
+            )
+            saveRDS(peak_valley_norm, file = paste0(save_outpath, "/RDS/ADTnorm_peak_valley_locations_", adt_marker_select_name, "_", study_name, ".rds"), compress = FALSE)
+            
+            # saveRDS(density_norm_plot, file = paste0(save_outpath, "/RDS/density_ADTnorm_", adt_marker_select_name, "_", study_name, ".rds"), compress = FALSE)
         }
-        if(save_intermediate_fig){
+        if(save_fig){
             grDevices::pdf(paste0(save_outpath, "/figures/ADTnorm_", adt_marker_select_name, "_", study_name, ".pdf"), width = 11, height = ceiling(length(levels(cell_x_feature$sample)) * 0.4))
             print(density_norm_plot)
             grDevices::dev.off()

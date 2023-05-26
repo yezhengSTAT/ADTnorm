@@ -1,17 +1,17 @@
 #' Get the peak landmarks location using the peak region midpoint
 #'
-#' This function detect the peak landmark locations for each sample per ADT markers based on the midpoint of the peak region. Using the peak midpoint instead of the peak mode can be more stable across samples and less affected by the bandwidth.
+#' This function detects the peak landmark locations for each sample per ADT markers based on the midpoint of the peak region. Using the peak midpoint instead of the peak mode can be more stable across samples and less affected by the bandwidth.
 #' @param cell_x_adt Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.
-#' @param cell_x_feature Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch related information.
-#' @param adt_marker_select Markers to normalize. Leaving empty to process all the ADT markers in cell_x_adt matrix.
+#' @param cell_x_feature Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch-related information.
+#' @param adt_marker_select Markers to normalize. Leaving empty to process all the ADT markers in the cell_x_adt matrix.
 #' @param adt_marker_index Index of the ADT markers that will be normalized. Leaving empty if adt_marker_select is not specified.
-#' @param bwFac_smallest The smallest band width parameter value. Recommend 1.1 for general bi-modal ADT markers except CD3, CD4 and CD8.
+#' @param bwFac_smallest The smallest bandwidth parameter value. Recommend 1.1 for general bi-modal ADT markers except for CD3, CD4, and CD8.
 #' @param bimodal_marker_index Index of the ADT markers that tend to have two peaks based on researchers' prior knowledge or preliminary observation on particular data to be processed.
-#' @param trimodal_marker_index Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g. CD4) or preliminary observation on particular data to be processed.
-#' @param positive_peak A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to positive peaks of other samples.
-#' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples are large.
-#' @param lower_peak_thres The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid suspecious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.
-#' @param arcsine_transform_flag The flag indicating if input is raw count and arcsine transformation is implemented.
+#' @param trimodal_marker_index Index of the ADT markers that tend to have three peaks based on researchers' prior knowledge (e.g., CD4) or preliminary observation on particular data to be processed.
+#' @param positive_peak A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned with the positive peaks of other samples.
+#' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large.
+#' @param lower_peak_thres The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.
+#' @param arcsine_transform_flag The flag indicates if the input is raw count and arcsine transformation is implemented.
 #' @export
 #' @examples
 #' \dontrun{

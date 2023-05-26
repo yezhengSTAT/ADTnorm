@@ -23,32 +23,32 @@ get_valley_location(
 \arguments{
 \item{cell_x_adt}{Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.}
 
-\item{cell_x_feature}{Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch related information.}
+\item{cell_x_feature}{Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch-related information.}
 
-\item{adt_marker_select}{Markers to normalize. Leaving empty to process all the ADT markers in cell_x_adt matrix.}
+\item{adt_marker_select}{Markers to normalize. Leaving empty to process all the ADT markers in the cell_x_adt matrix.}
 
 \item{peak_mode_res}{The peak landmark results coming out of \code{get_peak_mode} or \code{get_peak_midpoint} function.}
 
-\item{shoulder_valley}{Indictor to specify whether a shoulder valley is expected in case of heavy right tail where the population of cells should be considered as positive population.}
+\item{shoulder_valley}{Indictor to specify whether a shoulder valley is expected in case of the heavy right tail where the population of cells should be considered as positive population.}
 
-\item{positive_peak}{A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned to positive peaks of other samples.}
+\item{positive_peak}{A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned with the positive peaks of other samples.}
 
-\item{multi_sample_per_batch}{Set it to TRUE to discard the positive peak that only appear in one sample per batch (sample number is >=3 per batch).}
+\item{multi_sample_per_batch}{Set it to TRUE to discard the positive peak that only appears in one sample per batch (sample number is >=3 per batch).}
 
-\item{adjust}{Parameter for \code{density} function: bandwidth used is actually adjust*bw. This makes it easy to specify values like ‘half the default’ bandwidth.}
+\item{adjust}{Parameter for \code{density} function: bandwidth used is actually adjust*bw. This makes it easy to specify values like 'half the default' bandwidth.}
 
-\item{min_fc}{Mimimal fold change between the highest peak density height and candidate valley density height. Default is 20.}
+\item{min_fc}{Mimimal fold change between the highest peak density height and candidate valley density height. The default is 20.}
 
 \item{shoulder_valley_slope}{The slope on the ADT marker density distribution to call shoulder valley.}
 
-\item{lower_peak_thres}{The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid suspecious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.}
+\item{lower_peak_thres}{The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid suspicious positive peaks. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.}
 
-\item{neg_candidate_thres}{The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95\% quantile of IgG samples are large.}
+\item{neg_candidate_thres}{The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95\% quantile of IgG samples is large.}
 
-\item{arcsine_transform_flag}{The flag indicating if input is raw count and arcsine transformation is implemented.}
+\item{arcsine_transform_flag}{The flag indicates if the input is raw count and arcsine transformation is implemented.}
 }
 \description{
-This function detect the valley locations either between every two peak landmarks or cut at the right heavy tails. If specified positive uni-peak, the valley location will be set at the left side of the uni-peak.
+This function detects the valley locations either between every two peak landmarks or cut at the right heavy tails. If the specified positive uni-peak, the valley location will be set at the left side of the uni-peak.
 }
 \examples{
 \dontrun{

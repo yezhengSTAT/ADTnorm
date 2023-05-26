@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_adt_density_with_peak_valley_each.R
 \name{plot_adt_density_with_peak_valley_each}
 \alias{plot_adt_density_with_peak_valley_each}
-\title{Plot the expression density profile for ONE ADT marker with identifies peak and valley locations}
+\title{Plot the expression density profile for ONE ADT marker with identified peak and valley locations}
 \usage{
 plot_adt_density_with_peak_valley_each(
   adt_count,
@@ -16,18 +16,18 @@ plot_adt_density_with_peak_valley_each(
 \arguments{
 \item{adt_count}{Matrix of ADT raw counts in cells (rows) by one target ADT marker (column) format.}
 
-\item{cell_x_feature}{Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch related information.}
+\item{cell_x_feature}{Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch-related information.}
 
 \item{peak_landmark_list}{Matrix of peak landmark locations with rows being samples and columns being the peaks.}
 
 \item{valley_landmark_list}{Matrix of valley landmark locations with rows being samples and columns being the valleys.}
 
-\item{brewer_palettes}{Set the color scheme of color brewer.}
+\item{brewer_palettes}{Set the color scheme of the color brewer.}
 
-\item{parameter_list}{Users can specify: "run_label" to give name for this run; "bw" to adjust the band width of the density plot.}
+\item{parameter_list}{Users can specify: "run_label" to give a name for this run; "bw" to adjust the bandwidth of the density plot.}
 }
 \description{
-This function plots adt expression density profile with identifies peak and valley locations for only one ADT marker. Each track is a sample. Color by batch
+This function plots the ADT expression density profile with identified peak and valley locations for only one ADT marker. Each track is a sample. Color by batch
 }
 \examples{
 \dontrun{

@@ -1,6 +1,6 @@
 #' A matrix of raw count for the cell by ADT markers
 #'
-#' A dataset containing 422682 cells and 9 ADT markers for the CITE-seq raw measurement of 13 public available CITE-seq datasets.
+#' A dataset containing 422682 cells and 9 ADT markers for the CITE-seq raw measurement of 13 publicly available CITE-seq datasets.
 #'
 #' @format A data frame with 422682 rows and 9 variables:
 #' \describe{
@@ -19,7 +19,7 @@
 
 #' A matrix of raw count for the cell by features
 #'
-#' A dataset containing 422682 cells and 7 feature categories for the CITE-seq raw measurement of 13 public available CITE-seq datasets.
+#' A dataset containing 422682 cells and 7 feature categories for the CITE-seq raw measurement of 13 publicly available CITE-seq datasets.
 #'
 #' @format A data frame with 422682 rows and 7 variables:
 #' \describe{

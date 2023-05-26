@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_customize_landmark.R
 \name{get_customize_landmark}
 \alias{get_customize_landmark}
-\title{Get the user-customized peaks and valleys location for each sample}
+\title{Prompt Shiny browser to manually customize peaks and valleys locations.}
 \usage{
 get_customize_landmark(
   cell_x_adt_sample,
@@ -13,18 +13,18 @@ get_customize_landmark(
 )
 }
 \arguments{
-\item{cell_x_adt_sample}{Matrix of adt counts of seleted marker, with columns of sample and batch information for each row of cells.}
+\item{cell_x_adt_sample}{Matrix of ADT counts of the selected marker, with columns of sample and batch information for each row of cells.}
 
 \item{landmark_pos}{Matrix of landmark location including peaks and valleys.}
 
 \item{bw}{Bandwidth for the density plot.}
 
-\item{adt_marker_select_name}{The adt marker needed to be manually processed to set the landmarks.}
+\item{adt_marker_select_name}{The ADT marker needed to be manually processed to set the landmarks.}
 
-\item{brewer_palettes}{Set the color scheme of color brewer. Default is "Set1".}
+\item{brewer_palettes}{Set the color scheme of the color brewer. The default is "Set1".}
 }
 \description{
-This function will launch a shiny app to allow user to manually set the peaks and valleys location. The function will output the landmark positions that user has set.
+This function will launch a shiny app allowing the user to set the location of peaks and valleys manually. The function will output the landmark positions that the user has set.
 }
 \examples{
 \dontrun{

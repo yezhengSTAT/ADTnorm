@@ -1,6 +1,6 @@
 #' Clean ADT marker name
 #'
-#' This function enables the general ADT name clearning but users should try cleaning and unifying their ADT marker name first. Please also make sure there is no "/" in the ADT name such as "TCRγ/δ".
+#' This function enables the general cleaning of ADT marker names. Regardless, users should try cleaning and unifying their ADT marker name first. Please also ensure there is no "/" in the ADT name, such as "TCRγ/δ".
 #' @param adt_name A vector of ADT marker name.
 #' @export
 #' @examples

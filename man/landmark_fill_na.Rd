@@ -2,7 +2,7 @@
 % Please edit documentation in R/landmark_fill_na.R
 \name{landmark_fill_na}
 \alias{landmark_fill_na}
-\title{Merge the peak and valley landmarks locations and fill in NA if landmark is not detected.}
+\title{Merge locations of peak and valley landmarks}
 \usage{
 landmark_fill_na(
   peak_landmark_list = NULL,
@@ -13,18 +13,18 @@ landmark_fill_na(
 )
 }
 \arguments{
-\item{peak_landmark_list}{Matrix of peak landmark detection results. Rows are samples and column(s) are the peak locations.}
+\item{peak_landmark_list}{Matrix of peak landmark detection results. Rows are samples, and column(s) are the peak locations.}
 
-\item{valley_landmark_list}{Matrix of valley landmark detection results. Rows are samples and column(s) are the valley locations.}
+\item{valley_landmark_list}{Matrix of valley landmark detection results. Rows are samples, and column(s) are the valley locations.}
 
 \item{landmark_align_type}{Algin the peak and valleys using one of the "negPeak", "negPeak_valley", "negPeak_valley_posPeak", and "valley" alignment modes.}
 
-\item{midpoint_type}{Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valley ("valley").}
+\item{midpoint_type}{Fill in the missing first valley by the midpoint of two positive peaks ("midpoint") or impute by other valleys ("valley").}
 
-\item{neg_candidate_thres}{The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95\% quantile of IgG samples are large.}
+\item{neg_candidate_thres}{The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95\% quantile of IgG samples is large.}
 }
 \description{
-This function detect the valley locations either between every two peak landmarks or cut at the right heavy tails. If specified positive uni-peak, the valley location will be set at the left side of the uni-peak.
+This function merges the peak and valley landmarks locations and fills in NA if the landmark is not detected.
 }
 \examples{
 \dontrun{

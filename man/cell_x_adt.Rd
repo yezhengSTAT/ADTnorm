@@ -25,6 +25,6 @@ See detailed description in the manuscript
 cell_x_adt
 }
 \description{
-A dataset containing 422682 cells and 9 ADT markers for the CITE-seq raw measurement of 13 public available CITE-seq datasets.
+A dataset containing 422682 cells and 9 ADT markers for the CITE-seq raw measurement of 13 publicly available CITE-seq datasets.
 }
 \keyword{datasets}

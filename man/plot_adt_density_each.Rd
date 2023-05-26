@@ -14,14 +14,14 @@ plot_adt_density_each(
 \arguments{
 \item{adt_count}{Matrix of ADT raw counts in cells (rows) by one target ADT marker (column) format.}
 
-\item{cell_x_feature}{Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch related information.}
+\item{cell_x_feature}{Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch-related information.}
 
-\item{brewer_palettes}{Set the color scheme of color brewer.}
+\item{brewer_palettes}{Set the color scheme of the color brewer.}
 
-\item{parameter_list}{Users can specify: "run_label" to give name for this run; "bw" to adjust the band width of the density plot.}
+\item{parameter_list}{Users can specify: "run_label" to give a name for this run; "bw" to adjust the bandwidth of the density plot.}
 }
 \description{
-This function plots adt expression density profile for only one ADT marker. Each track is a sample. Color by batch
+This function plots the ADT expression density profile for only one ADT marker. Each track is a sample. Color by batch
 }
 \examples{
 \dontrun{

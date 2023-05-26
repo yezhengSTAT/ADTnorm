@@ -1,13 +1,13 @@
-#' Plot adt expression density profile with identifies peak and valley locations
+#' Plot ADT marker expression density profile with identified peak and valley locations
 #'
-#' This function plots adt expression density profile with identifies peak and valley locations. Each panel is an ADT marker and each track is a sample. Color by batch
+#' This function plots the ADT expression density profile with identified peak and valley locations. Each panel is an ADT marker, and each track is a sample. Color by batch
 #' @param cell_x_adt Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format.
-#' @param cell_x_feature Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch related information.
+#' @param cell_x_feature Matrix of cells (rows) by cell features (columns) such as cell type, sample, and batch-related information.
 #' @param adt_marker_select The target ADT marker(s) that the denstiy plot is about. Leave it NULL will generate figures for all the ADT markers available in cell_x_adt.
 #' @param peak_landmark_list Matrix of peak landmark locations with rows being samples and columns being the peaks.
 #' @param valley_landmark_list Matrix of valley landmark locations with rows being samples and columns being the valleys.
-#' @param brewer_palettes Set the color scheme of color brewer.
-#' @param parameter_list Users can specify: "run_label" to give name for this run; "bw" to adjust the band width of the density plot.
+#' @param brewer_palettes Set the color scheme of the color brewer.
+#' @param parameter_list Users can specify: "run_label" to give a name for this run; "bw" to adjust the bandwidth of the density plot.
 #' @export
 #' @examples
 #' \dontrun{
