@@ -310,7 +310,7 @@ Please note:
 
 ```override_landmark```: Override the peak and valley locations if prior information is available or the user wants to manually adjust the peak and valley locations for certain markers. The input value of ```override_landmark``` is in the same format of the intermediate landmark location saved in the rds file if ```save_landmark``` is set to TRUE. More specifically, the user can overwrite the landmark values by providing a matrix of new landmark values:
 
-```{r alignfixed, eval = FALSE}
+```{r override, eval = FALSE}
 customized_peak_landmark_list = matrix(rnorm(26), nrow = 13, ncol = 2)
 rownames(customized_peak_landmark_list) = rownames(peak_mode_res)
 customized_valley_landmark_list = matrix(rnorm(26), nrow = 13, ncol = 1)
