@@ -204,7 +204,7 @@ Color-coded by studies as batches.
 
 ```customize_landmark```: By setting it to TRUE, ADTnorm will trigger the interactive landmark tuning function and pop out a shiny application for the user's manual setting of peak and valley locations. The procedure for adjusting the landmarks (peaks and valleys) is below.
 
-<img src="../man/figures/ShinyR.png" alt="ShinyR" width="1000px">
+<img src="./man/figures/ShinyR.png" alt="ShinyR" width="1000px">
 
 Please note:
 
