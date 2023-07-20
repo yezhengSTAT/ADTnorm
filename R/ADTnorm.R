@@ -252,32 +252,7 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         if(detect_outlier_valley != FALSE){ ## detect if valley is outlier and impute by neighbor samples if found
             valley_location_res = detect_impute_outlier_valley(valley_location_res, adt_marker_select, cell_x_adt, cell_x_feature, scale = 3, method = detect_outlier_valley, nearest_neighbor_n = 3, nearest_neighbor_threshold = 0.75)
         }
-        ## Manual tune the landmark location - peak and valley 
-        if(customize_landmark){
-            cell_x_adt_sample = data.frame(adt = cell_x_adt[, adt_marker_select], sample = cell_x_feature[, "sample"], batch = cell_x_feature[, "batch"])
-            num_landmark = ncol(peak_mode_res) + ncol(valley_location_res)
-
-            landmark_pos = matrix(nrow = nrow(peak_mode_res), ncol = num_landmark)
-            landmark_pos[, seq(1, num_landmark, 2)] = peak_mode_res
-            landmark_pos[, seq(2, num_landmark, 2)] = valley_location_res
-            rownames(landmark_pos) = rownames(peak_mode_res)
-            colnames(landmark_pos)[seq(1, num_landmark, 2)] = paste0("peak", 1:ncol(peak_mode_res))
-            colnames(landmark_pos)[seq(2, num_landmark, 2)] = paste0("valley", 1:ncol(valley_location_res))
-
-            landmark_pos_customized = get_customize_landmark(cell_x_adt_sample, landmark_pos, bw = 0.2, adt_marker_select_name = adt_marker_select_name)
-            peak_mode_res = landmark_pos_customized[, seq(1, num_landmark, 2), drop = FALSE]
-            valley_location_res = landmark_pos_customized[, seq(2, num_landmark, 2), drop = FALSE]
-
-            peak_mode_res_na <- apply(peak_mode_res, 2, function(x) all(is.na(x)))
-            if(any(peak_mode_res_na)){
-                peak_mode_res_filter <- peak_mode_res[, -which(peak_mode_res_na), drop = FALSE]
-                peak_mode_res <- peak_mode_res_filter
-            }
-            if(verbose){
-                print("Customized landmark positions:")
-                print(landmark_pos_customized)
-            }
-        }   
+         
         ## override the landmark location
         if(adt_marker_select_name %in% names(override_landmark)){
             if("peak_landmark_list" %in% names(override_landmark[[adt_marker_select_name]])){ ## override peaks
@@ -327,7 +302,33 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
                 }
             }
         }
-      
+        
+        ## Manual tune the landmark location - peak and valley 
+        if(customize_landmark){
+            cell_x_adt_sample = data.frame(adt = cell_x_adt[, adt_marker_select], sample = cell_x_feature[, "sample"], batch = cell_x_feature[, "batch"])
+            num_landmark = ncol(peak_mode_res) + ncol(valley_location_res)
+
+            landmark_pos = matrix(nrow = nrow(peak_mode_res), ncol = num_landmark)
+            landmark_pos[, seq(1, num_landmark, 2)] = peak_mode_res
+            landmark_pos[, seq(2, num_landmark, 2)] = valley_location_res
+            rownames(landmark_pos) = rownames(peak_mode_res)
+            colnames(landmark_pos)[seq(1, num_landmark, 2)] = paste0("peak", 1:ncol(peak_mode_res))
+            colnames(landmark_pos)[seq(2, num_landmark, 2)] = paste0("valley", 1:ncol(valley_location_res))
+
+            landmark_pos_customized = get_customize_landmark(cell_x_adt_sample, landmark_pos, bw = 0.2, adt_marker_select_name = adt_marker_select_name)
+            peak_mode_res = landmark_pos_customized[, seq(1, num_landmark, 2), drop = FALSE]
+            valley_location_res = landmark_pos_customized[, seq(2, num_landmark, 2), drop = FALSE]
+
+            peak_mode_res_na <- apply(peak_mode_res, 2, function(x) all(is.na(x)))
+            if(any(peak_mode_res_na)){
+                peak_mode_res_filter <- peak_mode_res[, -which(peak_mode_res_na), drop = FALSE]
+                peak_mode_res <- peak_mode_res_filter
+            }
+            if(verbose){
+                print("Customized landmark positions:")
+                print(landmark_pos_customized)
+            }
+        }  
         
         ## density plot for peak and valley location checking
         if(arcsine_transform_flag){
