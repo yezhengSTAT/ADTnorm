@@ -16,7 +16,7 @@ load_landmarks = function(dir, append_rds = TRUE){
     for(file in list.files(dir,pattern='^peak_valley_locations_.*.rds',full.names=TRUE)){
         file_items <- utils::tail(unlist(strsplit(file,'/')),1)
         file_items <- unlist(strsplit(file_items,'_'))
-        marker <- paste(file_items[4:(length(file_items)-2)],sep='_')
+        marker <- file_items[4]
         override_landmark[[marker]] <- readRDS(file)
     }
     return(override_landmark)
