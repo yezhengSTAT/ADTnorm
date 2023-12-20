@@ -2,7 +2,7 @@
 % Please edit documentation in R/arcsinh_transform.R
 \name{arcsinh_transform}
 \alias{arcsinh_transform}
-\title{Arcsine transformation.}
+\title{arcsinh transformation.}
 \usage{
 arcsinh_transform(cell_x_adt = NULL, parameter_list = NULL)
 }
@@ -12,7 +12,7 @@ arcsinh_transform(cell_x_adt = NULL, parameter_list = NULL)
 \item{parameter_list}{Parameter list for a: positive double that corresponds to a shift about 0; b: positive double that corresponds to a scale factor; c: positive double. By default a = 1, b = 1/5 and c = 0.}
 }
 \description{
-This function transforms the input cell_x_adt matrix by arcsine with co-factor 5. The definition of this function is x_new <- asinh(a + b * x) + c)
+This function transforms the input cell_x_adt matrix by arcsinh with co-factor 5. The definition of this function is x_new <- asinh(a + b * x) + c)
 }
 \examples{
 \dontrun{

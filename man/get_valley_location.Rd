@@ -17,7 +17,7 @@ get_valley_location(
   shoulder_valley_slope = -1,
   lower_peak_thres = 0.01,
   neg_candidate_thres = asinh(10/5 + 1),
-  arcsine_transform_flag = TRUE
+  arcsinh_transform_flag = TRUE
 )
 }
 \arguments{
@@ -45,7 +45,7 @@ get_valley_location(
 
 \item{neg_candidate_thres}{The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95\% quantile of IgG samples is large.}
 
-\item{arcsine_transform_flag}{The flag indicates if the input is raw count and arcsine transformation is implemented.}
+\item{arcsinh_transform_flag}{The flag indicates if the input is raw count and arcsinh transformation is implemented.}
 }
 \description{
 This function detects the valley locations either between every two peak landmarks or cut at the right heavy tails. If the specified positive uni-peak, the valley location will be set at the left side of the uni-peak.

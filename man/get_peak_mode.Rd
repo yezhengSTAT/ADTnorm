@@ -15,7 +15,7 @@ get_peak_mode(
   positive_peak = NULL,
   neg_candidate_thres = asinh(10/5 + 1),
   lower_peak_thres = 0.001,
-  arcsine_transform_flag = TRUE
+  arcsinh_transform_flag = TRUE
 )
 }
 \arguments{
@@ -39,7 +39,7 @@ get_peak_mode(
 
 \item{lower_peak_thres}{The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid suspicious positive peaks. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.}
 
-\item{arcsine_transform_flag}{The flag indicates if the input is raw count and arcsine transformation is implemented.}
+\item{arcsinh_transform_flag}{The flag indicates if the input is raw count and arcsinh transformation is implemented.}
 }
 \description{
 This function detects the peak mode locations for each sample per ADT markers. Using the peak mode instead of the peak region midpoint can be more accurate in determining the peak location if the bandwidth is generally proper and the local peak density is not too discrete.

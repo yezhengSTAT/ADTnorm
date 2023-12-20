@@ -1,7 +1,7 @@
 #' ADTnorm normalization to remove the technical variations across samples for each ADT marker.
 #'
 #' This function removes the technical variations such as batch effect, sequencing depth biases, antibody selection differences and antibody concentration differences, etc. The normalized samples are ready for integration across studies.
-#' @param cell_x_adt Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format. By default, ADTnorm expects raw counts as input data and arcsin transformation to be performed by ADTnorm internally. If ADTnorm detects that the input count matrix is a non-integer matrix, it will skip the arcsine transformation. Therefore, users also need to tune the parameters to fit their input transformation.
+#' @param cell_x_adt Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format. By default, ADTnorm expects raw counts as input data and arcsin transformation to be performed by ADTnorm internally. If ADTnorm detects that the input count matrix is a non-integer matrix, it will skip the arcsinh transformation. Therefore, users also need to tune the parameters to fit their input transformation.
 #' @param cell_x_feature Matrix of cells (rows) by cell features (columns) such as sample, batch, or other cell-type related information. Please ensure that the cell_x_feature matrix at least contains a sample column with the exact "sample" column name. Please note that "sample" should be the smallest unit to group the cells. At this resolution, ADTnorm will identify peaks and valleys to implement normalization. Please ensure the samples have different names across batches/conditions/studies. "batch" column is optional. It can be batches/conditions/studies etc, that group the samples based on whether the samples are collected from the same batch run or experiment. This column is needed if ```multi_sample_per_batch``` parameter is turned on to remove outlier positive peaks per batch or ```detect_outlier_valley``` for detecting and imputing outlier valleys per batch. If "batch" column is not provided, it will be set as the same as "sample" column. In the intermediate density plots that ADTnorm provides, density plots will be colored by the "batch" column.
 #' @param save_outpath The path to save the results.
 #' @param study_name Name of this run.
@@ -58,8 +58,8 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         as_int = as.matrix(cell_x_adt)
         mode(as_int) = "integer"
         if(any(as_int[!is.na(as_int)] != matrix[!is.na(matrix)])){ ## if any input count is not integer
-            print("Note: Input ADT count matrix values are not all integer, hence the input is NOT considered as raw count data. ADTnorm will assume transformation or scaling has been done and will skip the arcsine transformation......")
-            arcsine_transform_flag = FALSE
+            print("Note: Input ADT count matrix values are not all integer, hence the input is NOT considered as raw count data. ADTnorm will assume transformation or scaling has been done and will skip the arcsinh transformation......")
+            arcsinh_transform_flag = FALSE
             if(is.null(neg_candidate_thres)){
                 print("neg_candidate_thres is not set; hence the suspicious negative peak candidate filtering function will be disabled. Return to set it if several negative peaks are mistakenly detected due to the discrete values around 0.")
                 neg_candidate_thres = min(matrix) ## disable the negative peak candidates filtering
@@ -70,7 +70,7 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
             if(any(matrix[!is.na(matrix)] < 0)){
                 stop("ADTnorm detects integer input ADT count matrix and assumes the input is raw count. Please check why there is any non-negative values in the raw count matrix.")
             }
-            arcsine_transform_flag = TRUE
+            arcsinh_transform_flag = TRUE
 
             if(is.null(neg_candidate_thres)){
                 neg_candidate_thres = asinh(8/5 + 1) ## give the default value for neg_candidate_thres for raw count input
@@ -152,7 +152,7 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
     }
 
     ## Arcsinh transformation with default shift factor 1 and scale factor 1/5
-    if(arcsine_transform_flag){
+    if(arcsinh_transform_flag){
         cell_x_adt = arcsinh_transform(cell_x_adt = cell_x_adt) 
     }
 
@@ -238,13 +238,13 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
 
         ## get the peak mode location    
         if(peak_type == "mode"){
-            peak_mode_res = get_peak_mode(cell_x_adt, cell_x_feature, adt_marker_select, adt_marker_index, bwFac_smallest, bimodal_marker_index, trimodal_marker_index, positive_peak, neg_candidate_thres = neg_candidate_thres, lower_peak_thres = lower_peak_thres, arcsine_transform_flag = arcsine_transform_flag)
+            peak_mode_res = get_peak_mode(cell_x_adt, cell_x_feature, adt_marker_select, adt_marker_index, bwFac_smallest, bimodal_marker_index, trimodal_marker_index, positive_peak, neg_candidate_thres = neg_candidate_thres, lower_peak_thres = lower_peak_thres, arcsinh_transform_flag = arcsinh_transform_flag)
         } else if(peak_type == "midpoint"){
-            peak_mode_res = get_peak_midpoint(cell_x_adt, cell_x_feature, adt_marker_select, adt_marker_index, bwFac_smallest, bimodal_marker_index, trimodal_marker_index, positive_peak, neg_candidate_thres = neg_candidate_thres, lower_peak_thres = lower_peak_thres, arcsine_transform_flag = arcsine_transform_flag)
+            peak_mode_res = get_peak_midpoint(cell_x_adt, cell_x_feature, adt_marker_select, adt_marker_index, bwFac_smallest, bimodal_marker_index, trimodal_marker_index, positive_peak, neg_candidate_thres = neg_candidate_thres, lower_peak_thres = lower_peak_thres, arcsinh_transform_flag = arcsinh_transform_flag)
         }
 
         ## get the valley location
-        peak_valley_list = get_valley_location(cell_x_adt, cell_x_feature, adt_marker_select, peak_mode_res, shoulder_valley, positive_peak, multi_sample_per_batch, adjust = valley_density_adjust, min_fc = 20, shoulder_valley_slope = shoulder_valley_slope, neg_candidate_thres = neg_candidate_thres, arcsine_transform_flag = arcsine_transform_flag)
+        peak_valley_list = get_valley_location(cell_x_adt, cell_x_feature, adt_marker_select, peak_mode_res, shoulder_valley, positive_peak, multi_sample_per_batch, adjust = valley_density_adjust, min_fc = 20, shoulder_valley_slope = shoulder_valley_slope, neg_candidate_thres = neg_candidate_thres, arcsinh_transform_flag = arcsinh_transform_flag)
         
         valley_location_res = peak_valley_list$valley_location_list
         peak_mode_res = peak_valley_list$peak_landmark_list
@@ -331,7 +331,7 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         }  
         
         ## density plot for peak and valley location checking
-        if(arcsine_transform_flag){
+        if(arcsinh_transform_flag){
             run_label = "Arcsinh Transformation"
             run_label_name = "ArcsinhTransformation"
         }else{

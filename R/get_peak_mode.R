@@ -11,7 +11,7 @@
 #' @param positive_peak A list variable containing a vector of ADT marker(s) and a corresponding vector of sample name(s) in matching order to specify that the uni-peak detected should be aligned to positive peaks. For example, for samples that only contain T cells. The only CD3 peak should be aligned with the positive peaks of other samples.
 #' @param neg_candidate_thres The upper bound for the negative peak. Users can refer to their IgG samples to obtain the minimal upper bound of the IgG sample peak. It can be one of the values of asinh(4/5+1), asinh(6/5+1), or asinh(8/5+1) if the right 95% quantile of IgG samples is large.
 #' @param lower_peak_thres The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid suspicious positive peaks. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.
-#' @param arcsine_transform_flag The flag indicates if the input is raw count and arcsine transformation is implemented.
+#' @param arcsinh_transform_flag The flag indicates if the input is raw count and arcsinh transformation is implemented.
 #' @export
 #' @examples
 #' \dontrun{
@@ -24,7 +24,7 @@
 #' }
 # require(flowStats)
 # require(dplyr)
-get_peak_mode = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marker_select = NULL, adt_marker_index = NULL, bwFac_smallest = 1.1, bimodal_marker_index = NULL, trimodal_marker_index = NULL, positive_peak = NULL, neg_candidate_thres = asinh(10/5 + 1), lower_peak_thres = 0.001, arcsine_transform_flag = TRUE) {
+get_peak_mode = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marker_select = NULL, adt_marker_index = NULL, bwFac_smallest = 1.1, bimodal_marker_index = NULL, trimodal_marker_index = NULL, positive_peak = NULL, neg_candidate_thres = asinh(10/5 + 1), lower_peak_thres = 0.001, arcsinh_transform_flag = TRUE) {
 
     ## set parameters
     bwFac = 1.2
@@ -64,7 +64,7 @@ get_peak_mode = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marker_se
                     print(paste0(sample_name, "-Single Value!"))
             } else {
                 ## get the proportion of cells near zero to diagnoise the negative peak enrichment
-                if(arcsine_transform_flag){
+                if(arcsinh_transform_flag){
                     zero_prop = sum(cell_x_adt[cell_ind, adt_marker_select] < 2) / length(cell_x_adt[cell_ind, adt_marker_select])
                 }else{
                     zero_prop = sum(cell_x_adt[cell_ind, adt_marker_select] < neg_candidate_thres) / length(cell_x_adt[cell_ind, adt_marker_select])
