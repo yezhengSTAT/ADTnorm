@@ -71,7 +71,7 @@
 <span>  positive_peak <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  neg_candidate_thres <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">asinh</a></span><span class="op">(</span><span class="fl">10</span><span class="op">/</span><span class="fl">5</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  lower_peak_thres <span class="op">=</span> <span class="fl">0.001</span>,</span>
-<span>  arcsine_transform_flag <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  arcsinh_transform_flag <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -117,8 +117,8 @@
 <dd><p>The minimal ADT marker density height to call it a real peak. Set it to 0.01 to avoid a suspicious positive peak. Set it to 0.001 or smaller to include some small but tend to be real positive peaks, especially for markers like CD19.</p></dd>
 
 
-<dt>arcsine_transform_flag</dt>
-<dd><p>The flag indicates if the input is raw count and arcsine transformation is implemented.</p></dd>
+<dt>arcsinh_transform_flag</dt>
+<dd><p>The flag indicates if the input is raw count and arcsinh transformation is implemented.</p></dd>
 
 </dl></div>
 
