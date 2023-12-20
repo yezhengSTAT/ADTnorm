@@ -1,7 +1,7 @@
 #' ADTnorm normalization to remove the technical variations across samples for each ADT marker.
 #'
 #' This function removes the technical variations such as batch effect, sequencing depth biases, antibody selection differences and antibody concentration differences, etc. The normalized samples are ready for integration across studies.
-#' @param cell_x_adt Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format. By default, ADTnorm expects raw counts as input data and arcsin transformation to be performed by ADTnorm internally. If ADTnorm detects that the input count matrix is a non-integer matrix, it will skip the arcsinh transformation. Therefore, users also need to tune the parameters to fit their input transformation.
+#' @param cell_x_adt Matrix of ADT raw counts in cells (rows) by ADT markers (columns) format. By default, ADTnorm expects raw counts as input data and arcsinh transformation to be performed by ADTnorm internally. If ADTnorm detects that the input count matrix is a non-integer matrix, it will skip the arcsinh transformation. Therefore, users also need to tune the parameters to fit their input transformation.
 #' @param cell_x_feature Matrix of cells (rows) by cell features (columns) such as sample, batch, or other cell-type related information. Please ensure that the cell_x_feature matrix at least contains a sample column with the exact "sample" column name. Please note that "sample" should be the smallest unit to group the cells. At this resolution, ADTnorm will identify peaks and valleys to implement normalization. Please ensure the samples have different names across batches/conditions/studies. "batch" column is optional. It can be batches/conditions/studies etc, that group the samples based on whether the samples are collected from the same batch run or experiment. This column is needed if ```multi_sample_per_batch``` parameter is turned on to remove outlier positive peaks per batch or ```detect_outlier_valley``` for detecting and imputing outlier valleys per batch. If "batch" column is not provided, it will be set as the same as "sample" column. In the intermediate density plots that ADTnorm provides, density plots will be colored by the "batch" column.
 #' @param save_outpath The path to save the results.
 #' @param study_name Name of this run.
@@ -146,7 +146,7 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
     ## Whether to consider zero as missing value and set to NA.
     if(exclude_zeroes){
         na_mask = is.na(cell_x_adt)
-        # Set all cell_x_adt to NA to avoid transformation during arcsin (if used)
+        # Set all cell_x_adt to NA to avoid transformation during arcsinh (if used)
         cell_x_adt[cell_x_adt == 0] = NA
 
     }
