@@ -118,9 +118,13 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         stop("Please provide the save_outpath to save the intermediate figures in pdf.")
     }
     if(!is.null(target_landmark_location)){ ## Check if user wants to align to a fixed location. 
-        if(target_landmark_location == "fixed"){ ## Currently default fixed alignemnt locations are set to 1 and 5 for better visualization. 
-            print("Will align negative peak to 1 and right-most positive peak to 5.")
-            target_landmark_location = c(1, 5)
+        if(length(target_landmark_location) == 1){
+            if(target_landmark_location == "fixed"){ ## Currently default fixed alignment locations are set to 1 and 5 for better visualization.
+                print("Will align negative peak to 1 and right-most positive peak to 5.")
+                target_landmark_location = c(1, 5)
+            }else{
+                stop("Please provide two elements vector to target_landmark_location or use 'NULL' or 'fixed'")
+            }
         }else{ ## If user provide the fixed alignment location, align to the user-set locations to align the negative and the right-most positive peak.
             if(length(target_landmark_location) == 2 && target_landmark_location[1] < target_landmark_location[2]){
                 print(paste0("Will align negative peak to", target_landmark_location[1], " and right-most positive peak to ", target_landmark_location[2]))
