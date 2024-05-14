@@ -13,7 +13,7 @@
 # require(dplyr)
 # require(flowStats)
 # require(fda)
-peak_alignment = function(cell_x_adt, cell_x_feature = NULL, landmark_matrix = NULL, target_landmark = NULL, neg_candidate_thres = asinh(8/5 + 1)) {
+peak_alignment = function(cell_x_adt, cell_x_feature = NULL, landmark_matrix = NULL, target_landmark = NULL) {
   ## get parameters
   grouping = NULL
   monwrd = TRUE
@@ -37,8 +37,8 @@ peak_alignment = function(cell_x_adt, cell_x_feature = NULL, landmark_matrix = N
   from = min(c(min(cell_x_adt, na.rm = TRUE),  target_landmark[1], min(landmark_matrix))) - diff(range(cell_x_adt, na.rm = TRUE)) * extend
   to = max(c(max(cell_x_adt, na.rm = TRUE), target_landmark[length(target_landmark)], max(landmark_matrix))) + diff(range(cell_x_adt, na.rm = TRUE)) * extend
   
-  lower_bound = min(cell_x_adt, na.rm = TRUE) - diff(range(cell_x_adt, na.rm = TRUE)) * extend
-  upper_bound = max(cell_x_adt, na.rm = TRUE) + diff(range(cell_x_adt, na.rm = TRUE)) * extend
+  lower_bound = min(cell_x_adt, na.rm = TRUE) #- diff(range(cell_x_adt, na.rm = TRUE)) * extend
+  upper_bound = max(cell_x_adt, na.rm = TRUE) #+ diff(range(cell_x_adt, na.rm = TRUE)) * extend
   
   wbasis = fda::create.bspline.basis(
     rangeval = c(from, to),
@@ -84,7 +84,7 @@ peak_alignment = function(cell_x_adt, cell_x_feature = NULL, landmark_matrix = N
     ## if any valley is beyond the upper bound of range, replace by the upper bound
     if(any(landmark_matrix[, 2] > upper_bound)){
       landmark_matrix[which(landmark_matrix[, 2] > upper_bound), 2] = max(cell_x_adt, na.rm = TRUE) 
-      print(paste0("Warning: some valley landmarks are larger the upper bound of the range. They are replaced by the maximum value of cell_x_adt. Please consider reduce 'neg_candidate_thres' value. The default value for 'neg_candidate_thres' is asinh(8/5 + 1) and the current value for 'neg_candidate_thres' is ", neg_candidate_thres, "."))
+      print(paste0("Warning: some valley landmarks are larger the upper bound of the range. They are replaced by the maximum value of cell_x_adt. Please consider reduce 'neg_candidate_thres' value."))
     }
     if(any(landmark_matrix[, 1] < lower_bound)){
       landmark_matrix[which(landmark_matrix[, 1] < lower_bound), 1] = min(cell_x_adt, na.rm = TRUE) 
