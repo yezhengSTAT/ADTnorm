@@ -407,7 +407,7 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         }else{
             target_landmark = NULL
         }
-        peak_alignment_res = peak_alignment(cell_x_adt[, adt_marker_select], cell_x_feature, landmark_matrix, target_landmark = target_landmark, neg_candidate_thres = neg_candidate_thres)
+        peak_alignment_res = peak_alignment(cell_x_adt[, adt_marker_select], cell_x_feature, landmark_matrix, target_landmark = target_landmark)
         cell_x_adt_norm[, adt_marker_select] = peak_alignment_res[[1]]
          
         if(ncol(peak_alignment_res[[2]]) == 2){
