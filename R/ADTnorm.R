@@ -410,15 +410,21 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         peak_alignment_res = peak_alignment(cell_x_adt[, adt_marker_select], cell_x_feature, landmark_matrix, target_landmark = target_landmark)
         cell_x_adt_norm[, adt_marker_select] = peak_alignment_res[[1]]
          
-        if(ncol(peak_alignment_res[[2]]) == 2){
+        if(ncol(peak_alignment_res[[2]]) == 2){ ## negPeak_valley
             peak_mode_norm_res = peak_alignment_res[[2]][, 1, drop = FALSE]
             valley_location_norm_res = peak_alignment_res[[2]][, 2, drop = FALSE]
-        }else if(ncol(peak_alignment_res[[2]]) == 3){
+        }else if(ncol(peak_alignment_res[[2]]) == 3){ ## negPeak_valley_posPeak
             peak_mode_norm_res = peak_alignment_res[[2]][, c(1, 3), drop = FALSE]
             valley_location_norm_res = peak_alignment_res[[2]][, 2, drop = FALSE]
-        }else if(ncol(peak_alignment_res[[2]]) == 5){
+        }else if(ncol(peak_alignment_res[[2]]) == 5){ ## three peaks
             peak_mode_norm_res = peak_alignment_res[[2]][, c(1, 3, 5), drop = FALSE]
             valley_location_norm_res = peak_alignment_res[[2]][, c(2, 4), drop = FALSE]
+        }else if(ncol(peak_alignment_res[[2]]) == 1){ ## negPeak or valley
+        
+            peak_mode_norm_res = peak_alignment_res[[2]][, 1, drop = FALSE]
+            valley_location_norm_res = NULL
+            
+            
         }
         density_norm_plot = plot_adt_density_with_peak_valley_each(
             cell_x_adt_norm[, adt_marker_select], cell_x_feature, peak_landmark_list = peak_mode_norm_res, valley_landmark_list = valley_location_norm_res, brewer_palettes = brewer_palettes, 

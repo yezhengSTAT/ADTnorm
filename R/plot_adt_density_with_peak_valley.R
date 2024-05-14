@@ -26,7 +26,7 @@
 # require(tidyr)
 # require(ggridges)
 # require(ggpubr)
-plot_adt_density_with_peak_valley = function(cell_x_adt, cell_x_feature, adt_marker_select = NULL, peak_landmark_list, valley_landmark_list, brewer_palettes = "Set1", parameter_list = NULL) {
+plot_adt_density_with_peak_valley = function(cell_x_adt, cell_x_feature, adt_marker_select = NULL, peak_landmark_list, valley_landmark_list = NULL, brewer_palettes = "Set1", parameter_list = NULL) {
     if (is.null(parameter_list)) {
         return("parameter_list is NULL!")
     }
@@ -72,7 +72,7 @@ plot_adt_density_with_peak_valley = function(cell_x_adt, cell_x_feature, adt_mar
             peaky = 0.5,
             peaks = 1:length(levels(cell_x_feature$sample))
         )
-        if (i <= ncol(valley_landmark_list)) {
+        if ((!is.null(valley_landmark_list)) && i <= ncol(valley_landmark_list)) {
             valley_location[[i]] = data.frame(
                 ADT = adt_marker_select,
                 sample = cell_x_feature$sample %>% levels(),
@@ -84,10 +84,10 @@ plot_adt_density_with_peak_valley = function(cell_x_adt, cell_x_feature, adt_mar
     }
     fillColor = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, brewer_palettes))(length(unique(tmpProfile$batch)))
 
-    resPlot = ggplot(tmpProfile, aes_string(x = "counts", y = "sample")) +
+    resPlot = ggplot(tmpProfile, aes(x = counts, y = sample)) +
         ggridges::geom_density_ridges(aes(fill = factor(batch)), bandwidth = bw) +
-        geom_segment(data = peak_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1) +
-        geom_segment(data = valley_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1, color = "grey") +
+        geom_segment(data = peak_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), linewidth = 1) +
+        # geom_segment(data = valley_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), linewidth = 1, color = "grey") +
         facet_wrap(~ factor(ADT), scales = "free_x") +
         theme_bw(base_size = 20) +
         xlab(run_label) +
@@ -97,21 +97,24 @@ plot_adt_density_with_peak_valley = function(cell_x_adt, cell_x_feature, adt_mar
         scale_fill_manual(values = fillColor) +
         ggpubr::rremove("legend.title")
 
+    if(is.null(valley_landmark_list)){
+        resPlot = resPlot + geom_segment(data = valley_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), linewidth = 1, color = "grey")
+    }
 
     if (ncol(peak_landmark_list) >= 2) {
         resPlot = resPlot +
-            geom_segment(data = peak_location[[2]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1)
+            geom_segment(data = peak_location[[2]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), linewidth = 1)
     }
 
     if (ncol(peak_landmark_list) >= 3) {
         resPlot = resPlot +
-            geom_segment(data = peak_location[[3]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1) +
-            geom_segment(data = valley_location[[2]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1, color = "grey")
+            geom_segment(data = peak_location[[3]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), linewidth = 1) +
+            geom_segment(data = valley_location[[2]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), linewidth = 1, color = "grey")
     }
     if (ncol(peak_landmark_list) >= 4) {
         resPlot = resPlot +
-            geom_segment(data = peak_location[[4]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1) +
-            geom_segment(data = valley_location[[3]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1, color = "grey")
+            geom_segment(data = peak_location[[4]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), linewidth = 1) +
+            geom_segment(data = valley_location[[3]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), linewidth = 1, color = "grey")
     }
 
     return(resPlot)

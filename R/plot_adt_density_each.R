@@ -71,10 +71,10 @@ plot_adt_density_each = function(adt_count, cell_x_feature, brewer_palettes, par
     #     }
     # }
     fillColor = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, brewer_palettes))(length(unique(tmpProfile$batch)))
-    resPlot = ggplot(tmpProfile, aes_string(x = "counts", y = "sample")) +
+    resPlot = ggplot(tmpProfile, aes(x = counts, y = sample)) +
         ggridges::geom_density_ridges(aes(fill = factor(batch)), bandwidth = bw) +
-        # geom_segment(data = peak_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1) +
-        # geom_segment(data = valley_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), size = 1, color = "grey") +
+        # geom_segment(data = peak_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), linewidth = 1) +
+        # geom_segment(data = valley_location[[1]], aes(x = peakx, xend = peakx, y = peaks, yend = peaky + peaks), linewidth = 1, color = "grey") +
         # facet_wrap(~ factor(ADT), scales = "free_x") +
         theme_bw(base_size = 20) +
         xlab(run_label) +
