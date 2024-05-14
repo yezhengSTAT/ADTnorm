@@ -84,9 +84,9 @@ get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marke
                         # exprs(dat[[sample_name]])[, adt_marker_select] = adt_expression
                     }
                 }
-                fres1 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = 2))
-                fres2 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = 3))
-                fres3 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = 3.1))
+                fres1 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = max(2, bwFac_smallest)))
+                fres2 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = max(3, bwFac_smallest)))
+                fres3 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = max(3.1, bwFac_smallest)))
 
                 ## different bandwidth w.r.t the zero proportion.
                 if (zero_prop > 0.5) {

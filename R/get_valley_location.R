@@ -131,7 +131,12 @@ get_valley_location = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_mar
                         shoulder_cand_index = which(diff(y)/diff(x) > shoulder_valley_slope)
                         first_peak_index = (which(x > max(x_peak[1], real_peak[1])) %>% min) + 50
                         x_shoulder = x[shoulder_cand_index[shoulder_cand_index > first_peak_index][1]]
-                        real_valley = min(x_shoulder, real_valley, na.rm = T)
+                        if(is.na(x_shoulder) & is.na(real_valley)){
+                            stop("No valley is detected. Please consider increasing 'valley_density_adjust'.")
+                        }else{
+                            real_valley = min(x_shoulder, real_valley, na.rm = T)
+                        }
+                        
 
                     }else{
                         ## check if no valley is detected due to shoulder peak

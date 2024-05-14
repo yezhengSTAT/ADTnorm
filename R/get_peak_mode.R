@@ -73,15 +73,15 @@ get_peak_mode = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marker_se
                 adt_expression = cell_x_adt[cell_ind, adt_marker_select] ## adt value for this marker and this sample
 
                 ## if most are around 0 and there are very few unique value: add random small number
-                if(zero_prop > 0.95){
+                if(zero_prop >= 0.95){
                     if(length(unique(adt_expression)) < 50){
                         adt_expression = adt_expression + stats::rnorm(length(adt_expression), mean = 0, sd = 0.05)
                         # exprs(dat[[sample_name]])[, adt_marker_select] = adt_expression
                     }
                 }
-                fres1 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = 2))
-                fres2 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = 3))
-                fres3 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = 3.1))
+                fres1 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = max(2, bwFac_smallest)))
+                fres2 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = max(3, bwFac_smallest)))
+                fres3 = flowCore::filter(fcs, flowStats::curv1Filter(adt_marker_select, bwFac = max(3.1, bwFac_smallest)))
 
                 ## different bandwidth w.r.t the zero proportion.
                 if (zero_prop > 0.5) {

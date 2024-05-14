@@ -118,12 +118,16 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         stop("Please provide the save_outpath to save the intermediate figures in pdf.")
     }
     if(!is.null(target_landmark_location)){ ## Check if user wants to align to a fixed location. 
-        if(target_landmark_location == "fixed"){ ## Currently default fixed alignemnt locations are set to 1 and 5 for better visualization. 
-            print("Will align negative peak to 1 and right-most positive peak to 5.")
-            target_landmark_location = c(1, 5)
+        if(length(target_landmark_location) == 1){ ## Currently default fixed alignemnt locations are set to 1 and 5 for better visualization. 
+            if(target_landmark_location == "fixed"){
+                print("Will align negative peak to 1 and right-most positive peak to 5.")
+                target_landmark_location = c(1, 5)
+            }else{
+                stop("Please provide NULL, or fixed, or a two-element vector to target_landmark_location!")
+            }
         }else{ ## If user provide the fixed alignment location, align to the user-set locations to align the negative and the right-most positive peak.
             if(length(target_landmark_location) == 2 && target_landmark_location[1] < target_landmark_location[2]){
-                print(paste0("Will align negative peak to", target_landmark_location[1], " and right-most positive peak to ", target_landmark_location[2]))
+                print(paste0("Will align negative peak to ", target_landmark_location[1], " and right-most positive peak to ", target_landmark_location[2]))
             }else{
                 stop("Please provide two elements vector to target_landmark_location where the first element is smaller!")
             }
@@ -137,6 +141,9 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
     ## DATA PROCESSING AND CLEANNING
     ## ==============================
     ## Remove ADT marker if it only has zero value across all the cells
+    cell_x_adt = data.frame(cell_x_adt)
+    cell_x_feature = data.frame(cell_x_feature)
+
     col_sums = colSums(cell_x_adt, na.rm = TRUE)
     if (any(col_sums == 0)){
         message("Markers with zero counts will be ignored")
@@ -265,9 +272,10 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
                     peak_replace_len = len_provided
                     provide_replace_len = len_provided
                 }else if(len_needed < len_provided){
-                    print(paste0("Identified ", len_needed, " peaks but more peaks (", len_provided, ") are provided. Will only use the first ", len_needed, " peaks provided to override the peaks detected by ADTnorm."))
-                    peak_replace_len = len_needed
-                    provide_replace_len = len_needed
+                    print(paste0("Identified ", len_needed, " peaks but more peaks (", len_provided, ") are provided. Will use ", len_provided, " peaks provided to override the peaks detected by ADTnorm."))
+                    peak_replace_len = len_provided
+                    provide_replace_len = len_provided
+                    peak_mode_res = cbind(peak_mode_res, matrix(NA, nrow = nrow(peak_mode_res), ncol = len_provided - len_needed))
                 }else{
                     peak_replace_len = len_needed
                     provide_replace_len = len_provided
@@ -288,9 +296,10 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
                     valley_replace_len = len_provided
                     provide_replace_len = len_provided
                 }else if(len_needed < len_provided){
-                    print(paste0("Identified ", len_needed, " valleys but more valleys (", len_provided, ") are provided. Will only use the first ", len_needed, " valleys provided to override the valleys detected by ADTnorm."))
-                    valley_replace_len = len_needed
-                    provide_replace_len = len_needed
+                    print(paste0("Identified ", len_needed, " valleys but more valleys (", len_provided, ") are provided. Will use ", len_provided, " valleys provided to override the valleys detected by ADTnorm."))
+                    valley_replace_len = len_provided
+                    provide_replace_len = len_provided
+                    valley_location_res = cbind(valley_location_res, matrix(NA, nrow = nrow(valley_location_res), ncol = len_provided - len_needed))
                 }else{
                     valley_replace_len = len_needed
                     provide_replace_len = len_provided
@@ -312,10 +321,11 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
             landmark_pos[, seq(1, num_landmark, 2)] = peak_mode_res
             landmark_pos[, seq(2, num_landmark, 2)] = valley_location_res
             rownames(landmark_pos) = rownames(peak_mode_res)
+            colnames(landmark_pos) = paste0("col", 1:num_landmark)
             colnames(landmark_pos)[seq(1, num_landmark, 2)] = paste0("peak", 1:ncol(peak_mode_res))
             colnames(landmark_pos)[seq(2, num_landmark, 2)] = paste0("valley", 1:ncol(valley_location_res))
 
-            landmark_pos_customized = get_customize_landmark(cell_x_adt_sample, landmark_pos, bw = 0.2, adt_marker_select_name = adt_marker_select_name)
+            landmark_pos_customized = get_customize_landmark(cell_x_adt_sample, landmark_pos, bw = 0.1, adt_marker_select_name = adt_marker_select_name)
             peak_mode_res = landmark_pos_customized[, seq(1, num_landmark, 2), drop = FALSE]
             valley_location_res = landmark_pos_customized[, seq(2, num_landmark, 2), drop = FALSE]
 
@@ -397,9 +407,9 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         }else{
             target_landmark = NULL
         }
-        peak_alignment_res = peak_alignment(cell_x_adt[, adt_marker_select], cell_x_feature, landmark_matrix, target_landmark = target_landmark)
+        peak_alignment_res = peak_alignment(cell_x_adt[, adt_marker_select], cell_x_feature, landmark_matrix, target_landmark = target_landmark, neg_candidate_thres = neg_candidate_thres)
         cell_x_adt_norm[, adt_marker_select] = peak_alignment_res[[1]]
-        
+         
         if(ncol(peak_alignment_res[[2]]) == 2){
             peak_mode_norm_res = peak_alignment_res[[2]][, 1, drop = FALSE]
             valley_location_norm_res = peak_alignment_res[[2]][, 2, drop = FALSE]
