@@ -48,7 +48,9 @@ get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marke
     peak_mode = list()
     peak_region = list()
 
+    bimodal_marker_index_original = bimodal_marker_index
     for(sample_name in sample_name_list){
+        bimodal_marker_index = bimodal_marker_index_original
         ## extract the ADT counts for this sample
         cell_ind_tmp = which(cell_x_feature$sample == sample_name)
         cell_notNA = which(!is.na(cell_x_adt[cell_ind_tmp, adt_marker_select]))
@@ -80,6 +82,10 @@ get_peak_midpoint = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marke
                 ## if most are around 0 and there are very few unique value: add random small number
                 if(zero_prop > 0.95){
                     if(length(unique(adt_expression)) < 50){
+                        if(adt_marker_index %in% bimodal_marker_index){
+                            print(paste0("This marker only has ", length(unique(adt_expression)), " unique values and the near-zero proportion is ", zero_prop, ". It is highly likely not a bimodal marker. Excluded from 'bimodal_marker' list."))
+                            bimodal_marker_index = bimodal_marker_index[!bimodal_marker_index %in% adt_marker_index]
+                        }
                         adt_expression = adt_expression + stats::rnorm(length(adt_expression), mean = 0, sd = 0.05)
                         # exprs(dat[[sample_name]])[, adt_marker_select] = adt_expression
                     }
