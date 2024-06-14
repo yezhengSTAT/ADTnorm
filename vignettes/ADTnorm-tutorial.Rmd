@@ -16,9 +16,11 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-CITE-seq technology enables the direct measurement of protein expression, known as antibody-derived tags (ADT), in addition to RNA expression. The increase in the copy number of protein molecules leads to a more robust detection of protein features compared to RNA, providing a deep definition of cell types. However, due to added discrepancies of antibodies, such as the different types or concentrations of IgG antibodies, the batch effects of the ADT component of CITE-seq can dominate over biological variations, especially for the across-study integration. We present ADTnorm as a normalization and integration method designed explicitly for the ADT counts of CITE-seq data. Benchmarking with existing scaling and normalization methods, ADTnorm achieves a fast and accurate matching of the negative and positive peaks of the ADT counts across samples, efficiently removing technical variations across batches. Further quantitative evaluations confirm that ADTnorm achieves the best cell-type separation while maintaining the minimal batch effect. Therefore, ADTnorm facilitates the scalable ADT count integration of massive public CITE-seq datasets with distinguished experimental designs, which are essential for creating a corpus of well-annotated single-cell data with deep and standardized annotations.
+CITE-seq enables paired measurement of surface protein and mRNA expression in single cells using antibodies conjugated to oligonucleotide tags. Due to the high copy number of surface protein molecules, sequencing antibody-derived tags (ADTs) allows for robust protein detection, improving cell-type identification. However, variability in antibody staining leads to batch effects in the ADT expression, obscuring biological variation, reducing interpretability, and obstructing cross-study analyses. Here, we present ADTnorm, a normalization and integration method designed explicitly for ADT abundance. Benchmarking against 14 existing scaling and normalization methods, we show that ADTnorm accurately aligns populations with negative- and positive-expression of surface protein markers across 13 public datasets, effectively removing technical variation across batches and improving cell-type separation. ADTnorm enables efficient integration of public CITE-seq datasets, each with unique experimental designs, paving the way for atlas-level analyses. Beyond normalization, ADTnorm aids in automated threshold-gating as well as assessment of antibody staining quality for titration optimization and antibody panel selection. 
 
-Manuscript: [Zheng et al. Robust Normalization and Integration of Single-cell Protein Expression across CITE-seq Datasets. BioRxiv. 2022](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1)
+This repository is the ADTnorm R package. We also provide a [Python wrapper](https://github.com/donnafarberlab/ADTnormPy) by [Daniel P. Caron](https://github.com/Daniel-Caron).
+
+Manuscript: [Zheng et al. ADTnorm: Robust Integration of Single-cell Protein Measurement across CITE-seq Datasets. BioRxiv. 2024](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v2)
 
 
 ## ADT Normaliztion Pipeline
@@ -36,7 +38,7 @@ remotes::install_github("yezhengSTAT/ADTnorm", build_vignettes = FALSE)
 
 ## Input Data
 
-The 13 public datasets used in the [manuscript](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v1) are also included in the R package as a demo data set. They can be loaded by
+The 13 public datasets used in the [manuscript](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v2) are also included in the R package as a demo data set. They can be loaded by
 
 ```{r loaddata, eval = FALSE}
 data(cell_x_adt)
