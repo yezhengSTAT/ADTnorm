@@ -23,7 +23,7 @@ get_customize_landmark = function(cell_x_adt_sample, landmark_pos, bw, adt_marke
   # cell_x_adt_sample_filter = cell_x_adt_sample %>% dplyr::filter(!is.na(adt))
   sample_num = levels(cell_x_adt_sample$sample) %>% length
   plot_height = paste0(sample_num * 50, "px")
-  cell_x_adt_sample$sample_rev = factor(cell_x_adt_sample$sample, levels = rev(levels(cell_x_adt_sample$sample)))
+  cell_x_adt_sample$sample_ordered = factor(cell_x_adt_sample$sample, levels = levels(cell_x_adt_sample$sample))
   ## Create an example UI
   ui <- create_ui(landmark_pos, max_value, bw, plot_height)
   server <- create_server(landmark_pos, cell_x_adt_sample, bw, adt_marker_select_name, brewer_palettes, max_value)
@@ -37,6 +37,7 @@ get_customize_landmark = function(cell_x_adt_sample, landmark_pos, bw, adt_marke
 flat_table <- function(tab) {
   tmp <- lapply(1:nrow(tab), function(i) {
     data.frame(
+      peaky = i,
       y = rownames(tab)[i],
       x = sapply(1:ncol(tab), function(j) {
         tab[i,j]
@@ -54,7 +55,7 @@ create_ui <- function(landmark_pos, max_value, bw, plot_height) {
       sidebarPanel(
         selectInput(inputId = "landmark_select",
                     label = "Select the sample to tune:",
-                    choices = rownames(landmark_pos)),
+                    choices = rev(rownames(landmark_pos))),
         uiOutput(outputId = "landmark_slider_ui")
       ),
       mainPanel(
@@ -91,7 +92,7 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
         bw_value <- input$bandwidth_slider
         # no_mis_idx = !is.na(cell_x_adt_sample$adt)
         
-        vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample_rev")) + 
+        vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample_ordered")) + 
           ggridges::geom_density_ridges2(aes(fill = factor(batch)), bandwidth = bw_value) +
           theme_bw(base_size = 20) +
           ggpubr::rotate_x_text(angle = 90) +
@@ -100,8 +101,13 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
           ylab("Sample") +
           scale_fill_manual(values = fillColor) +
           scale_x_continuous(breaks = seq(0, max_value, 0.5)) +
-          geom_point(data = vals$slider_values, aes_string(x = "x", y = "y", shape = "type"), size = 5)
-          
+          # geom_point(data = vals$slider_values, aes_string(x = "x", y = "y", shape = "type"), size = 5)
+          geom_segment(
+              data = vals$slider_values,
+              aes(x = x, xend = x, y = peaky, yend = peaky+0.5, color = type),
+              size = 1
+            ) +
+            scale_color_manual(values = c("peak" = "black", "valley" = "grey"))
 
         vals$fig
       })
@@ -154,7 +160,7 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
         output$plot <- renderPlot({
           bw_value <- input$bandwidth_slider
           
-          vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample_rev")) + 
+          vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample_ordered")) + 
             ggridges::geom_density_ridges2(aes(fill = factor(batch)), bandwidth = bw_value) +
             theme_bw(base_size = 20) +
             ggpubr::rotate_x_text(angle = 90) +
@@ -163,7 +169,13 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
             ylab("Sample") +
             scale_fill_manual(values = fillColor) +
             scale_x_continuous(breaks = seq(0, max_value, 0.5)) + 
-            geom_point(data = slider_values, aes_string(x = "x", y = "y", shape = "type"), size = 5) 
+            # geom_point(data = slider_values, aes_string(x = "x", y = "y", shape = "type"), size = 5) 
+            geom_segment(
+              data = slider_values,
+              aes(x = x, xend = x, y = peaky, yend = peaky+0.5, color = type),
+              size = 1
+            ) +
+            scale_color_manual(values = c("peak" = "black", "valley" = "grey"))
           vals$fig
           })
     })

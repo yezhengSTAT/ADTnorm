@@ -140,9 +140,12 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
     ## ==============================
     ## DATA PROCESSING AND CLEANNING
     ## ==============================
+    ## save the original marker name
+    all_marker_name = colnames(cell_x_adt)
+    
     ## Remove ADT marker if it only has zero value across all the cells
-    cell_x_adt = data.frame(cell_x_adt)
-    cell_x_feature = data.frame(cell_x_feature)
+    cell_x_adt = data.frame(cell_x_adt, check.names = FALSE)
+    cell_x_feature = data.frame(cell_x_feature, check.names = FALSE)
 
     col_sums = colSums(cell_x_adt, na.rm = TRUE)
     if (any(col_sums == 0)){
@@ -163,9 +166,7 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         cell_x_adt = arcsinh_transform(cell_x_adt = cell_x_adt) 
     }
 
-    ## save the original marker name
-    all_marker_name = colnames(cell_x_adt)
-    
+ 
     ## factorize the sample label
     if(!is.factor(cell_x_feature$sample)){
         cell_x_feature$sample = factor(cell_x_feature$sample, levels = unique(cell_x_feature$sample))
