@@ -277,7 +277,10 @@ Due to technical variations, the positive population of cells may not have a ver
 
 ## 11. Detect outlier valley and impute by the neighbor samples
 
-```detect_outlier_valley```: Detect outlier valley and impute by the neighbor samples. For outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Recommend trying "MAD" first if needed.
+```detect_outlier_valley```: Detect outlier valley and impute by the neighbor samples. For outlier detection methods, choose from "MAD" (Median Absolute Deviation) or "IQR" (InterQuartile Range). Recommend trying "MAD" first if needed. 
+
+Valleys are initially identified as local minima between two peaks in the protein density distribution. However, in cases of narrow density bandwidths or discrete protein density patterns (e.g., zigzagging distributions), valley locations may vary dramatically between samples. To address this, ADTnorm assumes relative consistency in valley and peak locations within the same batch.  First, deviations are detected based on the median absolute deviation (MAD). For correction, the valley locations of outlier samples are adjusted to align with the average valley positions of the most similar samples within the batch. Similarity between samples is quantified using the earth mover’s distance (EMD), as implemented in the \textit{calculate_emd_gene} function from the \textit{EMDomics} R package with default parameters\cite{hitchcock1941distribution}. The EMD measures the similarity of ADT count density distributions for each protein marker, where a lower EMD score indicates higher similarity.
+
 
 ## 12. Zero ADT count exclusion and other scaling or transformation as input
 
@@ -301,7 +304,9 @@ Due to technical variations, the positive population of cells may not have a ver
 
 Please note:
 
-- We recommend using this function after initial rounds of ADTnorm normalization with a few parameter tuning attempts. It is better to narrow down a few ADT markers that do need manual tuning and provide the list to ```marker_to_process``` as the interactive function will pop out for every marker being processed. 
+- We recommend using this function after initial rounds of ADTnorm normalization with the default parameter settings or with a few parameter tuning attempts. The intermediate protein density distribution figures will help narrow down a few potentially problematic ADT markers that do need manual tuning and provide the list to ```marker_to_process``` as the interactive function will pop out for every marker being processed. 
+
+- During the interactive tuning using R Shiny app, it is recommended to explore the bandwidth sliding bar, "Bandwidth for Density Visualization", at the top of the density distribution plot to determine a proper density bandwidth for setting the landmarks. It will also help double-check if the weak positive peaks are real or dubious. At a large bandwidth level, a real positive population tends to be more visible as one peak, while dubious peaks will present a zigzag pattern. Those rarer positive populations that are not visible as a peak, even with a large bandwidth, can still be deemed as positive populations if the valley is set directly next to the right-hand side of the negative peaks.
 
 - If zigzag discrete negative peaks are observed, user can first increase the "Bandwidth for Density Visualization" at the top of the right panel to smooth out the discrete negative peaks before setting the landmarks.
 

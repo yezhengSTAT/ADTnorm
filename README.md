@@ -181,26 +181,26 @@ save_fig:  Save the density plot figure for checking the peak and valley locatio
 
 ### Case 1. Consider one study as a sample and normalize across studies.
 
-#### Raw Counts 
+#### Arcsinh Transformation on Raw Counts 
 
-<img src="./man/figures/RawCount.png" alt="RawCount" width="700px">
+<img src="./man/figures/RawCount.png" alt="Arcsinh Transformation" width="700px">
 
 #### ADTnorm Counts
 
-<img src="./man/figures/ADTnorm.png" alt="Normalization" width="700px">
+<img src="./man/figures/ADTnorm.png" alt="ADTnorm Normalization" width="700px">
 
 ### Case 2. Consider each healthy donor/patient per time point/condition/response/etc as one sample and normalize across the individual sample. 
 
 
-#### Raw Counts 
+#### Arcsinh Transformation on Raw Counts 
 
 Color-coded by studies as batches.
 
-<img src="./man/figures/PublicData_samplelevel_raw.png" alt="RawCount" width="1000px">
+<img src="./man/figures/PublicData_samplelevel_raw.png" alt="Arcsinh Transformation" width="1000px">
 
 #### ADTnorm Counts
 
-<img src="./man/figures/PublicData_samplelevel_adtnorm.png" alt="Normalization" width="1000px">
+<img src="./man/figures/PublicData_samplelevel_adtnorm.png" alt="ADTnorm Normalization" width="1000px">
 
 ## Manual Adjustment of Landmark Locations by R Shiny
 
