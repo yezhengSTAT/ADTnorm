@@ -223,12 +223,12 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
 
 
         if(quantile_clip < 1){ 
-            quant = quantile(cell_x_adt[[adt_marker_select]], quantile_clip, na.rm = TRUE)
+            quant = quantile(cell_x_adt[,adt_marker_select], quantile_clip, na.rm = TRUE)
             if(verbose){
                 print(paste0("Performing quantile clip to remove outliers beyond the claimed quantile ", quantile_clip, ":", quant, "......"))
             }
             
-            cell_x_adt[[adt_marker_select]][which(cell_x_adt[[adt_marker_select]] > quant)] <- NA
+            cell_x_adt[,adt_marker_select][which(cell_x_adt[,adt_marker_select] > quant)] <- NA
         }
         
         ## smallest bw for density curve
