@@ -9,16 +9,17 @@
 #' @examples
 #' \dontrun{
 #' get_customize_landmark(
-#' cell_x_adt_sample, 
-#' landmark_pos, 
-#' bw, 
-#' adt_marker_select_name, 
+#' cell_x_adt_sample,
+#' landmark_pos,
+#' bw,
+#' adt_marker_select_name,
 #' brewer_palettes = "Set1"
 #' )}
 #' @export
 #' @import ggplot2 ggridges shiny
 get_customize_landmark = function(cell_x_adt_sample, landmark_pos, bw, adt_marker_select_name, brewer_palettes = "Set1"){
 
+  min_value = floor(min(cell_x_adt_sample[, 1], na.rm = TRUE))
   max_value = ceiling(max(cell_x_adt_sample[, 1], na.rm = TRUE)) + 2
   # cell_x_adt_sample_filter = cell_x_adt_sample %>% dplyr::filter(!is.na(adt))
   sample_num = levels(cell_x_adt_sample$sample) %>% length
@@ -26,7 +27,7 @@ get_customize_landmark = function(cell_x_adt_sample, landmark_pos, bw, adt_marke
   cell_x_adt_sample$sample_ordered = factor(cell_x_adt_sample$sample, levels = levels(cell_x_adt_sample$sample))
   ## Create an example UI
   ui <- create_ui(landmark_pos, max_value, bw, plot_height)
-  server <- create_server(landmark_pos, cell_x_adt_sample, bw, adt_marker_select_name, brewer_palettes, max_value)
+  server <- create_server(landmark_pos, cell_x_adt_sample, bw, adt_marker_select_name, brewer_palettes, min_value, max_value)
 
   ## Return user input, vals can change
   res <- shiny::runApp(shinyApp(ui, server))
@@ -74,25 +75,25 @@ create_ui <- function(landmark_pos, max_value, bw, plot_height) {
 }
 
 
-create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_select_name, brewer_palettes = "Set1", max_value) {
-  
+create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_select_name, brewer_palettes = "Set1", min_value, max_value) {
+
   fillColor <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, brewer_palettes))(length(unique(cell_x_adt_sample$batch)))
 
-  
+
   server <- function(input, output, session) {
     vals <- shiny::reactiveValues(
       landmark_pos = landmark_pos,
       slider_values = flat_table(landmark_pos),
       fig = NULL
     )
-    
+
     output$table <- DT::renderDataTable(vals$landmark_pos %>% DT::datatable() %>% DT::formatRound(columns = colnames(landmark_pos), digits = 3))
 
       output$plot <- renderPlot({
         bw_value <- input$bandwidth_slider
         # no_mis_idx = !is.na(cell_x_adt_sample$adt)
-        
-        vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample_ordered")) + 
+
+        vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample_ordered")) +
           ggridges::geom_density_ridges2(aes(fill = factor(batch)), bandwidth = bw_value) +
           theme_bw(base_size = 20) +
           ggpubr::rotate_x_text(angle = 90) +
@@ -100,7 +101,7 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
           xlab(paste0(adt_marker_select_name, " ADT Counts")) +
           ylab("Sample") +
           scale_fill_manual(values = fillColor) +
-          scale_x_continuous(breaks = seq(0, max_value, 0.5)) +
+          scale_x_continuous(breaks = seq(min_value, max_value, 0.5)) +
           # geom_point(data = vals$slider_values, aes_string(x = "x", y = "y", shape = "type"), size = 5)
           geom_segment(
               data = vals$slider_values,
@@ -112,7 +113,7 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
         vals$fig
       })
 
-    
+
     output$landmark_slider_ui <- renderUI({
       if (!is.null(input$landmark_select)) {
         fluidRow(
@@ -132,7 +133,7 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
                      sliderInput(
                        inputId = paste0(colnames(landmark_pos)[j]),
                        label = colnames(landmark_pos)[j],
-                       min = 0,
+                       min = min_value,
                        max = max_value,
                        value = val,
                        step = 0.0001
@@ -143,7 +144,7 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
         )
       }
     })
-    
+
     observeEvent(input$applied, {
       i <- which(rownames(landmark_pos) == input$landmark_select)
       for (j in 1:ncol(landmark_pos)) {
@@ -154,13 +155,13 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
         }
       }
       output$table <- DT::renderDataTable(vals$landmark_pos %>% DT::datatable() %>% DT::formatRound(columns = colnames(landmark_pos), digits = 3))
-      
+
       slider_values <- flat_table(vals$landmark_pos)
-      
+
         output$plot <- renderPlot({
           bw_value <- input$bandwidth_slider
-          
-          vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample_ordered")) + 
+
+          vals$fig <- ggplot(cell_x_adt_sample, aes_string(x = "adt", y = "sample_ordered")) +
             ggridges::geom_density_ridges2(aes(fill = factor(batch)), bandwidth = bw_value) +
             theme_bw(base_size = 20) +
             ggpubr::rotate_x_text(angle = 90) +
@@ -168,8 +169,8 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
             xlab(paste0(adt_marker_select_name, " ADT Counts")) +
             ylab("Sample") +
             scale_fill_manual(values = fillColor) +
-            scale_x_continuous(breaks = seq(0, max_value, 0.5)) + 
-            # geom_point(data = slider_values, aes_string(x = "x", y = "y", shape = "type"), size = 5) 
+            scale_x_continuous(breaks = seq(min_value, max_value, 0.5)) +
+            # geom_point(data = slider_values, aes_string(x = "x", y = "y", shape = "type"), size = 5)
             geom_segment(
               data = slider_values,
               aes(x = x, xend = x, y = peaky, yend = peaky+0.5, color = type),
@@ -179,12 +180,12 @@ create_server <- function(landmark_pos, cell_x_adt_sample, bw = 0.1, adt_marker_
           vals$fig
           })
     })
-    
+
     shiny::observeEvent(input$done, {
       shiny::stopApp(vals$landmark_pos)
     })
   }
-  
+
   return(server)
 
 }
