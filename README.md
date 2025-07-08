@@ -11,7 +11,7 @@ CITE-seq enables paired measurement of surface protein and mRNA expression in si
 
 This repository is the ADTnorm R package. We also provide a [Python wrapper](https://github.com/donnafarberlab/ADTnormPy) by [Daniel P. Caron](https://github.com/Daniel-Caron).
 
-Manuscript: [Zheng et al. ADTnorm: Robust Integration of Single-cell Protein Measurement across CITE-seq Datasets. BioRxiv. 2024](https://www.biorxiv.org/content/10.1101/2022.04.29.489989v2)
+Manuscript: [Zheng et al. ADTnorm: Robust Integration of Single-cell Protein Measurement across CITE-seq Datasets. Nature Communications. 2025](https://www.nature.com/articles/s41467-025-61023-6)
 
 
 ## ADT Normalization Pipeline
@@ -222,6 +222,6 @@ Please note:
 
 [Ye Zheng](https://yezhengstat.github.io/)
 
-Email: yzheng23@fredhutch.org
+Email: yzheng8@mdanderson.org
 
 Twitter: @yezhengSTAT
