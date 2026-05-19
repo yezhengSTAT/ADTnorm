@@ -317,7 +317,7 @@ get_peak_mode = function(cell_x_adt = NULL, cell_x_feature = NULL, adt_marker_se
                     )
                     # peak_infoTmp$midpoints = peak_infoTmp$peaks[, "x"]
 
-                    if ((adt_marker_select %in% bimodal_marker_index) && (length(peak_infoTmp$midpoints) == 2)) {
+                    if ((adt_marker_index %in% bimodal_marker_index) && (length(peak_infoTmp$midpoints) == 2)) {
                         ## if user define this marker to have 2 peaks.
                         resTmp = peak_infoTmp$midpoints
                         res_regionTmp = peak_infoTmp$regions

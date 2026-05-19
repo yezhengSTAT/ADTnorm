@@ -184,13 +184,6 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         cell_x_adt[cell_x_adt == 0] = NA
 
     }
-    ## Whether to consider zero as missing value and set to NA.
-    if(exclude_zeroes){
-        na_mask = is.na(cell_x_adt)
-        # Set all cell_x_adt to NA to avoid transformation during arcsinh (if used)
-        cell_x_adt[cell_x_adt == 0] = NA
-
-    }
 
     ## Arcsinh transformation with default shift factor 1 and scale factor 1/5
     if(arcsinh_transform_flag){
