@@ -98,6 +98,9 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
     if(clean_adt_name){ ## if user wants to clean the adt name
         colnames(cell_x_adt) = colnames(cell_x_adt) %>% clean_adt_name
         marker_to_process = marker_to_process %>% clean_adt_name
+        bimodal_marker = bimodal_marker %>% clean_adt_name #clean_adt_name applied to bimodal/trimodal/positive_peak
+        trimodal_marker = trimodal_marker %>% clean_adt_name
+        if(!is.null(positive_peak)){ positive_peak[["ADT"]] = positive_peak[["ADT"]] %>% clean_adt_name }
     }
     if(any(!(marker_to_process %in% colnames(cell_x_adt)))){ ## check if all the markers required normalization exist in the cell_x_adt
         print("Warning: Please double check the marker_to_process value or the column name of cell_x_adt. The following markers are not provided in the cell_x_adt input matrix:")
@@ -151,6 +154,27 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
     if (any(col_sums == 0)){
         message("Markers with zero counts will be ignored")
         cell_x_adt = cell_x_adt[, col_sums > 0, drop = FALSE] 
+        all_marker_name = all_marker_name[col_sums > 0] #Fix zero-sum column filter desync
+    }
+
+    if(ncol(cell_x_adt) == 0){
+        stop("All markers have zero total counts. Nothing to normalize.")
+    }
+
+    ## warn if user-specified bimodal/trimodal markers were removed by filter
+    if(!is.null(bimodal_marker)){
+        bimodal_removed = bimodal_marker[!bimodal_marker %in% all_marker_name]
+        if(length(bimodal_removed) > 0){
+            message("bimodal_marker(s) removed by zero-count filter: ",
+                    paste(bimodal_removed, collapse = ", "))
+        }
+    }
+    if(!is.null(trimodal_marker)){
+        trimodal_removed = trimodal_marker[!trimodal_marker %in% all_marker_name]
+        if(length(trimodal_removed) > 0){
+            message("trimodal_marker(s) removed by zero-count filter: ",
+                    paste(trimodal_removed, collapse = ", "))
+        }
     }
 
     ## Whether to consider zero as missing value and set to NA.
@@ -177,8 +201,10 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
         bimodal_marker = setdiff(all_marker_name, trimodal_marker)
     }
     bimodal_marker_index = which(all_marker_name %in% bimodal_marker)
+    if(length(bimodal_marker_index) == 0) bimodal_marker_index = NULL
     if(!is.null(trimodal_marker)){
         trimodal_marker_index = which(all_marker_name %in% trimodal_marker)
+        if(length(trimodal_marker_index) == 0) trimodal_marker_index = NULL # downstream code from receiving integer(0) instead of NULL
     }else{
         trimodal_marker_index = NULL
     }
@@ -190,6 +216,12 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
             positive_peak_marker_index = c(positive_peak_marker_index, which(all_marker_name %in% adt_each))
         }
         positive_peak[["ADT_index"]] = positive_peak_marker_index
+        adt_keep = positive_peak[["ADT"]] %in% all_marker_name         # Sync positive_peak vectors after filter
+        positive_peak[["ADT"]] = positive_peak[["ADT"]][adt_keep]      # Keeps $ADT / $sample vectors in sync when zero-sum markers are removed from positive_peak
+        positive_peak[["sample"]] = positive_peak[["sample"]][adt_keep]
+        if(length(positive_peak[["ADT"]]) == 0){
+            positive_peak = NULL
+        }
     }
     
     ## replace the marker name by temp simple name to avoid symbol change by r
@@ -204,7 +236,7 @@ ADTnorm = function(cell_x_adt = NULL, cell_x_feature = NULL, save_outpath = NULL
     }else{
         adt_marker_index_list = which(all_marker_name %in% marker_to_process)
         if(length(adt_marker_index_list) == 0){ ## may not need it anymore 
-            stop("Please provide consistent ADT marker name as the input ADT expression count matrix column name.")
+            stop("None of the requested marker_to_process markers were found as the input ADT expression count matrix column name.")
         }else{
             print(paste0("Note: ADTnorm will process the following ADT markers as provided: ", paste(all_marker_name[adt_marker_index_list], collapse = ", ")))
             cell_x_adt_norm = cell_x_adt[, adt_marker_index_list, drop=FALSE] #%>% t %>% t ## to record normalization results
